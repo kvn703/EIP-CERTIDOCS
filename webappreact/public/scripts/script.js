@@ -145,18 +145,69 @@ function updateUI(address) {
     }
 }
 
+
 async function connectMetaMask() {
     if (typeof window.ethereum === "undefined") {
         alert("❌ MetaMask non détecté !");
         return;
     }
 
+    const TARGET_CHAIN_ID = "0x89"; // Polygon Mainnet (137 en hexadécimal)
+    const NETWORK_PARAMS = {
+        chainId: TARGET_CHAIN_ID,
+        chainName: "Polygon Mainnet",
+        nativeCurrency: {
+            name: "MATIC",
+            symbol: "MATIC",
+            decimals: 18,
+        },
+        rpcUrls: ["https://polygon-rpc.com"],
+        blockExplorerUrls: ["https://polygonscan.com/"],
+    };
+
     const provider = new ethers.BrowserProvider(window.ethereum);
-    signer = await provider.getSigner();
+    const signer = await provider.getSigner();
     const address = await signer.getAddress();
-    contract = new ethers.Contract(contractAddress, abi, signer);
-    updateUI(address);
-    document.getElementById("signMessage").disabled = false;
+
+    try {
+        // Vérifier si l'utilisateur est déjà sur le bon réseau
+        const network = await provider.getNetwork();
+        if (network.chainId !== parseInt(TARGET_CHAIN_ID, 16)) {
+            alert("Mauvais réseau, tentative de changement...");
+            
+            // Demande à MetaMask de changer de réseau
+            await window.ethereum.request({
+                method: "wallet_switchEthereumChain",
+                params: [{ chainId: TARGET_CHAIN_ID }],
+            });
+
+            alert("Réseau changé avec succès !");
+        }
+
+        // Initialisation du contrat
+        contract = new ethers.Contract(contractAddress, abi, signer);
+        updateUI(address);
+        document.getElementById("signMessage").disabled = false;
+
+    } catch (error) {
+        alert("Erreur lors du changement de réseau :", error.code);
+
+        // Si le réseau n'existe pas dans MetaMask, propose de l'ajouter
+        // if (error.code === 4902) {
+            try {
+                await window.ethereum.request({
+                    method: "wallet_addEthereumChain",
+                    params: [NETWORK_PARAMS],
+                });
+                alert("Réseau ajouté avec succès !");
+                contract = new ethers.Contract(contractAddress, abi, signer);
+                updateUI(address);
+                document.getElementById("signMessage").disabled = false;
+            } catch (addError) {
+                alert("Erreur lors de l'ajout du réseau :", addError);
+            }
+        // }
+    }
 }
 
 document.getElementById("logoutButton").addEventListener("click", function () {
