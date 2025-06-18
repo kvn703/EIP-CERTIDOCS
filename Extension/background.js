@@ -1,7 +1,7 @@
 importScripts("./lib/ethers.umd.min.js");
 
 chrome.runtime.onMessage.addListener((request) => {
-    if (request.action === "openSignatureWindow") {
+    if (request.action === "openSignatureWindow" || request.action === "openVerificationWindow") {
         const windowId = chrome.windows.WINDOW_ID_CURRENT;
         chrome.windows.get(windowId, (window) => {
             const windowWidth = 500;
@@ -17,10 +17,10 @@ chrome.runtime.onMessage.addListener((request) => {
                     }
                 });
             });
-            // Choix de l'URL selon le type
+            // Choix de l'URL selon le type et l'action
             let url = "http://localhost:8080/";
             if (request.type === "pdf") {
-                url = "http://localhost:8080/signPDF";
+                url = request.action === "openSignatureWindow" ? "http://localhost:8080/signPDF" : "http://localhost:8080/verifyPDF";
             }
             chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                 if (tabs.length === 0) return;
@@ -83,9 +83,13 @@ chrome.runtime.onMessage.addListener((request) => {
                 chrome.tabs.sendMessage(tabs[0].id, { action: "getDivContentVerify" }, (response) => {
                     console.log("Contenu de la div:", response.content);
                     console.log("SignatureId:", response.signatureId);
+                    let url = "http://localhost:8080/verify";
+                    if (request.type === "pdf") {
+                        url = "http://localhost:8080/verifyPDF";
+                    }
                     if (response.content === "Aucune div trouvée") {
                         chrome.windows.create({
-                            url: "http://localhost:8080/verify", // Remplace par l'URL que tu veux
+                            url: url, // Remplace par l'URL que tu veux
                             type: "popup",
                             width: windowWidth,
                             height: windowHeight,
@@ -96,7 +100,7 @@ chrome.runtime.onMessage.addListener((request) => {
                     } else {
                         const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(response.content));
                         chrome.windows.create({
-                            url: "http://localhost:8080/verify.html?messageHash=" + hash + "&signatureId=" + response.signatureId, // Remplace par l'URL que tu veux
+                            url: url + "?messageHash=" + hash + "&signatureId=" + response.signatureId, // Remplace par l'URL que tu veux
                             type: "popup",
                             width: windowWidth,
                             height: windowHeight,
