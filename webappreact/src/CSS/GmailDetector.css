@@ -1,0 +1,115 @@
+/* Fond violet moderne */
+.gmail-detector.modern {
+  position: fixed;
+  z-index: 9999;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, #7f53ac 0%, #647dee 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.5s;
+}
+
+.detection-loading {
+  background: rgba(255,255,255,0.13);
+  border-radius: 18px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.10);
+  padding: 40px 32px 32px 32px;
+  min-width: 340px;
+  max-width: 95vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.detection-animation {
+  position: relative;
+  margin-bottom: 32px;
+}
+.pulse-ring {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: rgba(160,132,238,0.18);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0% { transform: translate(-50%,-50%) scale(1); opacity: 0.7; }
+  70% { transform: translate(-50%,-50%) scale(1.25); opacity: 0.15; }
+  100% { transform: translate(-50%,-50%) scale(1.5); opacity: 0; }
+}
+.detection-icon {
+  width: 54px;
+  height: 54px;
+  background: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: #7f53ac;
+  box-shadow: 0 2px 12px rgba(127,83,172,0.10);
+  position: relative;
+  z-index: 2;
+}
+
+.detection-steps {
+  margin-top: 10px;
+  width: 100%;
+}
+.detection-step {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 1.08rem;
+  color: #e0e0e0;
+  opacity: 0.7;
+  transition: color 0.3s, opacity 0.3s;
+}
+.detection-step.active {
+  color: #fff;
+  opacity: 1;
+}
+.step-indicator {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  font-size: 1.2em;
+}
+.step-indicator .fa-check {
+  color: #aaffc3;
+  font-size: 1.2em;
+  animation: popIn 0.4s;
+}
+.step-indicator .fa-circle {
+  color: #bdbdbd;
+  font-size: 0.9em;
+}
+.step-spinner {
+  width: 18px;
+  height: 18px;
+  border: 3px solid #e0e0e0;
+  border-top: 3px solid #a084ee;
+  border-radius: 50%;
+  animation: modern-spin 1s linear infinite;
+}
+@keyframes modern-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes popIn {
+  0% { transform: scale(0.7); opacity: 0; }
+  80% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+} 

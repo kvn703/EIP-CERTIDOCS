@@ -1,5 +1,6 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === "getDivContentGenerate") {
+
         // recupere la deuxieme div avec la classe 'Am aiL Al editable LW-avf tS-tW' et recupere son contenu
         try {
             const divs = document.querySelectorAll("div.Am.aiL.Al.editable.LW-avf.tS-tW");
@@ -9,42 +10,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             sendResponse({ content: content });
         } catch (error) {
             sendResponse({ content: "Aucune div trouvée" });
-        }
-    }
-    
-    if (message.action === "getDivContentVerify") {
-        // recupere la premiere div avec la classe 'ii gt' et recupere son contenu
-        try {
-            const divs = document.querySelectorAll("div.ii.gt");
-            // recupere le contenu de la premiere div
-            let content = divs[0].innerText;
-            // remove "Télécharger\nAjouter à Drive\nEnregistrer dans Photos" from the content
-            content = content.replace("Télécharger\nAjouter à Drive\nEnregistrer dans Photos\n", "");
-            content = content.replace("Télécharger\nAjouter à Drive\nEnregistrer dans Photos", "");
-            content = content.replace("Analyse antivirus en cours...\nAjouter à Drive\nEnregistrer dans Photos\n", "");
-            content = content.replace("Analyse antivirus en cours...\nAjouter à Drive\nEnregistrer dans Photos", "");
-            
-            // get image in the div
-            const images = divs[0].querySelectorAll("img");
-            const src = images[0]?.getAttribute("src");
-            
-            if (src) {
-                // Utiliser une promesse pour gérer l'extraction asynchrone
-                extractTextFromImage(src).then(text => {
-                    console.log("Texte extrait de l'image:", text);
-                    console.log("Contenu de la div:", content);
-                    sendResponse({ content: content, signatureId: text });
-                }).catch(error => {
-                    console.error(error);
-                    sendResponse({ content: content, signatureId: "" });
-                });
-                return true; // Indique que la réponse sera asynchrone
-            } else {
-                // Pas d'image, répondre immédiatement
-                sendResponse({ content: content, signatureId: "" });
-            }
-        } catch (error) {
-            sendResponse({ content: "Aucune div trouvée", signatureId: "" });
         }
     }
 });
@@ -78,6 +43,40 @@ async function extractTextFromImage(imageUrl) {
         img.onerror = () => reject("Erreur de chargement de l'image");
     });
 }
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === "getDivContentVerify") {
+        // recupere la premiere div avec la classe 'ii gt' et recupere son contenu
+        try {
+            const divs = document.querySelectorAll("div.ii.gt");
+            // recupere le contenu de la premiere div
+            let content = divs[0].innerText;
+            // remove "Télécharger\nAjouter à Drive\nEnregistrer dans Photos" from the content
+            content = content.replace("Télécharger\nAjouter à Drive\nEnregistrer dans Photos\n", "");
+            content = content.replace("Télécharger\nAjouter à Drive\nEnregistrer dans Photos", "");
+            content = content.replace("Analyse antivirus en cours...\nAjouter à Drive\nEnregistrer dans Photos\n", "");
+            content = content.replace("Analyse antivirus en cours...\nAjouter à Drive\nEnregistrer dans Photos", "");
+            // get image in the div
+            const images = divs[0].querySelectorAll("img");
+            // get the image src attribute
+            const src = images[0].getAttribute("src");
+            
+            extractTextFromImage(src).then(text => {
+                console.log("Texte extrait de l'image:", text);
+                console.log("Contenu de la div:", content);
+                // now inside the div, from '[CERTIDOCS]' to the end of the string replace every thing by an image
+                sendResponse({ content: content, signatureId: text});
+                console.log("Contenu de la div:", content);
+            }).catch(error => {
+                console.error(error);
+                sendResponse({ content: "Erreur lors de l'extraction du texte de l'image", signatureId: "" });
+            });
+            return true;
+        } catch (error) {
+            sendResponse({ content: "Aucune div trouvée", signatureId: "" });
+        }
+    }
+});
 
 function replaceCertidocsInTextNodes(node) {
     if (node.nodeType === Node.TEXT_NODE) {

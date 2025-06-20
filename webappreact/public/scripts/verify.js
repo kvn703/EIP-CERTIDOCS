@@ -175,4 +175,5 @@ async function checkMetaMaskConnection() {
 window.addEventListener("load", checkMetaMaskConnection);
 document
     .getElementById("verifySignature")
-    .addEventListener("click", verifySignature);document.addEventListener("DOMContentLoaded", connectMetaMask);
+    .addEventListener("click", verifySignature);
+document.addEventListener("DOMContentLoaded", connectMetaMask);

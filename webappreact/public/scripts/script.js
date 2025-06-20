@@ -246,7 +246,7 @@ async function signMessage() {
             copyButton.innerText = "📋 Copié la signature !";
             document.getElementById("status").appendChild(copyButton);
             copyButton.onclick = () => {
-                hideTextInImage("http://localhost:3000/DEFAULT_SIGNATURE.png", "[CERTIDOCS]" + signatureId).then(() => {
+                hideTextInImage("http://localhost:8080/DEFAULT_SIGNATURE.png", "[CERTIDOCS]" + signatureId).then(() => {
                     const confirmationMessage = document.createElement("div");
                     confirmationMessage.className = "copy-confirmation";
                     confirmationMessage.innerText = "✅ Signature copiée !";
