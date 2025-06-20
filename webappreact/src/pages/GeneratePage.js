@@ -12,7 +12,6 @@ import NavigationBar from "../component/NavigationBar/NavigationBar";
 import { useAppKitAccount, useDisconnect, modal } from "@reown/appkit/react";
 
 const GeneratePage = () => {
-  const [expiration, setExpiration] = useState("3600");
   const [activeOption, setActiveOption] = useState('text');
   const { isConnected} = useAppKitAccount();
   const { disconnect } = useDisconnect();
@@ -79,15 +78,6 @@ const GeneratePage = () => {
       <div id="confirmationMessage">
         <span className="emoji">✅</span>Votre message a bien été récupéré.
       </div>
-
-      <CustomText className="fas fa-clock clock-icon" Text="Temps d'expiration :" />
-      <select id="expirationSelect" value={expiration} onChange={(e) => setExpiration(e.target.value)}>
-        <option value="3600">1 heure</option>
-        <option value="7200">2 heures</option>
-        <option value="10800">3 heures</option>
-        <option value="86400">1 jour</option>
-        <option value="604800">1 semaine</option>
-      </select>
 
       <CustomText className="fas fa-user" Text="Destinataires autorisés :" />
       <CustomTextInput id="recipientsInput" placeholder="Adresse1, Adresse2, ..." />
