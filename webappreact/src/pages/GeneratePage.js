@@ -8,12 +8,10 @@ import "../CSS/logoutButton.css";
 import Container from "../component/Container";
 import CustomText from "../component/CustomText";
 import CustomTextInput from "../component/CustomTextInput";
-import NavigationBar from "../component/NavigationBar/NavigationBar";
 import { useAppKitAccount, useDisconnect, modal } from "@reown/appkit/react";
 
 const GeneratePage = () => {
   const [expiration, setExpiration] = useState("3600");
-  const [activeOption, setActiveOption] = useState('text');
   const { isConnected} = useAppKitAccount();
   const { disconnect } = useDisconnect();
 
@@ -44,12 +42,6 @@ const GeneratePage = () => {
     }
   };
 
-  const handleOptionSelect = (option) => {
-    setActiveOption(option);
-    // Ici vous pouvez ajouter la logique pour naviguer vers les différentes pages
-    console.log(`Option sélectionnée: ${option}`);
-  };
-
   return (
 
     <Container>
@@ -66,12 +58,6 @@ const GeneratePage = () => {
           <button onClick={handleOpenModal}>Connecter le Wallet</button>
         )}
       </div>
-
-      {/* Barre de navigation avec icônes Font Awesome */}
-      <NavigationBar 
-        activeOption={activeOption}
-        onOptionSelect={handleOptionSelect}
-      />
 
       <CustomText className="fas fa-pen" Text="Message à signer électroniquement :" />
       <CustomTextInput id="messageInput" rows="4" placeholder="Saisissez votre message..." />
