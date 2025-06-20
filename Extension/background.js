@@ -18,9 +18,9 @@ chrome.runtime.onMessage.addListener((request) => {
                 });
             });
             // Choix de l'URL selon le type et l'action
-            let url = "http://localhost:8080/";
+            let url = "http://localhost:3000/";
             if (request.type === "pdf") {
-                url = request.action === "openSignatureWindow" ? "http://localhost:8080/signPDF" : "http://localhost:8080/verifyPDF";
+                url = request.action === "openSignatureWindow" ? "http://localhost:3000/signPDF" : "http://localhost:3000/verifyPDF";
             }
             chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                 if (tabs.length === 0) return;
@@ -83,9 +83,9 @@ chrome.runtime.onMessage.addListener((request) => {
                 chrome.tabs.sendMessage(tabs[0].id, { action: "getDivContentVerify" }, (response) => {
                     console.log("Contenu de la div:", response.content);
                     console.log("SignatureId:", response.signatureId);
-                    let url = "http://localhost:8080/verify";
+                    let url = "http://localhost:3000/verify";
                     if (request.type === "pdf") {
-                        url = "http://localhost:8080/verifyPDF";
+                        url = "http://localhost:3000/verifyPDF";
                     }
                     if (response.content === "Aucune div trouvée") {
                         chrome.windows.create({

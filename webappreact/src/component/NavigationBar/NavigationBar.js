@@ -4,25 +4,16 @@ import './NavigationBar.css';
 const NavigationBar = ({ activeOption, onOptionSelect }) => {
   return (
     <div className="navigation-bar">
-      <div 
-        className={`nav-item ${activeOption === 'text' ? 'active' : ''}`} 
-        onClick={() => onOptionSelect('text')}
-      >
-        <i className="fas fa-file-alt"></i>
+      <div className="nav-item" onClick={() => onOptionSelect('text')}>
+        <i className={`fas fa-file-alt ${activeOption === 'text' ? 'active' : ''}`}></i>
         <span>Texte</span>
       </div>
-      <div 
-        className={`nav-item ${activeOption === 'mail' ? 'active' : ''}`} 
-        onClick={() => onOptionSelect('mail')}
-      >
-        <i className="fas fa-envelope"></i>
+      <div className="nav-item" onClick={() => onOptionSelect('mail')}>
+        <i className={`fas fa-envelope ${activeOption === 'mail' ? 'active' : ''}`}></i>
         <span>Mail</span>
       </div>
-      <div 
-        className={`nav-item ${activeOption === 'pdf' ? 'active' : ''}`} 
-        onClick={() => onOptionSelect('pdf')}
-      >
-        <i className="fas fa-file-pdf"></i>
+      <div className="nav-item" onClick={() => onOptionSelect('pdf')}>
+        <i className={`fas fa-file-pdf ${activeOption === 'pdf' ? 'active' : ''}`}></i>
         <span>PDF</span>
       </div>
     </div>

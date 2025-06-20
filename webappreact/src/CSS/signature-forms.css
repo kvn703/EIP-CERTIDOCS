@@ -7,128 +7,6 @@
   border: 1px solid #e9ecef;
 }
 
-/* États de succès pour texte */
-.text-success-state {
-  background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
-  border-radius: 16px;
-  border: 2px solid #4CAF50;
-  padding: 25px;
-  margin-bottom: 20px;
-  position: relative;
-  overflow: hidden;
-}
-
-.text-success-state::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #4CAF50, #45a049, #4CAF50);
-  animation: successShimmer 2s infinite;
-}
-
-.text-success-header {
-  margin-bottom: 20px;
-}
-
-.text-content h3 {
-  color: #333;
-  margin-bottom: 15px;
-  font-size: 1.3rem;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.text-status-message {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 15px;
-  background: rgba(255, 255, 255, 0.7);
-  border-radius: 10px;
-  margin-bottom: 20px;
-  font-size: 14px;
-  color: #555;
-  border-left: 4px solid #4CAF50;
-}
-
-.text-status-message i {
-  color: #4CAF50;
-  font-size: 16px;
-}
-
-/* États d'erreur pour Gmail */
-.gmail-error-state {
-  background: linear-gradient(135deg, #fff8f8 0%, #ffe8e8 100%);
-  border-radius: 16px;
-  border: 2px solid #f44336;
-  padding: 25px;
-  margin-bottom: 20px;
-  position: relative;
-  overflow: hidden;
-}
-
-.gmail-error-state::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #f44336, #d32f2f, #f44336);
-  animation: errorShimmer 2s infinite;
-}
-
-@keyframes errorShimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-.gmail-error-header {
-  margin-bottom: 20px;
-}
-
-.error-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: linear-gradient(135deg, #f44336, #d32f2f);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 14px;
-  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
-  animation: errorBadgePop 0.6s ease-out;
-}
-
-@keyframes errorBadgePop {
-  0% {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-.error-badge i {
-  font-size: 16px;
-}
-
-.gmail-status-message.error {
-  border-left: 4px solid #f44336;
-  background: rgba(255, 255, 255, 0.8);
-}
-
-.gmail-status-message.error i {
-  color: #f44336;
-}
-
 .gmail-integration {
   text-align: center;
 }
@@ -526,9 +404,7 @@
   }
   
   .gmail-success-state,
-  .gmail-waiting-state,
-  .gmail-error-state,
-  .text-success-state {
+  .gmail-waiting-state {
     padding: 20px;
   }
   

@@ -17,7 +17,7 @@ const HomePage = () => {
   const [expiration, setExpiration] = useState("3600");
   const [activeOption, setActiveOption] = useState('text');
   const [gmailAvailable, setGmailAvailable] = useState(false);
-  const [showSignatureForm, setShowSignatureForm] = useState(true);
+  const [showSignatureForm, setShowSignatureForm] = useState(false);
   const { isConnected } = useAppKitAccount();
   const { disconnect } = useDisconnect();
 
@@ -47,70 +47,46 @@ const HomePage = () => {
   };
 
   const handleGmailDetected = () => {
-    console.log("Gmail détecté - Changement vers mail");
     setGmailAvailable(true);
-    setActiveOption('mail'); // Change automatiquement vers mail
+    setActiveOption('mail');
   };
 
   const handleNoGmail = () => {
-    console.log("Gmail non détecté - Reste sur texte");
     setGmailAvailable(false);
-    // Ne change pas l'option active si l'utilisateur a déjà choisi quelque chose
-    if (activeOption === 'mail') {
-      setActiveOption('text');
-    }
+    setActiveOption('text');
   };
 
   const handleOptionSelect = (option) => {
-    console.log("Option sélectionnée:", option);
     setActiveOption(option);
     setShowSignatureForm(true);
   };
 
   const renderSignatureForm = () => {
-    console.log("Rendu avec activeOption:", activeOption, "Gmail disponible:", gmailAvailable);
-    
+    if (!showSignatureForm) return null;
+
     switch (activeOption) {
       case 'text':
         return (
           <div className="signature-form">
-            <div className="text-success-state">
-              <div className="text-success-header">
-                <div className="success-badge">
-                  <i className="fas fa-check-circle"></i>
-                  <span>Prêt pour la signature de texte</span>
-                </div>
-              </div>
-              
-              <div className="text-content">
-                <h3>📝 Signature de message texte</h3>
-                <p className="text-status-message">
-                  <i className="fas fa-info-circle"></i>
-                  Votre message texte a bien été récupéré et est prêt à être signé.
-                </p>
-                
-                <CustomText className="fas fa-pen" Text="Message à signer électroniquement :" />
-                <CustomTextInput id="messageInput" rows="4" placeholder="Saisissez votre message..." />
-                
-                <CustomText className="fas fa-clock clock-icon" Text="Temps d'expiration :" />
-                <select id="expirationSelect" value={expiration} onChange={(e) => setExpiration(e.target.value)}>
-                  <option value="3600">1 heure</option>
-                  <option value="7200">2 heures</option>
-                  <option value="10800">3 heures</option>
-                  <option value="86400">1 jour</option>
-                  <option value="604800">1 semaine</option>
-                </select>
+            <CustomText className="fas fa-pen" Text="Message à signer électroniquement :" />
+            <CustomTextInput id="messageInput" rows="4" placeholder="Saisissez votre message..." />
+            
+            <CustomText className="fas fa-clock clock-icon" Text="Temps d'expiration :" />
+            <select id="expirationSelect" value={expiration} onChange={(e) => setExpiration(e.target.value)}>
+              <option value="3600">1 heure</option>
+              <option value="7200">2 heures</option>
+              <option value="10800">3 heures</option>
+              <option value="86400">1 jour</option>
+              <option value="604800">1 semaine</option>
+            </select>
 
-                <CustomText className="fas fa-user" Text="Destinataires autorisés :" />
-                <CustomTextInput id="recipientsInput" placeholder="Adresse1, Adresse2, ..." />
-                <p style={{ fontSize: "12px", fontStyle: "italic" }}>Séparées par des virgules</p>
+            <CustomText className="fas fa-user" Text="Destinataires autorisés :" />
+            <CustomTextInput id="recipientsInput" placeholder="Adresse1, Adresse2, ..." />
+            <p style={{ fontSize: "12px", fontStyle: "italic" }}>Séparées par des virgules</p>
 
-                <button id="signMessage" className="gmail-action-btn primary">
-                  <i className="fas fa-signature"></i>
-                  🖊️ Signer et stocker sur la blockchain
-                </button>
-              </div>
-            </div>
+            <button id="signMessage" disabled>
+              🖊️ Signer et stocker sur la blockchain
+            </button>
           </div>
         );
 
@@ -123,7 +99,7 @@ const HomePage = () => {
                   <div className="gmail-success-header">
                     <div className="success-badge">
                       <i className="fas fa-check-circle"></i>
-                      <span>Email Gmail récupéré avec succès</span>
+                      <span>Gmail Connecté</span>
                     </div>
                   </div>
                   
@@ -131,7 +107,7 @@ const HomePage = () => {
                     <h3>📧 Signature d'email Gmail</h3>
                     <p className="gmail-status-message">
                       <i className="fas fa-link"></i>
-                      Votre email Gmail a bien été récupéré et est prêt à être signé !
+                      Gmail a été détecté avec succès ! Vous pouvez maintenant signer vos emails.
                     </p>
                     
                     <div className="gmail-actions">
@@ -165,35 +141,26 @@ const HomePage = () => {
                         </div>
                       </div>
                     </div>
-
-                    <CustomText className="fas fa-clock clock-icon" Text="Temps d'expiration :" />
-                    <select id="expirationSelect" value={expiration} onChange={(e) => setExpiration(e.target.value)}>
-                      <option value="3600">1 heure</option>
-                      <option value="7200">2 heures</option>
-                      <option value="10800">3 heures</option>
-                      <option value="86400">1 jour</option>
-                      <option value="604800">1 semaine</option>
-                    </select>
                   </div>
                 </div>
               ) : (
-                <div className="gmail-error-state">
-                  <div className="gmail-error-header">
-                    <div className="error-badge">
-                      <i className="fas fa-exclamation-triangle"></i>
-                      <span>Erreur de détection Gmail</span>
+                <div className="gmail-waiting-state">
+                  <div className="gmail-waiting-header">
+                    <div className="waiting-badge">
+                      <i className="fas fa-hourglass-half"></i>
+                      <span>En attente de Gmail</span>
                     </div>
                   </div>
                   
                   <div className="gmail-content">
                     <h3>📧 Signature d'email Gmail</h3>
-                    <p className="gmail-status-message error">
-                      <i className="fas fa-times-circle"></i>
-                      Impossible de détecter Gmail. Veuillez vérifier que Gmail est ouvert dans un autre onglet.
+                    <p className="gmail-status-message">
+                      <i className="fas fa-info-circle"></i>
+                      Ouvrez Gmail dans un autre onglet pour activer la signature d'emails.
                     </p>
                     
                     <div className="gmail-instructions">
-                      <h4>Comment résoudre le problème :</h4>
+                      <h4>Comment procéder :</h4>
                       <ol>
                         <li>
                           <i className="fas fa-external-link-alt"></i>
@@ -209,14 +176,18 @@ const HomePage = () => {
                         </li>
                       </ol>
                     </div>
-
-                    <button className="gmail-action-btn primary" onClick={() => window.location.reload()}>
-                      <i className="fas fa-redo"></i>
-                      Réessayer la détection
-                    </button>
                   </div>
                 </div>
               )}
+
+              <CustomText className="fas fa-clock clock-icon" Text="Temps d'expiration :" />
+              <select id="expirationSelect" value={expiration} onChange={(e) => setExpiration(e.target.value)}>
+                <option value="3600">1 heure</option>
+                <option value="7200">2 heures</option>
+                <option value="10800">3 heures</option>
+                <option value="86400">1 jour</option>
+                <option value="604800">1 semaine</option>
+              </select>
             </div>
           </div>
         );
@@ -238,11 +209,7 @@ const HomePage = () => {
         );
 
       default:
-        return (
-          <div className="signature-form">
-            <p>Sélectionnez une option dans la barre de navigation ci-dessus.</p>
-          </div>
-        );
+        return null;
     }
   };
 
