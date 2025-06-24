@@ -120,55 +120,65 @@ function createCopyButton(address) {
 }
 
 async function verifySignature() {
-    const signatureId = document.getElementById("signatureId").value.trim();
-    if (!/^0x[a-fA-F0-9]{64}$/.test(signatureId)) {
-        alert("❌ L'ID de signature est invalide !");
-        return;
-    }
-
-    const message = document.getElementById("messageInput").value.trim();
-    if (message === "") {
-        alert("❌ Le message ne peut pas être vide !");
-        return;
-    }
-    messageHash = message;
-    const userAddress = await signer.getAddress();
-    console.log("Hash du message :", messageHash);
-    document.getElementById("verify").innerText = "⏳ Vérification en cours...";
     try {
+        const signatureId = document.getElementById("signatureId").value.trim();
+        if (!/^0x[a-fA-F0-9]{64}$/.test(signatureId)) {
+            alert("❌ L'ID de signature est invalide !");
+            return;
+        }
+
+        const message = document.getElementById("messageInput").value.trim();
+        if (!message || message.length < 3) {
+            alert("❌ Le message est vide ou trop court !");
+            return;
+        }
+
+        if (!signer || !contract) {
+            alert("❌ MetaMask ou contrat non initialisé !");
+            return;
+        }
+
+        const userAddress = await signer.getAddress();
+        messageHash = message;
+
+        document.getElementById("verify").innerText = "⏳ Vérification en cours...";
         const isValid = await contract.verifySignature(
             signatureId,
             userAddress,
             messageHash
         );
+
         document.getElementById("verify").innerText = isValid
-        ? "✅ Signature VALIDE !"
-        : "❌ Signature NON VALIDE.";
-        console.log(isValid);
+            ? "✅ Signature VALIDE !"
+            : "❌ Signature NON VALIDE.";
     } catch (error) {
-        alert(error.message);
         console.error(error);
-        document.getElementById("verify").innerText =
-        "❌ Erreur lors de la vérification.";
+        alert("❌ Une erreur est survenue pendant la vérification.");
+        document.getElementById("verify").innerText = "❌ Erreur lors de la vérification.";
     }
 }
 
 async function checkMetaMaskConnection() {
-    if (typeof window.ethereum === "undefined") {
-        document.getElementById("account").innerText = "❌ MetaMask non détecté !";
-        return;
-    }
+    try {
+        if (typeof window.ethereum === "undefined") {
+            document.getElementById("account").innerText = "❌ MetaMask non détecté !";
+            return;
+        }
 
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    const accounts = await provider.send("eth_accounts", []);
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const accounts = await provider.send("eth_accounts", []);
 
-    if (accounts.length > 0) {
-        signer = await provider.getSigner();
-        const address = await signer.getAddress();
-        contract = new ethers.Contract(contractAddress, abi, signer);
-        updateUI(address);
-    } else {
-        document.getElementById("account").innerText = "🔴 MetaMask non connecté !";
+        if (accounts.length > 0) {
+            signer = await provider.getSigner();
+            const address = await signer.getAddress();
+            contract = new ethers.Contract(contractAddress, abi, signer);
+            updateUI(address);
+        } else {
+            document.getElementById("account").innerText = "🔴 MetaMask non connecté !";
+        }
+    } catch (err) {
+        alert("❌ Erreur lors de la détection de MetaMask.");
+        console.error(err);
     }
 }
 
