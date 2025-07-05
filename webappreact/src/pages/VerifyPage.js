@@ -7,7 +7,7 @@ import Container from "../component/Container";
 import CustomText from "../component/CustomText";
 import CustomTextInput from "../component/CustomTextInput";
 import { useAppKitAccount, useDisconnect, modal } from "@reown/appkit/react";
-import { FaWallet, FaSignOutAlt, FaCog, FaRegCopy, FaInbox, FaEdit, FaFileAlt, FaCamera } from "react-icons/fa";
+import { FaWallet, FaSignOutAlt, FaCog, FaRegCopy, FaInbox, FaEdit, FaFileAlt, FaCamera, FaCheckCircle } from "react-icons/fa";
 import Tabs from "../component/Tabs";
 import "../component/Tabs.css";
 import PDFSection from "../component/PdfPage/PDFSection";
@@ -157,13 +157,13 @@ function VerifyPage() {
           {console.log("Rendering mail tab, mailContentLost:", mailContentLost)}
 
           {signatureId && message && showContentRecovered && !isVerifying && !verificationResult && (
-            <div style={{ textAlign: 'center', padding: '32px 20px' }}>
-              <div style={{ fontSize: '22px', fontWeight: '600', color: '#333', marginBottom: '16px' }}>
-                ✅ Contenu récupéré avec succès !
+            <div style={{ textAlign: 'center', padding: '32px 20px', background: '#f0fdfa', borderRadius: 12, boxShadow: '0 2px 8px #7fffa744', marginBottom: 18, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+              <FaCheckCircle style={{ fontSize: '2.2em', color: '#51cf66', marginBottom: 8 }} />
+              <div style={{ fontSize: '20px', fontWeight: '600', color: '#333', marginBottom: '8px' }}>
+                Contenu récupéré avec succès !
               </div>
-              <div style={{ color: '#666', marginBottom: '32px', lineHeight: '1.6' }}>
-                Signature et message extraits de votre boîte mail.<br/>
-                Cliquez sur le bouton ci-dessous pour vérifier votre signature
+              <div style={{ color: '#666', marginBottom: '8px', lineHeight: '1.6', fontSize: '15px' }}>
+                Signature et message extraits de votre boîte mail.
               </div>
             </div>
           )}

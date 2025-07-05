@@ -9,7 +9,7 @@ chrome.runtime.onMessage.addListener((request) => {
             // const left = window.left;
             // const top = window.top;
             const windowWidth = 400;
-            const windowHeight = 780;
+            const windowHeight = 900;
             const screenWidth = window.width;
             const screenHeight = window.height;
 
@@ -66,8 +66,8 @@ chrome.runtime.onMessage.addListener((request) => {
     if (request.action === "openVerificationWindow") {
         const windowId = chrome.windows.WINDOW_ID_CURRENT;
         chrome.windows.get(windowId, (window) => {
-            const windowWidth = 500;
-            const windowHeight = 575;
+            const windowWidth = 400;
+            const windowHeight = 775;
             const screenWidth = window.width;
             const screenHeight = window.height;
 
