@@ -12,34 +12,30 @@ on:
             - 'webappreact/**'
 
 jobs:
-  push_to_prod:
-    name: Push webappreact folder to prod
+  push_to_mirror:
+    name: Push webappreact folder to mirror repo
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true || github.event_name == 'push'
     steps:
-      - name: Repository checkout
+      - name: Checkout repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          path: webappreact # Clone uniquement dans le dossier webappreact
 
-      - name: Configure Git identity
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.CLONE_KEY }}
+
+      - name: Push webappreact/ subtree to mirror repo
         run: |
+          git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-          git config --global user.name "GitHub Actions"
 
-      - name: Initialize Git in webappreact folder
-        run: |
-            cd webappreact
-            git init
-            git remote set-url origin ${{ secrets.MIRROR_URL_WEB }}
-            git add .
-            git commit -m "Mirror webappreact folder"
-            git branch -M main
+          # Ajouter le repo cible en remote
+          git remote add mirror ${{ secrets.MIRROR_URL_WEB }}
 
-      - name: Push webappreact folder to target repository
-        run: |
-          cd webappreact
-          git push origin main --force
+          # Pousser uniquement le dossier webappreact/ vers le repo cible
+          git subtree push --prefix=webappreact mirror main
 
     
