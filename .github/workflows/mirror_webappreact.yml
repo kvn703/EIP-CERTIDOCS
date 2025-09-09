@@ -25,12 +25,12 @@ jobs:
 
       - name: Initialize Git in webappreact folder
         run: |
-          cd webappreact
-          git init
-          git remote add origin ${{ secrets.MIRROR_URL_WEB }}
-          git add .
-          git commit -m "Mirror webappreact folder"
-          git branch -M main
+            cd webappreact
+            git init
+            git remote set-url origin ${{ secrets.MIRROR_URL_WEB }}
+            git add .
+            git commit -m "Mirror webappreact folder"
+            git branch -M main
 
       - name: Push webappreact folder to target repository
         run: |
