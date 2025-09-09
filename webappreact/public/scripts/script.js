@@ -23,10 +23,10 @@ const baseUrl = (() => {
     
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
         // Environnement de développement
-        return 'http://localhost:3000';
+        return 'http://localhost:3002';
     } else {
         // Environnement de production
-        return 'https://certidocsweb-yf6fjg.dappling.network';
+        return 'https://certidocsweb-xnvzbr.dappling.network';
     }
 })();
 
@@ -135,7 +135,7 @@ async function hideTextInImage(imageUrl, text) {
     });
 }
 
-// retrieve the variable inside url wich is formatted like https://certidocsweb-yf6fjg.dappling.network/?messageHash=0x1234567890
+// retrieve the variable inside url wich is formatted like https://certidocsweb-xnvzbr.dappling.network/?messageHash=0x1234567890
 if (typeof urlParams === "undefined") {
     var urlParams = new URLSearchParams(window.location.search);
 }

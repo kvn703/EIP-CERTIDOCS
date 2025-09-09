@@ -1,20 +1,20 @@
 // Configuration pour les environnements de développement et de production
 const CONFIG = {
     // Basculer manuellement entre dev (true) et prod (false)
-    isDevelopment: true,
+    isDevelopment: false,
 
     // URLs de développement
     dev: {
-        baseUrl: "http://localhost:3000",
-        generateUrl: "http://localhost:3000/",
-        verifyUrl: "http://localhost:3000/verify"
+        baseUrl: "http://localhost:3002",
+        generateUrl: "http://localhost:3002/",
+        verifyUrl: "http://localhost:3002/verify"
     },
 
     // URLs de production
     prod: {
-        baseUrl: "https://certidocsweb-yf6fjg.dappling.network",
-        generateUrl: "https://certidocsweb-yf6fjg.dappling.network/",
-        verifyUrl: "https://certidocsweb-yf6fjg.dappling.network/verify"
+        baseUrl: "https://certidocsweb-xnvzbr.dappling.network",
+        generateUrl: "https://certidocsweb-xnvzbr.dappling.network/",
+        verifyUrl: "https://certidocsweb-xnvzbr.dappling.network/verify"
     }
 };
 
