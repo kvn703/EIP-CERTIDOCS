@@ -5,9 +5,9 @@ const CONFIG = {
 
     // URLs de développement
     dev: {
-        baseUrl: "http://localhost:3002",
-        generateUrl: "http://localhost:3002/",
-        verifyUrl: "http://localhost:3002/verify"
+        baseUrl: "http://localhost:3000",
+        generateUrl: "http://localhost:3000/",
+        verifyUrl: "http://localhost:3000/verify"
     },
 
     // URLs de production

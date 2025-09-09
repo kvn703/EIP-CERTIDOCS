@@ -23,7 +23,7 @@ const baseUrl = (() => {
     
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
         // Environnement de développement
-        return 'http://localhost:3002';
+        return 'http://localhost:3000';
     } else {
         // Environnement de production
         return 'https://certidocsweb-xnvzbr.dappling.network';
