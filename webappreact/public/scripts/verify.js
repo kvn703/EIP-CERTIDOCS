@@ -36,14 +36,38 @@ let currentSignatureFile = null; // Pour stocker le fichier de signature sélect
 let currentPDFFile = null; // Pour stocker le fichier PDF sélectionné
 let currentImageFile = null; // Pour stocker le fichier image sélectionné
 
-// Events walletConnected/walletDisconnected (gérés par React/appkit)
+// Helpers
+async function initSignerAndContractIfPossible() {
+    try {
+        if (signer && contract) return true;
+        if (!window.ethereum || !window.ethers) return false;
+        const provider = new window.ethers.BrowserProvider(window.ethereum);
+        // Vérifie si un compte est déjà autorisé
+        const accounts = await provider.send("eth_accounts", []);
+        if (!accounts || accounts.length === 0) return false;
+        signer = await provider.getSigner();
+        const address = await signer.getAddress();
+        contract = new window.ethers.Contract(contractAddress, abi, signer);
+        updateUI(address);
+        return true;
+    } catch (e) {
+        console.warn("initSignerAndContractIfPossible:", e);
+        return false;
+    }
+}
+
+// Sync avec React/appkit
 window.addEventListener('walletConnected', async () => {
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    signer = await provider.getSigner();
-    const address = await signer.getAddress();
-    contract = new ethers.Contract(contractAddress, abi, signer);
-    console.log(address)
-    updateUI(address);
+    try {
+        const provider = new window.ethers.BrowserProvider(window.ethereum);
+        signer = await provider.getSigner();
+        const address = await signer.getAddress();
+        contract = new window.ethers.Contract(contractAddress, abi, signer);
+        console.log(address)
+        updateUI(address);
+    } catch (e) {
+        console.error("walletConnected handler error:", e);
+    }
 });
 
 window.addEventListener('walletDisconnected', () => {
@@ -51,6 +75,21 @@ window.addEventListener('walletDisconnected', () => {
     contract = null;
     updateUI(null);
 });
+
+// Tentative d'initialisation au chargement, utile si l'utilisateur est déjà connecté AVANT l'ouverture de la page
+window.addEventListener('load', () => {
+    initSignerAndContractIfPossible();
+});
+
+// Ecouter les changements de compte/réseau pour garder signer/contract à jour
+if (window.ethereum) {
+    window.ethereum.on && window.ethereum.on('accountsChanged', async () => {
+        await initSignerAndContractIfPossible();
+    });
+    window.ethereum.on && window.ethereum.on('chainChanged', async () => {
+        await initSignerAndContractIfPossible();
+    });
+}
 
 // Helpers UI (copié/adapté de script.js)
 function createAddressSpan(address, addressShort) {
@@ -119,104 +158,28 @@ function showBeautifulAlert(message, type = 'error') {
     const alertDiv = document.createElement('div');
     alertDiv.className = `beautiful-alert ${type}`;
     alertDiv.innerHTML = `
-        <div class="alert-content">
-            <div class="alert-icon">
-                ${type === 'error' ? '❌' : type === 'success' ? '✅' : '⚠️'}
-            </div>
-            <div class="alert-message">${message}</div>
-            <button class="alert-close" onclick="this.parentElement.parentElement.remove()">×</button>
+        <div class="beautiful-alert-content">
+            <span class="beautiful-alert-icon">${type === 'error' ? '❌' : '✅'}</span>
+            <span class="beautiful-alert-message">${message}</span>
         </div>
+        <button class="beautiful-alert-close">✖</button>
     `;
 
-    // Styles pour l'alerte
-    const style = document.createElement('style');
-    style.textContent = `
-        .beautiful-alert {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 10000;
-            animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .beautiful-alert.error {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
-        }
-        
-        .beautiful-alert.success {
-            background: linear-gradient(135deg, #51cf66, #40c057);
-        }
-        
-        .beautiful-alert.warning {
-            background: linear-gradient(135deg, #ffd43b, #fcc419);
-        }
-        
-        .alert-content {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px 20px;
-            border-radius: 12px;
-            color: white;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            min-width: 300px;
-        }
-        
-        .alert-icon {
-            font-size: 20px;
-            flex-shrink: 0;
-        }
-        
-        .alert-message {
-            flex: 1;
-            font-size: 14px;
-            font-weight: 600;
-            line-height: 1.4;
-        }
-        
-        .alert-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 0;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: background 0.2s;
-        }
-        
-        .alert-close:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-    `;
-
-    document.head.appendChild(style);
     document.body.appendChild(alertDiv);
 
-    // Auto-suppression après 5 secondes
+    const closeButton = alertDiv.querySelector('.beautiful-alert-close');
+    if (closeButton) {
+        closeButton.addEventListener('click', () => alertDiv.remove());
+    }
+
     setTimeout(() => {
-        if (alertDiv.parentElement) {
-            alertDiv.remove();
-        }
-    }, 5000);
+        alertDiv.classList.add('show');
+    }, 10);
+
+    setTimeout(() => {
+        alertDiv.classList.remove('show');
+        setTimeout(() => alertDiv.remove(), 300);
+    }, 4000);
 }
 
 function readFileAsArrayBuffer(file) {
@@ -231,13 +194,18 @@ function readFileAsArrayBuffer(file) {
 
 // Vérification de la signature (exemple)
 async function verifySignature() {
+    // Fallback: tente d'initialiser signer/contract si non prêts
+    if (!signer || !contract) {
+        const ready = await initSignerAndContractIfPossible();
+        if (!ready) {
+            showBeautifulAlert('🔐 Veuillez d\'abord connecter votre wallet pour vérifier une signature', 'error');
+            return;
+        }
+    }
+
     // Vérifier si l'utilisateur est connecté
     isString = document.getElementById("signatureCheckbox").checked;
     window.dispatchEvent(new CustomEvent('Error', { detail: 'Vérification de la signature' }));
-    if (!signer) {
-        showBeautifulAlert('🔐 Veuillez d\'abord connecter votre wallet pour vérifier une signature', 'error');
-        return;
-    }
 
     if (currentTab === 0) {
         const signatureId = document.getElementById("signatureId").value.trim();
@@ -274,7 +242,7 @@ async function verifySignature() {
             }
             console.error(error);
             document.getElementById("verify").innerText =
-                "❌ Erreur lors de la vérification.";
+                "❌ Erreur lors de la vérification (voir console).";
         }
     } else if (currentTab === 1) {
         if (!currentSignatureFile && !isString) {
