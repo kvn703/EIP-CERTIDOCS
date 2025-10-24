@@ -1,3 +1,56 @@
+# SETUP
+
+## Prerequisites
+
+- Node.js (v14 or higher)
+- npm (v6 or higher)
+- A compatible Ethereum wallet (e.g., MetaMask, WalletConnect)
+- Access to an Ethereum test network (e.g., Ropsten, Rinkeby)
+
+## Installation to Chrome Browser DEV Mode
+
+Git clone the repository:
+
+```bash
+git clone git@github.com:kvn703/EIP-CERTIDOCS.git
+
+cd EIP-CERTIDOCS
+
+```
+
+Enable to devMode the extension in `Extension/config.js` file:
+
+Line 4 of `Extension/config.js` file change to:
+```javascript
+isDevelopment: true,
+```
+
+### Download the extension package from the releases section.
+
+1. Open Chrome and navigate to `chrome://extensions/`.
+2. Enable "Developer mode" by toggling the switch in the top right corner.
+3. Click on "Load unpacked" and select the directory where the extension package is located.
+4. Upload Extension folder should contain:
+   - manifest.json
+   - background.js
+   - popup.html
+   - styles.css
+   - icons/
+
+When the extension is successfully loaded, you should see it in the list of installed extensions.
+
+# USAGE
+
+Then start the WebApp server sur le port 3000:
+
+```bash
+cd webappreact
+npm install
+npm start PORT=3000
+
+```
+
+
 # BETA TEST PLAN
 
 ## 1. Essential Features for the Beta Version
