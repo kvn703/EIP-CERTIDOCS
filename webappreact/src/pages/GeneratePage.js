@@ -13,14 +13,13 @@ import MailSection from '../component/MailSection';
 import TexteSection from '../component/TexteSection';
 import Tabs from '../component/Tabs';
 import '../component/Tabs.css';
-import { FaWallet, FaSignOutAlt, FaCog, FaRegCopy, FaEye, FaInbox, FaEdit, FaFileAlt, FaCamera } from "react-icons/fa";
+import { FaWallet, FaSignOutAlt, FaCog, FaRegCopy, FaInbox, FaEdit, FaFileAlt, FaCamera } from "react-icons/fa";
 import confetti from "canvas-confetti";
 import PDFSection from '../component/PdfPage/PDFSection';
 import ImageSection from '../component/PdfPage/ImageSection';
 import SignatureCard from '../component/SignatureCard';
 
 const GeneratePage = () => {
-    const [expiration, setExpiration] = useState("3600");
     const { isConnected, address } = useAppKitAccount();
     const { disconnect } = useDisconnect();
     const [activeTab, _setActiveTab] = useState(0);
@@ -28,7 +27,6 @@ const GeneratePage = () => {
     const [texteValue, setTexteValue] = useState("");
     const [showTooltip, setShowTooltip] = useState(false);
     const [copyStatus, setCopyStatus] = useState("");
-    const [showPreview, setShowPreview] = useState(false);
     const [signed, setSigned] = useState(false);
     const [signature, setSignature] = useState("");
     const [pdfFile, _setPdfFile] = useState(null);
@@ -117,13 +115,6 @@ const GeneratePage = () => {
             }, 1200);
         }
     };
-
-    function isProbablyHash(str) {
-        return (
-            (str && str.length > 32 && /^[a-f0-9]+$/i.test(str)) ||
-            (str && str.length > 32 && /^[A-Za-z0-9+/=]+$/.test(str) && !str.includes(' '))
-        );
-    }
 
     const handleSign = async () => {
         setSigned(false);
@@ -241,7 +232,7 @@ const GeneratePage = () => {
             <div style={{ marginBottom: 14 }}>
                 <Tabs activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
             </div>
-            <div style={{ display: mailMessage || activeTab != 1 ? 'none' : 'block', marginBottom: 14, fontSize: 14, padding: '8px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px' }}>
+            <div style={{ display: mailMessage || activeTab !== 1 ? 'none' : 'block', marginBottom: 14, fontSize: 14, padding: '8px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px' }}>
                 <CustomText className="fas fa-pen custom-text" Text="Votre message :" />
                 <CustomTextInput
                     id="messageInput"
