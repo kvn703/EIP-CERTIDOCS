@@ -1,3 +1,20 @@
+# SETUP
+
+### Download the extension package from the releases section.
+
+1. Open Chrome and navigate to `chrome://extensions/`.
+2. Enable "Developer mode" by toggling the switch in the top right corner.
+3. Click on "Load unpacked" and select the directory where the extension package is located.
+4. Upload Extension folder should contain:
+   - manifest.json
+   - background.js
+   - popup.html
+   - styles.css
+   - icons/
+
+When the extension is successfully loaded, you should see it in the list of installed extensions.
+
+
 # BETA TEST PLAN
 
 ## 1. Essential Features for the Beta Version
