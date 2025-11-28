@@ -173,14 +173,35 @@ const GeneratePage = () => {
         }
     }, [signed]);
 
+    // Scroll reveal effect
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                    }
+                });
+            },
+            { threshold: 0.1 }
+        );
+
+        const elements = document.querySelectorAll('.scroll-reveal');
+        elements.forEach((el) => observer.observe(el));
+
+        return () => {
+            elements.forEach((el) => observer.unobserve(el));
+        };
+    }, []);
+
     return (
         <>
             <HeaderExpert />
-            <div className="container">
+            <div className="container perspective-container">
 
             {/* Étape 2: Sélection du type de contenu - Flow logique */}
             <div 
-                className="gpu-accelerated animation-container"
+                className="gpu-accelerated animation-container scroll-reveal transform-3d-hover"
                 style={{ 
                     marginBottom: '20px',
                     animation: 'fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both'
@@ -192,7 +213,7 @@ const GeneratePage = () => {
             {/* Étape 3: Saisie du contenu (conditionnel selon l'onglet) */}
             {!mailMessage && activeTab === 1 && (
                 <div 
-                    className="stagger-item gpu-accelerated animation-container"
+                    className="stagger-item gpu-accelerated animation-container scroll-reveal depth-card micro-interaction"
                     style={{ 
                         marginBottom: '18px', 
                         padding: '16px', 
@@ -221,7 +242,7 @@ const GeneratePage = () => {
 
             {/* Étape 4: Configuration - Destinataires */}
             <div 
-                className="stagger-item gpu-accelerated animation-container"
+                className="stagger-item gpu-accelerated animation-container scroll-reveal depth-card micro-interaction"
                 style={{
                     padding: '16px', 
                     background: 'linear-gradient(135deg, rgba(149, 132, 255, 0.08) 0%, rgba(184, 170, 255, 0.04) 100%)',
@@ -244,7 +265,7 @@ const GeneratePage = () => {
             {/* Étape 5: Options - Signature textuelle (si applicable) */}
             {activeTab !== 0 && (
                 <div 
-                    className="stagger-item gpu-accelerated animation-container"
+                    className="stagger-item gpu-accelerated animation-container scroll-reveal depth-card micro-interaction"
                     style={{ 
                         marginBottom: '20px', 
                         padding: '14px', 
@@ -287,7 +308,7 @@ const GeneratePage = () => {
             {/* Étape 6: Action principale - Bouton de génération */}
             <button
                 id="signMessage"
-                className="button-3d gpu-accelerated interaction-debounce"
+                className="button-3d gpu-accelerated interaction-debounce scroll-reveal transform-3d-hover micro-interaction"
                 disabled={!texteValue || !isConnected}
                 style={{ 
                     width: '50%', 

@@ -4,7 +4,7 @@
    1.1 SYSTÈME DE COULEURS AVANCÉ
    ============================================ */
 :root {
-  /* Couleurs de base */
+  /* Couleurs de base - Light Mode */
   --primary-bg: #f4f3ff;
   --secondary-bg: #fff;
   --accent: #9584ff;
@@ -4300,6 +4300,270 @@ textarea,
 .card-3d {
   transform: translateZ(0);
   backface-visibility: hidden;
+}
+
+/* ============================================
+   PHASE 8 : FEATURES MODERNES 2025
+   ============================================ */
+
+/* 8.1 Dark Mode - Système de thème */
+[data-theme="dark"] {
+  /* Couleurs de base - Dark Mode */
+  --primary-bg: #1a1625;
+  --secondary-bg: #252030;
+  --accent: #9584ff;
+  --accent-light: #b8aaff;
+  --accent-dark: #7e6ef2;
+  --text-main: #f0eaff;
+  --text-muted: #a8a0c7;
+  --text-light: #7a6fa0;
+  
+  /* Inputs Dark Mode */
+  --input-bg: #2d2540;
+  --input-border: #9584ff;
+  --input-border-hover: #b8aaff;
+  --input-border-focus: #c9bfff;
+  
+  /* Ombres Dark Mode */
+  --card-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.4);
+  --card-shadow-hover: 0 8px 24px 0 rgba(149, 132, 255, 0.2);
+  --card-shadow-active: 0 2px 8px 0 rgba(149, 132, 255, 0.3);
+  
+  /* Background global */
+  background: var(--primary-bg);
+  color: var(--text-main);
+}
+
+[data-theme="dark"] body {
+  background: var(--primary-bg);
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .container {
+  background: linear-gradient(135deg, 
+    rgba(37, 32, 48, 0.98) 0%, 
+    rgba(26, 22, 37, 0.95) 100%);
+  border-color: rgba(149, 132, 255, 0.3);
+}
+
+[data-theme="dark"] .card-3d {
+  background: linear-gradient(135deg, 
+    rgba(37, 32, 48, 0.95) 0%, 
+    rgba(26, 22, 37, 0.85) 100%);
+  border-color: rgba(149, 132, 255, 0.25);
+}
+
+[data-theme="dark"] .header-expert {
+  background: linear-gradient(135deg, 
+    rgba(37, 32, 48, 0.98) 0%, 
+    rgba(26, 22, 37, 0.95) 100%);
+  border-color: rgba(149, 132, 255, 0.3);
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] .custom-text-input {
+  background: var(--input-bg);
+  color: var(--text-main);
+  border-color: rgba(149, 132, 255, 0.3);
+}
+
+[data-theme="dark"] .tabs {
+  background: linear-gradient(135deg, 
+    rgba(45, 37, 64, 0.85) 0%, 
+    rgba(37, 32, 48, 0.65) 100%);
+  border-color: rgba(149, 132, 255, 0.25);
+}
+
+/* Toggle Dark Mode */
+.theme-toggle {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--accent-gradient);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 8px 24px rgba(149, 132, 255, 0.3),
+    0 4px 12px rgba(149, 132, 255, 0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5em;
+  z-index: 1000;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
+  backdrop-filter: blur(10px);
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1) rotate(15deg);
+  box-shadow: 
+    0 12px 32px rgba(149, 132, 255, 0.4),
+    0 6px 16px rgba(149, 132, 255, 0.3);
+}
+
+.theme-toggle:active {
+  transform: scale(0.95);
+}
+
+/* 8.2 Animations avancées - Scroll reveal */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(50px) scale(0.95);
+  transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform, opacity;
+}
+
+.scroll-reveal.revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Transitions de page fluides */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.page-transition-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Micro-interactions sophistiquées */
+.micro-interaction {
+  position: relative;
+  overflow: hidden;
+}
+
+.micro-interaction::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.micro-interaction:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* 8.3 Design 3D subtil - Perspective légère */
+.perspective-container {
+  perspective: 1000px;
+  perspective-origin: center center;
+}
+
+.card-3d-subtle {
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.card-3d-subtle:hover {
+  transform: rotateY(2deg) rotateX(-1deg) translateZ(10px);
+}
+
+/* Cards avec effet de profondeur */
+.depth-card {
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.depth-card::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.2) 0%, 
+    rgba(184, 170, 255, 0.1) 100%);
+  border-radius: inherit;
+  transform: translateZ(-20px);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: -1;
+  filter: blur(8px);
+}
+
+.depth-card:hover::before {
+  opacity: 1;
+}
+
+/* Transformations 3D subtiles au hover */
+.transform-3d-hover {
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
+}
+
+.transform-3d-hover:hover {
+  transform: perspective(1000px) rotateY(5deg) rotateX(-2deg) translateZ(15px);
+}
+
+/* Ombres portées pour la profondeur */
+.depth-shadow {
+  box-shadow: 
+    0 10px 40px rgba(149, 132, 255, 0.2),
+    0 5px 20px rgba(149, 132, 255, 0.15),
+    0 2px 10px rgba(149, 132, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+.depth-shadow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.1) 0%, 
+    transparent 50%, 
+    rgba(0, 0, 0, 0.05) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+[data-theme="dark"] .depth-shadow {
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.5),
+    0 5px 20px rgba(149, 132, 255, 0.2),
+    0 2px 10px rgba(149, 132, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Application des effets 3D sur les éléments existants */
+.container {
+  transform-style: preserve-3d;
+}
+
+.card-3d {
+  transform-style: preserve-3d;
+}
+
+.wallet-section-2025 {
+  transform-style: preserve-3d;
 }
 
 /* ============================================
