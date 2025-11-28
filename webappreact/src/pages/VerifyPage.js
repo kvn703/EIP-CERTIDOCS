@@ -13,6 +13,7 @@ import "../component/Tabs.css";
 import PDFSection from "../component/PdfPage/PDFSection";
 import ImageSection from "../component/PdfPage/ImageSection";
 import VerificationAnimation from "../component/VerificationAnimation";
+import HeaderExpert from "../component/HeaderExpert";
 
 function VerifyPage() {
     const { isConnected, address } = useAppKitAccount();
@@ -496,62 +497,13 @@ function VerifyPage() {
     }
 
     return (
-        <Container>
-            <div className="title-shimmer" style={{ marginBottom: 18 }}>Vérifier une signature</div>
-            <div className="wallet-section-2025" style={{ marginBottom: 28 }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5em', marginBottom: '0.2em' }}>
-                    <div style={{ position: "relative" }}>
-                        <FaWallet
-                            className="wallet-icon-2025"
-                            style={{ animation: 'none', fontSize: '1.25em', marginBottom: 0 }}
-                            onMouseEnter={() => setShowTooltip(true)}
-                            onMouseLeave={() => setShowTooltip(false)}
-                            onClick={handleCopy}
-                            title="Voir l'adresse du wallet"
-                        />
-                        {isConnected && address && showTooltip && (
-                            <div className="wallet-tooltip-2025">
-                                {copyStatus === "copied" ? "Copié !" : address}
-                            </div>
-                        )}
-                    </div>
-                    {isConnected && address && (
-                        <span className="wallet-badge-2025" style={{ marginBottom: 0 }}>
-                            {address.slice(0, 6)}...{address.slice(-4)}
-                            <button
-                                className="wallet-copy-btn-2025"
-                                onClick={handleCopy}
-                                title="Copier mon adresse"
-                                tabIndex={0}
-                            >
-                                <FaRegCopy />
-                            </button>
-                        </span>
-                    )}
-                </div>
-                <div className="wallet-status-row-2025">
-                    {isConnected && <span className="wallet-dot-2025" title="Connecté"></span>}
-                    <span className="wallet-status-text-2025">
-                        {isConnected ? "Connecté" : "Non connecté"}
-                    </span>
-                </div>
-                <div className="wallet-btns-row-2025">
-                    {isConnected ? (
-                        <>
-                            <button className="wallet-btn-2025" onClick={handleDisconnect}>
-                                <FaSignOutAlt /> Déconnecter
-                            </button>
-                            <button className="wallet-btn-2025" onClick={() => modal.open()}>
-                                <FaCog /> Mon wallet
-                            </button>
-                        </>
-                    ) : (
-                        <button className="wallet-btn-2025" onClick={handleOpenModal}>
-                            <FaWallet /> Connecter le Wallet
-                        </button>
-                    )}
-                </div>
-            </div>
+        <>
+            <HeaderExpert 
+                showProgress={true}
+                currentStep={1}
+                steps={["Connexion", "Vérification", "Résultat"]}
+            />
+            <Container>
             <Tabs activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
             <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <ButtonCustom
@@ -563,7 +515,8 @@ function VerifyPage() {
                     Vérifier la signature
                 </ButtonCustom>
             </div>
-        </Container>
+            </Container>
+        </>
     );
 }
 

@@ -18,6 +18,7 @@ import confetti from "canvas-confetti";
 import PDFSection from '../component/PdfPage/PDFSection';
 import ImageSection from '../component/PdfPage/ImageSection';
 import SignatureCard from '../component/SignatureCard';
+import HeaderExpert from '../component/HeaderExpert';
 
 const GeneratePage = () => {
     const [expiration, setExpiration] = useState("3600");
@@ -125,14 +126,7 @@ const GeneratePage = () => {
         );
     }
 
-    const handleSign = async () => {
-        setSigned(false);
-        setSignature("");
-        // Génération directe de la signature sans animation
-        setSignature("0x" + Math.random().toString(16).slice(2, 66));
-        setSigned(true);
-        launchConfetti();
-    };
+
 
     const tabs = [
         {
@@ -180,112 +174,156 @@ const GeneratePage = () => {
     }, [signed]);
 
     return (
-        <div className="container">
-            <div className="card-3d">
-                <div className="title-shimmer">Générer une signature</div>
-                <div className="wallet-section-2025">
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5em', marginBottom: '0.2em' }}>
-                        <div style={{ position: "relative" }}>
-                            <FaWallet
-                                className="wallet-icon-2025"
-                                style={{ animation: 'none', fontSize: '1.25em', marginBottom: 0 }}
-                                onMouseEnter={() => setShowTooltip(true)}
-                                onMouseLeave={() => setShowTooltip(false)}
-                                onClick={handleCopy}
-                                title="Voir l'adresse du wallet"
-                            />
-                            {isConnected && address && showTooltip && (
-                                <div className="wallet-tooltip-2025">
-                                    {copyStatus === "copied" ? "Copié !" : address}
-                                </div>
-                            )}
-                        </div>
-                        {isConnected && address && (
-                            <span className="wallet-badge-2025" style={{ marginBottom: 0 }}>
-                                {address.slice(0, 6)}...{address.slice(-4)}
-                                <button
-                                    className="wallet-copy-btn-2025"
-                                    onClick={handleCopy}
-                                    title="Copier mon adresse"
-                                    tabIndex={0}
-                                >
-                                    <FaRegCopy />
-                                </button>
-                            </span>
-                        )}
-                    </div>
-                    <div className="wallet-status-row-2025">
-                        {isConnected && <span className="wallet-dot-2025" title="Connecté"></span>}
-                        <span className="wallet-status-text-2025">
-                            {isConnected ? "Connecté" : "Non connecté"}
-                        </span>
-                    </div>
-                    <div className="wallet-btns-row-2025">
-                        {isConnected ? (
-                            <>
-                                <button className="wallet-btn-2025" onClick={handleDisconnect}>
-                                    <FaSignOutAlt /> Déconnecter
-                                </button>
-                                <button className="wallet-btn-2025" onClick={() => modal.open()}>
-                                    <FaCog /> Mon wallet
-                                </button>
-                            </>
-                        ) : (
-                            <button className="wallet-btn-2025" onClick={handleOpenModal}>
-                                <FaWallet /> Connecter le Wallet
-                            </button>
-                        )}
-                    </div>
-                </div>
-            </div>
-            <div style={{ marginBottom: 14 }}>
+        <>
+            <HeaderExpert />
+            <div className="container">
+
+            {/* Étape 2: Sélection du type de contenu - Flow logique */}
+            <div 
+                className="gpu-accelerated animation-container"
+                style={{ 
+                    marginBottom: '20px',
+                    animation: 'fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both'
+                }}
+            >
                 <Tabs activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
             </div>
-            <div style={{ display: mailMessage || activeTab != 1 ? 'none' : 'block', marginBottom: 14, fontSize: 14, padding: '8px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px' }}>
-                <CustomText className="fas fa-pen custom-text" Text="Votre message :" />
-                <CustomTextInput
-                    id="messageInput"
-                    rows="5"
-                    placeholder="Saisissez votre message..."
-                    value={texteValue}
-                    onChange={(e) => setTexteValue(e.target.value)}
-                />
-            </div>
+
+            {/* Étape 3: Saisie du contenu (conditionnel selon l'onglet) */}
+            {!mailMessage && activeTab === 1 && (
+                <div 
+                    className="stagger-item gpu-accelerated animation-container"
+                    style={{ 
+                        marginBottom: '18px', 
+                        padding: '16px', 
+                        background: 'linear-gradient(135deg, rgba(149, 132, 255, 0.08) 0%, rgba(184, 170, 255, 0.04) 100%)',
+                        borderRadius: '14px',
+                        border: '1px solid rgba(149, 132, 255, 0.15)',
+                        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                        boxShadow: '0 4px 12px rgba(149, 132, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.5)',
+                        backdropFilter: 'blur(8px)'
+                    }}
+                >
+                    <CustomText className="fas fa-pen custom-text" Text="Votre message :" />
+                    <CustomTextInput
+                        id="messageInput"
+                        rows="5"
+                        placeholder="Saisissez votre message..."
+                        value={texteValue}
+                        onChange={(e) => setTexteValue(e.target.value)}
+                    />
+                </div>
+            )}
+
             <div id="confirmationMessage" style={{ display: 'none' }}></div>
-            <div style={{fontSize: 14, padding: '8px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px' }}>
+
+            <div id="confirmationMessage" style={{ display: 'none' }}></div>
+
+            {/* Étape 4: Configuration - Destinataires */}
+            <div 
+                className="stagger-item gpu-accelerated animation-container"
+                style={{
+                    padding: '16px', 
+                    background: 'linear-gradient(135deg, rgba(149, 132, 255, 0.08) 0%, rgba(184, 170, 255, 0.04) 100%)',
+                    borderRadius: '14px',
+                    border: '1px solid rgba(149, 132, 255, 0.15)',
+                    marginBottom: '18px',
+                    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                    boxShadow: '0 4px 12px rgba(149, 132, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.5)',
+                    backdropFilter: 'blur(8px)'
+                }}
+            >
                 <CustomText className="fas fa-user custom-text" Text="Destinataires autorisés :" />
                 <CustomTextInput id="recipientsInput" placeholder="Adresse1, Adresse2, ..." />
-                <p style={{ fontSize: "11px", fontStyle: "italic", color: 'var(--text-muted)', marginTop: 2 }}>Séparées par des virgules</p>
+                <p className="info-tooltip" style={{ fontSize: '11px', fontStyle: "italic", color: 'var(--text-muted)', marginTop: '8px', marginBottom: 0, opacity: 0.8 }}>
+                    Séparées par des virgules
+                    <span className="info-tooltip-content">Format attendu : 0x1234..., 0x5678..., etc.</span>
+                </p>
             </div>
-            {/* add a checkbox true/false with text "Signature textuelle" */}
-            <div style={{ marginBottom: 15, fontSize: 14, backgroundColor: 'var(--bg-secondary)', borderRadius: '8px' }}>
-                <label style={{ display: activeTab === 0 ? 'none' : 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                    <input
-                        type="checkbox"
-                        id="signatureCheckbox"
-                        style={{ width: '16px', height: '16px' }}
-                        onChange={(e) => setIsString(e.target.checked)}
-                        checked={IsString}
-                    />
-                    <span>Signature textuelle</span>
-                </label>
-            </div>
+
+            {/* Étape 5: Options - Signature textuelle (si applicable) */}
+            {activeTab !== 0 && (
+                <div 
+                    className="stagger-item gpu-accelerated animation-container"
+                    style={{ 
+                        marginBottom: '20px', 
+                        padding: '14px', 
+                        background: 'linear-gradient(135deg, rgba(149, 132, 255, 0.06) 0%, rgba(184, 170, 255, 0.03) 100%)',
+                        borderRadius: '14px',
+                        border: '1px solid rgba(149, 132, 255, 0.12)',
+                        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                        backdropFilter: 'blur(6px)'
+                    }}
+                >
+                    <label 
+                        className="info-tooltip"
+                        style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center', 
+                            gap: '10px',
+                            cursor: 'pointer',
+                            margin: 0
+                        }}
+                    >
+                        <input
+                            type="checkbox"
+                            id="signatureCheckbox"
+                            className="interaction-debounce"
+                            style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: 'var(--accent)' }}
+                            onChange={(e) => setIsString(e.target.checked)}
+                            checked={IsString}
+                        />
+                        <span style={{ fontSize: '14px', fontWeight: '500', color: 'var(--text-main)' }}>
+                            Signature textuelle
+                        </span>
+                        <span className="info-tooltip-content">
+                            Activez cette option pour générer une signature au format texte plutôt qu'hexadécimal
+                        </span>
+                    </label>
+                </div>
+            )}
+
+            {/* Étape 6: Action principale - Bouton de génération */}
             <button
                 id="signMessage"
-                className="button-3d"
+                className="button-3d gpu-accelerated interaction-debounce"
                 disabled={!texteValue || !isConnected}
-                style={{ width: '50%', marginTop: 8, marginBottom: 4, fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: 'auto', marginRight: 'auto', fontWeight: 1000, padding: '10px 20px', backgroundColor: 'var(--accent)', color: '#fff', borderRadius: '8px', cursor: 'pointer' }}
-                onClick={handleSign}
+                style={{ 
+                    width: '50%', 
+                    marginTop: 8, 
+                    marginBottom: 4, 
+                    fontSize: 16, 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    marginLeft: 'auto', 
+                    marginRight: 'auto', 
+                    fontWeight: 1000, 
+                    padding: '10px 20px', 
+                    backgroundColor: 'var(--accent)', 
+                    color: '#fff', 
+                    borderRadius: '8px', 
+                    cursor: (!texteValue || !isConnected) ? 'not-allowed' : 'pointer'
+                }}
             >
-                GÉNERER SIGNATURE
+                GÉNÉRER SIGNATURE
             </button>
-            {/* Résultat signature */}
+
+            {/* Étape 7: Résultat - Signature générée */}
             {signed && signature && (
-                <SignatureCard signature={signature} onCopy={launchConfetti} />
+                <div style={{ 
+                    marginTop: '24px',
+                    animation: 'fadeInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                }}>
+                    <SignatureCard signature={signature} onCopy={launchConfetti} />
+                </div>
             )}
-            <p id="status" style={{ minHeight: 18, color: 'var(--accent)', fontWeight: 500, fontSize: 13 }}></p>
-            <div id="copyMessage"></div>
-        </div>
+
+            <p id="status" className="gpu-accelerated" style={{ minHeight: 18, color: 'var(--accent)', fontWeight: 500, fontSize: 13 }}></p>
+            <div id="copyMessage" className="gpu-accelerated"></div>
+            </div>
+        </>
     );
 };
 

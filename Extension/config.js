@@ -1,7 +1,7 @@
 // Configuration pour les environnements de développement et de production
 const CONFIG = {
     // Basculer manuellement entre dev (true) et prod (false)
-    isDevelopment: false,
+    isDevelopment: true,
 
     // URLs de développement
     dev: {

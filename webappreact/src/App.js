@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import VerifyPage from "./pages/VerifyPage";
 import GeneratePage from "./pages/GeneratePage";
+import NotificationSystem from "./component/NotificationSystem";
 
 // 🧹 Import propre
 import { wagmiAdapter } from "./config/appkit";
@@ -17,6 +18,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <Router>
           <div className="App">
+            <NotificationSystem />
             <Routes>
               <Route path="/verify" element={<VerifyPage />} />
               <Route path="/" element={<GeneratePage />} />
