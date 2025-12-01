@@ -144,15 +144,53 @@ function VerifyPage() {
     };
 
     const handleVerifyClick = () => {
-        if (!signatureId || !message) {
-            setIsVerifying(false);
-            setVerificationResult(null);
-            setShowContentRecovered(false);
-            return;
+        // Vérifier selon l'onglet actif
+        if (activeTab === 0) {
+            // Onglet Mail
+            if (!signatureId || !message) {
+                setIsVerifying(false);
+                setVerificationResult(null);
+                setShowContentRecovered(false);
+                return;
+            }
+        } else if (activeTab === 1) {
+            // Onglet Texte
+            if (!texte2 || (!signatureFile && !texte1)) {
+                setIsVerifying(false);
+                setVerificationResult(null);
+                return;
+            }
+        } else if (activeTab === 2) {
+            // Onglet PDF
+            if (!pdfFile || (!signatureFile && !texte1)) {
+                setIsVerifying(false);
+                setVerificationResult(null);
+                return;
+            }
+        } else if (activeTab === 3) {
+            // Onglet Image
+            if (!imageFile || (!signatureFile && !texte1)) {
+                setIsVerifying(false);
+                setVerificationResult(null);
+                return;
+            }
         }
+        
         setShowContentRecovered(false);
         setIsVerifying(true);
         setVerificationResult(null);
+        
+        // Appeler la fonction de vérification de verify.js
+        if (typeof window.verifySignature === 'function') {
+            window.verifySignature();
+        } else {
+            // Attendre que la fonction soit disponible
+            setTimeout(() => {
+                if (typeof window.verifySignature === 'function') {
+                    window.verifySignature();
+                }
+            }, 100);
+        }
     };
 
     const tabs = [

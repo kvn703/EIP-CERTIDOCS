@@ -498,7 +498,25 @@ window.addEventListener('imageFileChanged', (event) => {
     currentImageFile = imageFile;
 });
 
+// Rendre la fonction accessible globalement
+window.verifySignature = verifySignature;
+
 // Attache l'event click sur le bouton de vérification après chargement du DOM
-document
-    .getElementById("verifySignature")
-    .addEventListener("click", verifySignature);
+// Utiliser un délai pour s'assurer que le DOM est chargé
+function attachVerifyButton() {
+    const verifyButton = document.getElementById("verifySignature");
+    if (verifyButton) {
+        // Ne pas ajouter d'event listener si React gère déjà le onClick
+        // La fonction est maintenant accessible via window.verifySignature
+    } else {
+        // Réessayer après un court délai si le bouton n'existe pas encore
+        setTimeout(attachVerifyButton, 100);
+    }
+}
+
+// Attendre que le DOM soit chargé
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', attachVerifyButton);
+} else {
+    attachVerifyButton();
+}

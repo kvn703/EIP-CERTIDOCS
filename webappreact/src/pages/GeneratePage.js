@@ -8,6 +8,7 @@ import "../CSS/logoutButton.css";
 import "../CSS/modern2025.css";
 import "../CSS/generateLayout.css";
 import CustomTextInput from "../component/CustomTextInput";
+import DestinatairesChipsInput from "../component/DestinatairesChipsInput";
 import { useAppKitAccount } from "@reown/appkit/react";
 import MailSection from '../component/MailSection';
 import TexteSection from '../component/TexteSection';
@@ -39,6 +40,7 @@ const GeneratePage = () => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [buttonEnabledState, setButtonEnabledState] = useState(false); // État React pour forcer le re-render
+    const [recipients, setRecipients] = useState([]); // État pour les destinataires
 
     useEffect(() => {
         if (isConnected) {
@@ -273,8 +275,7 @@ const GeneratePage = () => {
             const hasMailContent = mailMessage && mailMessage.trim().length > 0;
             const hasPdfContent = pdfFile !== null;
             const hasImageContent = imageFile !== null;
-            const recipientsInput = document.getElementById("recipientsInput");
-            const hasRecipients = recipientsInput && recipientsInput.value && recipientsInput.value.trim().length > 0;
+            const hasRecipients = recipients && recipients.length > 0;
             
             if (hasTextContent || hasMailContent || hasPdfContent || hasImageContent || hasRecipients) {
                 setCurrentStep(2);
@@ -303,8 +304,7 @@ const GeneratePage = () => {
         }
 
         // Vérifier les destinataires (requis pour tous les onglets)
-        const recipientsInput = document.getElementById("recipientsInput");
-        const hasRecipients = recipientsInput && recipientsInput.value && recipientsInput.value.trim().length > 0;
+        const hasRecipients = recipients && recipients.length > 0;
         if (!hasRecipients) {
             return false;
         }
@@ -338,8 +338,7 @@ const GeneratePage = () => {
             const signBtn = document.getElementById("signMessage");
             if (signBtn) {
                 // Vérifier les destinataires
-                const recipientsInput = document.getElementById("recipientsInput");
-                const hasRecipients = recipientsInput && recipientsInput.value && recipientsInput.value.trim().length > 0;
+                const hasRecipients = recipients && recipients.length > 0;
                 
                 // Vérifier le message selon l'onglet
                 const messageInput = document.getElementById("messageInput");
@@ -387,13 +386,9 @@ const GeneratePage = () => {
         updateButtonState();
 
         // Écouter les changements dans les champs
-        const recipientsInput = document.getElementById("recipientsInput");
         const messageInput = document.getElementById("messageInput");
         
-        if (recipientsInput) {
-            recipientsInput.addEventListener('input', updateButtonState);
-            recipientsInput.addEventListener('change', updateButtonState);
-        }
+        // Les destinataires sont maintenant gérés via le state React (recipients)
         
         if (messageInput) {
             messageInput.addEventListener('input', updateButtonState);
@@ -411,10 +406,7 @@ const GeneratePage = () => {
         const interval = setInterval(updateButtonState, 100);
 
         return () => {
-            if (recipientsInput) {
-                recipientsInput.removeEventListener('input', updateButtonState);
-                recipientsInput.removeEventListener('change', updateButtonState);
-            }
+            // Les destinataires sont maintenant gérés via le state React
             if (messageInput) {
                 messageInput.removeEventListener('input', updateButtonState);
                 messageInput.removeEventListener('change', updateButtonState);
@@ -441,7 +433,7 @@ const GeneratePage = () => {
         
         return () => clearInterval(interval);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isConnected, texteValue, mailMessage, pdfFile, imageFile, activeTab]); // isButtonEnabled est une fonction, pas besoin de dépendance
+    }, [isConnected, texteValue, mailMessage, pdfFile, imageFile, activeTab, recipients]); // isButtonEnabled est une fonction, pas besoin de dépendance
 
     return (
         <>
@@ -507,13 +499,20 @@ const GeneratePage = () => {
                                 </svg>
                             </div>
                             <div className="modern-input-content">
-                                <label className="modern-input-label" htmlFor="recipientsInput">
+                                <label className="modern-input-label">
                                     Destinataires autorisés
                                 </label>
                                 <div className="modern-input-wrapper">
-                                    <CustomTextInput 
-                                        id="recipientsInput" 
+                                    <DestinatairesChipsInput 
+                                        value={recipients}
+                                        onChange={setRecipients}
                                         placeholder="0x1234..., 0x5678..." 
+                                    />
+                                    {/* Input caché pour script.js */}
+                                    <input
+                                        type="hidden"
+                                        id="recipientsInput"
+                                        value={recipients.join(', ')}
                                     />
                                 </div>
                                 <p className="modern-input-hint info-tooltip">
