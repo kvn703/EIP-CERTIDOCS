@@ -4,7 +4,7 @@
 
 .generate-page-wrapper {
   width: 100%;
-  max-width: 650px;
+  max-width: 750px; /* Augmenté de 650px à 750px pour plus d'espace */
   margin: 0 auto;
   padding: 0;
 }
@@ -69,16 +69,17 @@
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-radius: 16px;
   border: 1.5px solid rgba(149, 132, 255, 0.15);
-  padding: 20px 24px;
+  padding: 20px 28px; /* Augmenté de 24px à 28px pour plus d'espace horizontal */
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow: 
     0 4px 16px rgba(149, 132, 255, 0.08),
     0 2px 8px rgba(149, 132, 255, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
   display: flex;
-  gap: 18px;
+  gap: 20px; /* Augmenté de 18px à 20px */
   align-items: flex-start;
   overflow: hidden;
+  width: 100%; /* Assure que la card prend toute la largeur disponible */
 }
 
 .modern-input-card::before {
@@ -234,7 +235,7 @@
 .modern-input-wrapper textarea,
 .modern-input-wrapper input {
   width: 100%;
-  padding: 14px 18px;
+  padding: 16px 22px; /* Augmenté de 14px 18px à 16px 22px pour plus d'espace */
   margin: 0;
   border: 2px solid rgba(149, 132, 255, 0.2);
   border-radius: 12px;
@@ -247,6 +248,8 @@
   box-shadow: 
     0 2px 8px rgba(149, 132, 255, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  min-width: 0; /* Permet au flex de fonctionner correctement */
+  box-sizing: border-box;
 }
 
 .modern-input-wrapper textarea::placeholder,

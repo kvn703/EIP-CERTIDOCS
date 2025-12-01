@@ -38,9 +38,7 @@ window.addEventListener('walletConnected', async () => {
     const provider = new ethers.BrowserProvider(window.ethereum);
     signer = await provider.getSigner();
     const address = await signer.getAddress();
-    console.log(address);
     contract = new ethers.Contract(contractAddress, abi, signer);
-    console.log("✅ Connexion établie via script.js :", { provider, signer, address, contract });
 
     updateUI(address);
     document.getElementById("signMessage").disabled = false;
@@ -234,7 +232,6 @@ function readFileAsArrayBuffer(file) {
 
 
 async function signMessage() {
-    console.log("🔐 signMessage() appelée - Début de la signature...");
     let messageHash;
     let message;
     let signature;
@@ -267,19 +264,13 @@ async function signMessage() {
         if (!ethers.isBytesLike(message)) {
             // hash message using keccak256
             const hash = ethers.keccak256(ethers.toUtf8Bytes(message));
-            console.log("Message non hashé, hash en cours...");
-            console.log("Message hashé :", hash);
             messageHash = hash;
         } else {
             // if message is already a bytes-like value, use it directly
             messageHash = message;
-            console.log("Message déjà hashé :", messageHash);
         }
 
-        console.log("📝 Signature du message avec MetaMask...");
         signature = await signer.signMessage(ethers.getBytes(messageHash));
-        console.log("✅ Signature obtenue:", signature);
-        console.log("hash:", messageHash);
     } else if (currentTab === 2) {
         if (!currentPDFFile) {
             alert("❌ Veuillez sélectionner un fichier PDF avant de signer !");
@@ -302,9 +293,7 @@ async function signMessage() {
         // Hash du fichier PDF
         const fileBuffer = await readFileAsArrayBuffer(currentPDFFile);
         messageHash = ethers.keccak256(new Uint8Array(fileBuffer));
-        console.log("Fichier PDF hashé :", messageHash);
         signature = await signer.signMessage(ethers.getBytes(messageHash));
-        console.log("Signature du fichier PDF :", signature);
     } else if (currentTab === 3) {
         if (!currentImageFile) {
             alert("❌ Veuillez sélectionner un fichier image avant de signer !");
@@ -327,27 +316,17 @@ async function signMessage() {
         // Hash du fichier image
         const fileBuffer = await readFileAsArrayBuffer(currentImageFile);
         messageHash = ethers.keccak256(new Uint8Array(fileBuffer));
-        console.log("Fichier image hashé :", messageHash);
         signature = await signer.signMessage(ethers.getBytes(messageHash));
-        console.log("Signature du fichier image :", signature);
     } else {
-        console.error("❌ Type de signature non supporté !");
         return;
     }
     if (!messageHash || !signature) {
-        console.error("❌ Impossible de signer le message !");
         return;
     }
 
     // const expirationSelect = document.getElementById("expirationSelect");
     // const expiration = Math.floor(Date.now() / 1000) + parseInt(expirationSelect.value);
     const expiration = Math.floor(Date.now() / 1000) + 31536000
-    console.log("📩 Données envoyées à storeSignature:");
-    console.log("→ messageHash:", messageHash);
-    console.log("→ signature:", signature);
-    console.log("→ authorizedRecipients:", authorizedRecipients);
-    console.log("→ expiration:", expiration);
-    console.log("→ contractAddress:", contractAddress);
 
     // Ancienne interface supprimée - on utilise maintenant ResultModal
     const statusEl = document.getElementById("status");
@@ -358,8 +337,6 @@ async function signMessage() {
     requestAnimationFrame(async () => {
         try {
             const timestamp = Math.floor(Date.now() / 1000);
-            console.log("→ timestamp:", timestamp);
-            console.log("📡 Envoi de la transaction...");
             const tx = await contract.storeSignature(
                 messageHash,
                 expiration,
@@ -378,7 +355,6 @@ async function signMessage() {
             }
 
             if (!signatureId) {
-                console.error("❌ Impossible de récupérer `signatureId` !");
                 return;
             }
 
@@ -404,7 +380,6 @@ async function signMessage() {
                 detail: { signatureId, signatureIdString }
             }));
         } catch (error) {
-            console.error(error);
             const statusEl = document.getElementById("status");
             if (statusEl) {
                 statusEl.style.display = "none";
@@ -418,19 +393,16 @@ window.addEventListener('pdfFileSelected', (event) => {
     // extract the PDF file from the event detail
     const pdfFile = event.detail;
     currentPDFFile = pdfFile;
-    console.log("PDF file selected:", pdfFile);
 });
 
 window.addEventListener('tabChanged', (event) => {
     const tabIDX = event.detail;
     currentTab = tabIDX;
-    console.log("Tab changed to:", tabIDX);
 });
 
 window.addEventListener('imageFileSelected', (event) => {
     const imageFile = event.detail;
     currentImageFile = imageFile;
-    console.log("Image file selected:", imageFile);
 });
 
 // Fonction pour attacher l'event listener de manière robuste
@@ -440,7 +412,6 @@ function attachSignMessageListener() {
         // Retirer l'ancien listener s'il existe pour éviter les doublons
         signBtn.removeEventListener("click", signMessage);
         signBtn.addEventListener("click", signMessage);
-        console.log("✅ Event listener attaché au bouton signMessage");
         return true;
     }
     return false;
@@ -448,7 +419,6 @@ function attachSignMessageListener() {
 
 // Écouter l'événement émis par React quand le bouton est prêt
 window.addEventListener('signMessageButtonReady', (event) => {
-    console.log("📢 Bouton signMessage prêt, attachement de l'event listener...");
     attachSignMessageListener();
 });
 
@@ -481,10 +451,8 @@ window.addEventListener('walletConnected', () => {
 
 // Exposer la fonction signMessage globalement pour pouvoir l'appeler depuis React
 window.signMessage = signMessage;
-console.log("✅ signMessage exposée globalement sur window");
 
 // Exposer la fonction hideTextInImageReturnBlob globalement pour le téléchargement
 window.hideTextInImageReturnBlob = hideTextInImageReturnBlob;
-console.log("✅ hideTextInImageReturnBlob exposée globalement sur window");
 
 // document.addEventListener("DOMContentLoaded", connectMetaMask);

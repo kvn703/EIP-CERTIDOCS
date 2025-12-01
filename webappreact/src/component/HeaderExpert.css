@@ -27,8 +27,135 @@
 .header-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex: 1;
+}
+
+/* Logo moderne et épuré 2025 */
+.logo-modern {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-modern svg {
+  width: 32px;
+  height: 32px;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.logo-modern:hover svg {
+  transform: scale(1.05);
+}
+
+/* Titre moderne et impactant 2025 */
+.header-title-modern {
+  position: relative;
+  z-index: 2;
+}
+
+.title-modern {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: 900;
+  margin: 0;
+  letter-spacing: 0.08em;
+  position: relative;
+  line-height: 1.2;
+  background: linear-gradient(135deg, 
+    #9584ff 0%, 
+    #b8aaff 30%,
+    #7fffa7 70%,
+    #9584ff 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: titleGradientShift 5s ease infinite;
+  text-transform: uppercase;
+  filter: drop-shadow(0 2px 4px rgba(149, 132, 255, 0.2));
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.title-modern::before {
+  content: 'CERTIDOCS';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.3) 0%, 
+    transparent 50%, 
+    rgba(255, 255, 255, 0.3) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: titleShine 3s ease-in-out infinite;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.title-modern::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    #9584ff 20%,
+    #7fffa7 50%,
+    #9584ff 80%,
+    transparent 100%);
+  border-radius: 2px;
+  opacity: 0.6;
+  animation: titleUnderline 3s ease-in-out infinite;
+  z-index: 0;
+}
+
+.header-left:hover .title-modern {
+  transform: translateY(-1px);
+  filter: drop-shadow(0 4px 8px rgba(149, 132, 255, 0.3));
+}
+
+.header-left:hover .title-modern::after {
+  opacity: 1;
+  height: 4px;
+}
+
+@keyframes titleGradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes titleShine {
+  0%, 100% {
+    background-position: -200% 0;
+    opacity: 0;
+  }
+  50% {
+    background-position: 200% 0;
+    opacity: 1;
+  }
+}
+
+@keyframes titleUnderline {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scaleX(0.9);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scaleX(1);
+  }
 }
 
 .header-actions {
@@ -282,53 +409,13 @@
 .gradient-text {
   background: linear-gradient(135deg, 
     #9584ff 0%, 
-    #b8aaff 25%, 
-    #7fffa7 50%, 
-    #b8aaff 75%, 
-    #9584ff 100%);
-  background-size: 300% 300%;
+    #7fffa7 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: gradientShift 4s ease infinite;
   position: relative;
-  text-shadow: 0 0 30px rgba(149, 132, 255, 0.3);
-  filter: drop-shadow(0 2px 8px rgba(149, 132, 255, 0.2));
-}
-
-.gradient-text::before {
-  content: 'CERTIDOCS';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.8) 0%, 
-    transparent 50%, 
-    rgba(255, 255, 255, 0.8) 100%);
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: shine 3s ease-in-out infinite;
-  z-index: 1;
-}
-
-.shine {
-  display: block;
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(255, 255, 255, 0.6) 50%, 
-    transparent 100%);
-  animation: shineSweep 3s ease-in-out infinite;
-  z-index: 2;
-  pointer-events: none;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 .header-baseline {

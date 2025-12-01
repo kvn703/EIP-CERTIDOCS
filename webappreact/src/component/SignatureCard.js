@@ -11,7 +11,7 @@ export default function SignatureCard({ signature, onCopy, isString, activeTab }
 
   const handleCopy = () => {
     if (!signature) return;
-    navigator.clipboard.writeText(signature);
+    navigator.clipboard.writeText("[CERTIDOCS]" + signature);
     setCopied(true);
     if (onCopy) onCopy();
     setTimeout(() => setCopied(false), 2000);
@@ -45,12 +45,12 @@ export default function SignatureCard({ signature, onCopy, isString, activeTab }
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        console.log("📥 Signature téléchargée !");
+        // Téléchargement réussi
       } else {
-        console.error("Fonction hideTextInImageReturnBlob non disponible");
+        // Fonction non disponible
       }
     } catch (error) {
-      console.error("Erreur lors du téléchargement:", error);
+      // Erreur silencieuse
     } finally {
       setDownloading(false);
     }

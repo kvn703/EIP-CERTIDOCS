@@ -31,58 +31,29 @@ const HeaderExpert = ({ showProgress = false, currentStep = 0, steps = [] }) => 
       localStorage.clear();
       window.dispatchEvent(new Event('walletDisconnected'));
     } catch (error) {
-      console.error("Erreur pendant la déconnexion :", error);
+      // Erreur silencieuse
     }
   };
 
   return (
     <header className="header-expert">
       <div className="header-left">
-        <div className="logo-anim">
-          {/* Logo SVG animé - Bouclier avec bleu qui remplit tout */}
+        <div className="logo-modern">
           <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#00e0ff" stopOpacity="1">
-                  <animate attributeName="stop-opacity" values="0.8;1;0.8" dur="3s" repeatCount="indefinite" />
-                </stop>
-                <stop offset="50%" stopColor="#4dabf7" stopOpacity="1">
-                  <animate attributeName="stop-opacity" values="0.9;1;0.9" dur="3s" repeatCount="indefinite" />
-                </stop>
-                <stop offset="100%" stopColor="#9584ff" stopOpacity="1">
-                  <animate attributeName="stop-opacity" values="0.8;1;0.8" dur="3s" repeatCount="indefinite" />
-                </stop>
+              <linearGradient id="shieldGradientModern" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#9584ff" />
+                <stop offset="100%" stopColor="#7fffa7" />
               </linearGradient>
-              <radialGradient id="glow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-                <stop offset="0%" stopColor="#00e0ff" stopOpacity="0.7" />
-                <stop offset="100%" stopColor="#9584ff" stopOpacity="0.1" />
-              </radialGradient>
             </defs>
-            <circle cx="24" cy="24" r="22" fill="url(#glow)" />
-            {/* Bouclier rempli avec le gradient bleu */}
             <path d="M24 8L40 14V24C40 34 24 40 24 40C24 40 8 34 8 24V14L24 8Z" 
-                  fill="url(#shieldGradient)" 
-                  stroke="#fff" 
-                  strokeWidth="1.5"
-                  opacity="0.95">
-              <animate attributeName="opacity" values="0.9;1;0.9" dur="2.5s" repeatCount="indefinite" />
-            </path>
-            {/* Contour animé pour l'effet de brillance */}
-            <path d="M24 8L40 14V24C40 34 24 40 24 40C24 40 8 34 8 24V14L24 8Z" 
-                  fill="none" 
-                  stroke="#00e0ff" 
-                  strokeWidth="2" 
-                  opacity="0.6">
-              <animate attributeName="stroke-dasharray" values="0,100;60,100;0,100" dur="2.5s" repeatCount="indefinite" />
-              <animate attributeName="opacity" values="0.4;0.8;0.4" dur="2.5s" repeatCount="indefinite" />
-            </path>
+                  fill="url(#shieldGradientModern)" 
+                  stroke="rgba(255, 255, 255, 0.2)" 
+                  strokeWidth="1.5" />
           </svg>
         </div>
-        <div className="header-title">
-          <h1>
-            <span className="gradient-text">CERTIDOCS</span>
-            <span className="shine"></span>
-          </h1>
+        <div className="header-title-modern">
+          <h1 className="title-modern">CERTIDOCS</h1>
         </div>
       </div>
       <div className="header-actions">

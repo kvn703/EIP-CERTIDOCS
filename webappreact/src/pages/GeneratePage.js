@@ -7,18 +7,16 @@ import "../CSS/status.css";
 import "../CSS/logoutButton.css";
 import "../CSS/modern2025.css";
 import "../CSS/generateLayout.css";
-import CustomText from "../component/CustomText";
 import CustomTextInput from "../component/CustomTextInput";
-import { useAppKitAccount, useDisconnect, modal } from "@reown/appkit/react";
+import { useAppKitAccount } from "@reown/appkit/react";
 import MailSection from '../component/MailSection';
 import TexteSection from '../component/TexteSection';
 import Tabs from '../component/Tabs';
 import '../component/Tabs.css';
-import { FaWallet, FaSignOutAlt, FaCog, FaRegCopy, FaEye, FaInbox, FaEdit, FaFileAlt, FaCamera } from "react-icons/fa";
+import { FaInbox, FaEdit, FaFileAlt, FaCamera } from "react-icons/fa";
 import confetti from "canvas-confetti";
 import PDFSection from '../component/PdfPage/PDFSection';
 import ImageSection from '../component/PdfPage/ImageSection';
-import SignatureCard from '../component/SignatureCard';
 import HeaderExpert from '../component/HeaderExpert';
 import Timeline from '../component/Timeline';
 import StickyButton from '../component/StickyButton';
@@ -26,15 +24,10 @@ import ResultModal from '../component/ResultModal';
 import FormatToggle from '../component/FormatToggle';
 
 const GeneratePage = () => {
-    const [expiration, setExpiration] = useState("3600");
-    const { isConnected, address } = useAppKitAccount();
-    const { disconnect } = useDisconnect();
+    const { isConnected } = useAppKitAccount();
     const [activeTab, _setActiveTab] = useState(0);
     const [mailMessage, setMailMessage] = useState("");
     const [texteValue, setTexteValue] = useState("");
-    const [showTooltip, setShowTooltip] = useState(false);
-    const [copyStatus, setCopyStatus] = useState("");
-    const [showPreview, setShowPreview] = useState(false);
     const [signed, setSigned] = useState(false);
     const [signature, setSignature] = useState("");
     const [pdfFile, _setPdfFile] = useState(null);
@@ -45,7 +38,6 @@ const GeneratePage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
-    const [showStickyButton, setShowStickyButton] = useState(false);
     const [buttonEnabledState, setButtonEnabledState] = useState(false); // État React pour forcer le re-render
 
     useEffect(() => {
@@ -89,26 +81,6 @@ const GeneratePage = () => {
         }
     }, []);
 
-    const handleOpenModal = () => {
-        if (!modal) {
-            console.error("modal est undefined. Appel à createAppKit manquant ?");
-            return;
-        }
-        modal.open();
-    };
-
-    const handleDisconnect = async () => {
-        try {
-            await disconnect();
-            localStorage.clear();
-            console.log("Déconnecté et cache vidé.");
-            // On notifie aussi script.js (pour reset UI côté vanilla)
-            window.dispatchEvent(new Event('walletDisconnected'));
-        } catch (error) {
-            console.error("Erreur pendant la déconnexion :", error);
-        }
-    };
-
     const launchConfetti = () => {
         confetti({
             particleCount: 32,
@@ -121,25 +93,6 @@ const GeneratePage = () => {
         });
     };
 
-    const handleCopy = () => {
-        if (address) {
-            navigator.clipboard.writeText(address);
-            setCopyStatus("copied");
-            setShowTooltip(true);
-            launchConfetti();
-            setTimeout(() => {
-                setCopyStatus("");
-                setShowTooltip(false);
-            }, 1200);
-        }
-    };
-
-    function isProbablyHash(str) {
-        return (
-            (str && str.length > 32 && /^[a-f0-9]+$/i.test(str)) ||
-            (str && str.length > 32 && /^[A-Za-z0-9+/=]+$/.test(str) && !str.includes(' '))
-        );
-    }
 
 
 
@@ -220,45 +173,7 @@ const GeneratePage = () => {
         }
     }, []); // S'exécute une fois au montage du composant
 
-    // Détecter si le contenu dépasse pour afficher le bouton sticky
-    useEffect(() => {
-        const checkContentHeight = () => {
-            const container = document.querySelector('.container.perspective-container');
-            if (container) {
-                const containerHeight = container.scrollHeight;
-                const viewportHeight = window.innerHeight;
-                // Afficher le bouton sticky seulement si le contenu dépasse de plus de 100px
-                setShowStickyButton(containerHeight > viewportHeight - 100);
-            }
-        };
-
-        checkContentHeight();
-        
-        // Réexécuter lors du resize et après un délai pour laisser le temps au contenu de se charger
-        window.addEventListener('resize', checkContentHeight);
-        const timeout = setTimeout(checkContentHeight, 500);
-        
-        // Observer les changements dans le container
-        const container = document.querySelector('.container.perspective-container');
-        if (container) {
-            const observer = new MutationObserver(checkContentHeight);
-            observer.observe(container, {
-                childList: true,
-                subtree: true,
-                attributes: true
-            });
-            return () => {
-                window.removeEventListener('resize', checkContentHeight);
-                clearTimeout(timeout);
-                observer.disconnect();
-            };
-        }
-        
-        return () => {
-            window.removeEventListener('resize', checkContentHeight);
-            clearTimeout(timeout);
-        };
-    }, [texteValue, mailMessage, pdfFile, imageFile, activeTab]);
+    // Le bouton sticky est toujours visible maintenant, plus besoin de détecter la hauteur
 
     // Écouter les changements du DOM pour détecter la signature générée par script.js
     useEffect(() => {
@@ -384,7 +299,6 @@ const GeneratePage = () => {
     const isButtonEnabled = () => {
         // Le wallet doit être connecté
         if (!isConnected) {
-            console.log("❌ Bouton désactivé: Wallet non connecté");
             return false;
         }
 
@@ -392,43 +306,29 @@ const GeneratePage = () => {
         const recipientsInput = document.getElementById("recipientsInput");
         const hasRecipients = recipientsInput && recipientsInput.value && recipientsInput.value.trim().length > 0;
         if (!hasRecipients) {
-            console.log("❌ Bouton désactivé: Pas de destinataires");
             return false;
         }
 
         // Vérifier selon l'onglet actif (indépendamment du format IsString)
         if (activeTab === 0) {
             // Onglet Mail - besoin de mailMessage
-            const enabled = !!mailMessage && mailMessage.trim().length > 0;
-            if (!enabled) console.log("❌ Bouton désactivé: Pas de message mail");
-            return enabled;
+            return !!mailMessage && mailMessage.trim().length > 0;
         } else if (activeTab === 1) {
             // Onglet Texte - vérifier à la fois texteValue (React) et messageInput (DOM)
             // Le bouton fonctionne indépendamment du format (Image ou Textuel)
             const messageInput = document.getElementById("messageInput");
             const hasMessageInDOM = messageInput && messageInput.value && messageInput.value.trim().length > 0;
             const hasMessageInState = !!texteValue && texteValue.trim().length > 0;
-            const enabled = hasMessageInState || hasMessageInDOM;
-            if (!enabled) {
-                console.log("❌ Bouton désactivé: Pas de message texte", { hasMessageInState, hasMessageInDOM, IsString });
-            } else {
-                console.log("✅ Bouton activé: Message texte présent", { hasMessageInState, hasMessageInDOM, IsString });
-            }
-            return enabled;
+            return hasMessageInState || hasMessageInDOM;
         } else if (activeTab === 2) {
             // Onglet PDF - besoin de pdfFile (indépendamment du format)
-            const enabled = pdfFile !== null;
-            if (!enabled) console.log("❌ Bouton désactivé: Pas de fichier PDF");
-            return enabled;
+            return pdfFile !== null;
         } else if (activeTab === 3) {
             // Onglet Image - besoin de imageFile (indépendamment du format)
             // Le bouton doit être disponible dès qu'un fichier image est sélectionné
-            const enabled = imageFile !== null;
-            if (!enabled) console.log("❌ Bouton désactivé: Pas de fichier image");
-            return enabled;
+            return imageFile !== null;
         }
         
-        console.log("❌ Bouton désactivé: Aucun onglet valide");
         return false;
     };
 
@@ -453,7 +353,6 @@ const GeneratePage = () => {
                     // La checkbox doit être checked seulement si IsString est explicitement true (Textuel)
                     // Si IsString est null ou false, la checkbox est unchecked (Image par défaut)
                     checkbox.checked = IsString === true;
-                    console.log("📋 Checkbox synchronisée:", { IsString, checked: checkbox.checked, activeTab });
                 }
                 
                 // Calculer si le bouton doit être activé (SANS vérifier IsString)
@@ -476,18 +375,6 @@ const GeneratePage = () => {
                         enabled = imageFile !== null;
                     }
                 }
-                
-                console.log("🔘 État du bouton:", { 
-                    enabled, 
-                    isConnected, 
-                    hasRecipients, 
-                    activeTab, 
-                    IsString, 
-                    texteValue: !!texteValue, 
-                    hasMessage,
-                    pdfFile: !!pdfFile,
-                    imageFile: !!imageFile 
-                });
                 
                 signBtn.disabled = !enabled;
                 
@@ -535,7 +422,7 @@ const GeneratePage = () => {
             window.removeEventListener('imageFileSelected', handleImageFileSelected);
             clearInterval(interval);
         };
-    }, [isConnected, texteValue, mailMessage, pdfFile, imageFile, activeTab]); // IsString retiré des dépendances car le format est optionnel
+    }, [isConnected, texteValue, mailMessage, pdfFile, imageFile, activeTab, IsString]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Forcer la mise à jour du bouton sticky quand les conditions changent (sans dépendre de IsString)
     useEffect(() => {
@@ -544,7 +431,6 @@ const GeneratePage = () => {
         const updateButtonEnabledState = () => {
             const enabled = isButtonEnabled();
             setButtonEnabledState(enabled);
-            console.log("🔄 Mise à jour état bouton sticky:", { enabled, IsString, activeTab });
         };
         
         // Mettre à jour immédiatement
@@ -554,7 +440,8 @@ const GeneratePage = () => {
         const interval = setInterval(updateButtonEnabledState, 200);
         
         return () => clearInterval(interval);
-    }, [isConnected, texteValue, mailMessage, pdfFile, imageFile, activeTab]); // IsString délibérément omis
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isConnected, texteValue, mailMessage, pdfFile, imageFile, activeTab]); // isButtonEnabled est une fonction, pas besoin de dépendance
 
     return (
         <>
@@ -662,50 +549,21 @@ const GeneratePage = () => {
                             </div>
                             
                             {/* Bouton Sticky - Placé juste en dessous du FormatToggle, en dehors du conteneur */}
-                            {(() => {
-                                const buttonEnabled = isButtonEnabled();
-                                console.log("🎨 Rendu bouton sticky:", { 
-                                    buttonEnabled, 
-                                    disabled: !buttonEnabled,
-                                    isConnected, 
-                                    activeTab, 
-                                    IsString,
-                                    texteValue: !!texteValue,
-                                    mailMessage: !!mailMessage,
-                                    pdfFile: !!pdfFile,
-                                    imageFile: !!imageFile
-                                });
-                                return null;
-                            })()}
                             <StickyButton
                                 onClick={async () => {
                                     // IMPORTANT: Le format (IsString) est OPTIONNEL - ne pas vérifier ici
                                     // Vérifier que le bouton peut être activé (sans dépendre de IsString)
                                     const buttonEnabled = isButtonEnabled();
-                                    console.log("🔍 Vérification avant clic:", { 
-                                        buttonEnabled, 
-                                        isConnected, 
-                                        activeTab, 
-                                        IsString,
-                                        texteValue: !!texteValue,
-                                        mailMessage: !!mailMessage,
-                                        pdfFile: !!pdfFile,
-                                        imageFile: !!imageFile
-                                    });
                                     
                                     if (!buttonEnabled) {
-                                        console.warn("❌ Bouton désactivé - conditions non remplies (format non requis)");
                                         return;
                                     }
-                                    
-                                    console.log("🖱️ Clic sur le bouton sticky - Génération d'empreinte...");
                                     
                                     // S'assurer que la checkbox est correctement synchronisée (même si IsString est null)
                                     const checkbox = document.getElementById("signatureCheckbox");
                                     if (checkbox) {
                                         // Si IsString est null, utiliser false (Image) par défaut
                                         checkbox.checked = IsString === true;
-                                        console.log("📋 Checkbox mise à jour avant signature:", { IsString, checked: checkbox.checked });
                                     }
                                     
                                     // Activer le bouton caché avant de cliquer
@@ -719,20 +577,16 @@ const GeneratePage = () => {
                                         
                                         // Vérifier si la fonction signMessage existe globalement
                                         if (typeof window.signMessage === 'function') {
-                                            console.log("✅ Appel direct de signMessage()");
                                             try {
                                                 await window.signMessage();
                                             } catch (error) {
-                                                console.error("❌ Erreur lors de l'appel de signMessage:", error);
                                                 setIsGenerating(false);
                                             }
                                         } else {
                                             // Fallback : cliquer sur le bouton caché
-                                            console.log("📌 Utilisation du clic sur le bouton caché");
                                             signBtn.click();
                                         }
                                     } else {
-                                        console.error("❌ Bouton signMessage introuvable dans le DOM");
                                         setIsGenerating(false);
                                     }
                                 }}

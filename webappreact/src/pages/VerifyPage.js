@@ -6,8 +6,8 @@ import ButtonCustom from "../component/ButtonCustom";
 import Container from "../component/Container";
 import CustomText from "../component/CustomText";
 import CustomTextInput from "../component/CustomTextInput";
-import { useAppKitAccount, useDisconnect, modal } from "@reown/appkit/react";
-import { FaWallet, FaSignOutAlt, FaCog, FaRegCopy, FaInbox, FaEdit, FaFileAlt, FaCamera } from "react-icons/fa";
+import { useAppKitAccount } from "@reown/appkit/react";
+import { FaInbox, FaEdit, FaFileAlt, FaCamera } from "react-icons/fa";
 import Tabs from "../component/Tabs";
 import "../component/Tabs.css";
 import PDFSection from "../component/PdfPage/PDFSection";
@@ -16,10 +16,7 @@ import VerificationAnimation from "../component/VerificationAnimation";
 import HeaderExpert from "../component/HeaderExpert";
 
 function VerifyPage() {
-    const { isConnected, address } = useAppKitAccount();
-    const { disconnect } = useDisconnect();
-    const [showTooltip, setShowTooltip] = useState(false);
-    const [copyStatus, setCopyStatus] = useState("");
+    const { isConnected } = useAppKitAccount();
     const [signatureId, setSignatureId] = useState("");
     const [message, setMessage] = useState("");
     const [activeTab, _setActiveTab] = useState(0);
@@ -72,21 +69,17 @@ function VerifyPage() {
         const urlParams = new URLSearchParams(window.location.search);
         const signatureIdParam = urlParams.get("signatureId")
         const messageParam = urlParams.get("messageHash");
-        console.log("URL parameters:", { signatureIdParam, messageParam });
         if (signatureIdParam && messageParam) {
             setSignatureId(signatureIdParam);
             setMessage(messageParam);
             setOriginalMailContent({ signatureId: signatureIdParam, message: messageParam });
         } else {
             setActiveTab(1); // Switch to Texte tab if no parameters
-            console.log("No URL parameters found, switching to Texte tab");
         }
     }, [signatureId, message, originalMailContent.signatureId]);
 
     useEffect(() => {
-        console.log("Check mail content lost:", { activeTab, hasVisitedOtherTab, signatureId, message });
         if (activeTab === 0 && hasVisitedOtherTab && (!signatureId || !message)) {
-            console.log("Mail content lost detected!");
             setMailContentLost(true);
         } else {
             setMailContentLost(false);
@@ -95,7 +88,6 @@ function VerifyPage() {
 
     useEffect(() => {
         if (activeTab !== 0) {
-            console.log("Visiting other tab, setting hasVisitedOtherTab to true");
             setHasVisitedOtherTab(true);
         }
     }, [activeTab]);
@@ -139,42 +131,10 @@ function VerifyPage() {
     //   }, [activeTab, signatureId, message]);
 
     const handleReloadMailContent = () => {
-        console.log("Rechargement de la page...");
-        console.log("Button clicked, reloading...");
         setIsReloading(true);
         setTimeout(() => {
             document.location.reload();
         }, 100);
-    };
-
-    const handleOpenModal = () => {
-        if (!modal) {
-            console.error("modal est undefined. Appel à createAppKit manquant ?");
-            return;
-        }
-        modal.open();
-    };
-
-    const handleDisconnect = async () => {
-        try {
-            await disconnect();
-            localStorage.clear();
-            window.dispatchEvent(new Event('walletDisconnected'));
-        } catch (error) {
-            console.error("Erreur pendant la déconnexion :", error);
-        }
-    };
-
-    const handleCopy = () => {
-        if (address) {
-            navigator.clipboard.writeText(address);
-            setCopyStatus("copied");
-            setShowTooltip(true);
-            setTimeout(() => {
-                setCopyStatus("");
-                setShowTooltip(false);
-            }, 1200);
-        }
     };
 
     const handleVerificationComplete = () => {
@@ -185,7 +145,6 @@ function VerifyPage() {
 
     const handleVerifyClick = () => {
         if (!signatureId || !message) {
-            console.error("Signature ID ou message manquant");
             setIsVerifying(false);
             setVerificationResult(null);
             setShowContentRecovered(false);
@@ -206,7 +165,6 @@ function VerifyPage() {
             ),
             content: (
                 <>
-                    {console.log("Rendering mail tab, mailContentLost:", mailContentLost)}
 
                     {signatureId && message && showContentRecovered && !isVerifying && !verificationResult && (
                         <div style={{ textAlign: 'center', padding: '32px 20px' }}>
