@@ -11,37 +11,42 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f3f4f6;
+  background-color: var(--primary-bg, #f3f4f6);
+  color: var(--text-main, #2d2346);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
-  background: #ffffff;
+  background: var(--secondary-bg, #ffffff);
   padding: 30px;
   border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--card-shadow, 0 10px 40px rgba(0, 0, 0, 0.1));
   width: 100%;
   max-width: 450px;
   margin: 20px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
   overflow-x: hidden;
   min-width: 0;
+  border: 1px solid var(--input-border, rgba(149, 132, 255, 0.1));
 }
 
 .container:hover {
-  box-shadow: 0 12px 50px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--card-shadow-hover, 0 12px 50px rgba(0, 0, 0, 0.1));
 }
 
 h2 {
   margin-bottom: 15px;
-  color: #333;
+  color: var(--text-main, #333);
   font-weight: 600;
   text-align: center;
+  transition: color 0.3s ease;
 }
 
 h3 {
   margin-bottom: 12px;
-  color: #333;
+  color: var(--text-main, #333);
   font-weight: 600;
+  transition: color 0.3s ease;
 }
 
 textarea,
@@ -49,23 +54,25 @@ input {
   width: 100%;
   padding: 12px;
   margin: 8px 0;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--input-border, #d1d5db);
   border-radius: 8px;
   font-size: 16px;
-  background-color: #f9fafb;
-  transition: border-color 0.3s ease, background-color 0.3s ease;
+  background-color: var(--input-bg, #f9fafb);
+  color: var(--text-main, #2d2346);
+  transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
 }
 
 textarea:focus,
 input:focus {
-  border-color: #9584ff;
-  background-color: #f0eaff;
+  border-color: var(--input-border-focus, #9584ff);
+  background-color: var(--overlay-bg-hover, #f0eaff);
+  outline: none;
 }
 
 button {
   width: 100%;
   padding: 12px;
-  background-color: #9584ff;
+  background: var(--accent-gradient, linear-gradient(135deg, #9584ff 0%, #b8aaff 50%, #c9bfff 100%));
   color: white;
   border: none;
   border-radius: 8px;
@@ -73,30 +80,34 @@ button {
   font-weight: bold;
   font-size: 16px;
   margin-top: 15px;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 button:disabled {
-  background-color: #cccccc;
+  background: var(--text-light, #cccccc);
   cursor: not-allowed;
+  opacity: 0.6;
 }
 
-button:hover {
-  background-color: #7e6ef2;
+button:hover:not(:disabled) {
+  background: var(--accent-gradient-hover, linear-gradient(135deg, #b8aaff 0%, #9584ff 50%, #7e6ef2 100%));
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(149, 132, 255, 0.3);
 }
 
 p {
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-muted, #6b7280);
+  transition: color 0.3s ease;
 }
 
 label {
   font-size: 16px;
-  color: #333;
+  color: var(--text-main, #333);
   font-weight: 600;
   margin-top: 15px;
   display: block;
+  transition: color 0.3s ease;
 }
 
 verify {
@@ -107,23 +118,25 @@ verify {
   text-align: center;
   width: 100%;
   padding: 20px;
-  background-color: #f9f9f9;
+  background-color: var(--secondary-bg, #f9f9f9);
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--card-shadow, 0 4px 12px rgba(0, 0, 0, 0.15));
   margin-top: 20px;
   font-family: "Roberto", sans-serif;
   position: relative;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 select {
   width: 100%;
   padding: 12px;
   margin: 8px 0;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--input-border, #d1d5db);
   border-radius: 8px;
   font-size: 16px;
-  background-color: #f9fafb;
-  transition: border-color 0.3s ease, background-color 0.3s ease, transform 0.3s ease;
+  background-color: var(--input-bg, #f9fafb);
+  color: var(--text-main, #2d2346);
+  transition: border-color 0.3s ease, background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;
   appearance: none;
   background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="%239584ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><path d="M6 9l6-6 6 6"/></svg>');
   background-repeat: no-repeat;
@@ -133,12 +146,14 @@ select {
 
 select:hover {
   transform: translateY(-2px);
+  border-color: var(--input-border-hover, #9584ff);
 }
 
 select:focus {
-  border-color: #9584ff;
-  background-color: #f0eaff;
+  border-color: var(--input-border-focus, #9584ff);
+  background-color: var(--overlay-bg-hover, #f0eaff);
   transform: translateY(-2px);
+  outline: none;
 }
 
 option {
@@ -151,7 +166,8 @@ option i {
 }
 
 .clock-icon, .fa-pen, .fa-user {
-  color: #9584ff;
+  color: var(--accent, #9584ff);
+  transition: color 0.3s ease;
 }
 
 @keyframes fadeIn {

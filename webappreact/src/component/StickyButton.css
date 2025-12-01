@@ -1,0 +1,242 @@
+.sticky-button-container {
+  position: relative; /* Changé de fixed à relative pour être dans le flux */
+  margin: 16px auto 0; /* Marge en haut pour espacer du FormatToggle */
+  z-index: 1;
+  padding: 0;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: stickyButtonContainerSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@keyframes stickyButtonContainerSlideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.sticky-button {
+  width: 318.50px; /* Largeur exacte demandée */
+  max-width: 318.50px;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(135deg, 
+    #9584ff 0%, 
+    #b8aaff 50%, 
+    #7fffa7 100%);
+  background-size: 200% 200%;
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  pointer-events: auto;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    0 -8px 32px rgba(149, 132, 255, 0.4),
+    0 -4px 16px rgba(127, 255, 167, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  animation: stickyButtonEntrance 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes stickyButtonEntrance {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.sticky-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.2) 0%, 
+    transparent 50%,
+    rgba(127, 255, 167, 0.2) 100%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.sticky-button:hover:not(.disabled):not(.loading):not(.success)::before {
+  opacity: 1;
+}
+
+.sticky-button:hover:not(.disabled):not(.loading):not(.success) {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 -12px 40px rgba(149, 132, 255, 0.5),
+    0 -6px 20px rgba(127, 255, 167, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+  background-position: 100% 0;
+}
+
+.sticky-button:active:not(.disabled):not(.loading):not(.success) {
+  transform: translateY(-2px);
+}
+
+.sticky-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.5) 0%, 
+    rgba(184, 170, 255, 0.4) 50%,
+    rgba(127, 255, 167, 0.4) 100%);
+}
+
+.sticky-button.loading {
+  background: linear-gradient(135deg, 
+    #9584ff 0%, 
+    #b8aaff 50%,
+    #9584ff 100%);
+  background-size: 200% 200%;
+  animation: stickyButtonGradient 2s ease infinite, stickyButtonPulse 2s ease infinite;
+  cursor: wait;
+}
+
+@keyframes stickyButtonGradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes stickyButtonPulse {
+  0%, 100% {
+    box-shadow: 
+      0 -8px 32px rgba(149, 132, 255, 0.4),
+      0 -4px 16px rgba(127, 255, 167, 0.3);
+  }
+  50% {
+    box-shadow: 
+      0 -12px 40px rgba(149, 132, 255, 0.6),
+      0 -6px 20px rgba(127, 255, 167, 0.5);
+  }
+}
+
+.sticky-button.success {
+  background: linear-gradient(135deg, 
+    #7fffa7 0%, 
+    #a8ffc4 100%);
+  animation: stickyButtonSuccess 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes stickyButtonSuccess {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.sticky-button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  position: relative;
+  z-index: 2;
+}
+
+.sticky-button-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.sticky-button-icon.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.sticky-button-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    transparent 100%);
+  background-size: 200% 100%;
+  animation: stickyButtonProgress 2s ease infinite;
+  border-radius: 0 0 16px 16px;
+}
+
+@keyframes stickyButtonProgress {
+  0% {
+    background-position: -200% 0;
+    width: 0%;
+  }
+  50% {
+    width: 100%;
+  }
+  100% {
+    background-position: 200% 0;
+    width: 100%;
+  }
+}
+
+/* Dark Mode */
+[data-theme="dark"] .sticky-button {
+  box-shadow: 
+    0 -8px 32px rgba(149, 132, 255, 0.5),
+    0 -4px 16px rgba(127, 255, 167, 0.4),
+    0 0 0 1px rgba(149, 132, 255, 0.3) inset;
+}
+
+[data-theme="dark"] .sticky-button:hover:not(.disabled):not(.loading):not(.success) {
+  box-shadow: 
+    0 -12px 40px rgba(149, 132, 255, 0.7),
+    0 -6px 20px rgba(127, 255, 167, 0.6),
+    0 0 0 1px rgba(149, 132, 255, 0.4) inset;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .sticky-button-container {
+    margin: 16px auto 0;
+    padding: 0;
+  }
+  
+  .sticky-button {
+    width: 100%;
+    max-width: 318.50px; /* Même largeur sur mobile */
+    padding: 14px 20px;
+    font-size: 13px;
+  }
+  
+  .sticky-button-icon {
+    font-size: 15px;
+  }
+}
+

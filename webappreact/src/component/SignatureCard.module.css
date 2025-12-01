@@ -91,6 +91,7 @@
   animation: particlesFloat 8s ease-in-out infinite;
   pointer-events: none;
   z-index: 0;
+  /* S'assurer qu'il ne couvre pas les boutons */
 }
 
 @keyframes particlesFloat {
@@ -151,13 +152,13 @@
 .value {
   font-family: 'Fira Mono', 'Menlo', monospace;
   color: #2d2346;
-  font-size: 0.95em;
+  font-size: 0.85em; /* Réduit pour permettre l'affichage complet */
   background: linear-gradient(135deg, 
     rgba(149, 132, 255, 0.12) 0%, 
     rgba(184, 170, 255, 0.08) 100%);
   border-radius: 8px;
   padding: 0.4em 0.8em;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px; /* Réduit légèrement */
   font-weight: 600;
   user-select: all;
   min-width: 0;
@@ -167,14 +168,16 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 200px;
+  max-width: 100%; /* Permet de prendre toute la largeur disponible */
+  width: 100%; /* Prend toute la largeur */
   margin-right: 0.3em;
   flex-shrink: 1;
-  flex-grow: 0;
+  flex-grow: 1; /* Permet de grandir pour afficher plus de texte */
   text-align: left;
   border: 1px solid rgba(149, 132, 255, 0.2);
   transition: all 0.3s ease;
   position: relative;
+  word-break: break-all; /* Permet de casser les mots longs si nécessaire */
 }
 
 .value:hover {
@@ -187,26 +190,68 @@
   transform: translateY(-1px);
 }
 
+/* Style pour l'affichage complet de l'empreinte */
+.valueFull {
+  white-space: normal !important; /* Permet le retour à la ligne */
+  word-break: break-all !important; /* Casse les mots longs */
+  overflow: visible !important; /* Affiche tout le contenu */
+  text-overflow: clip !important; /* Pas d'ellipsis */
+  max-width: 100% !important; /* Prend toute la largeur */
+  width: 100% !important;
+  min-height: auto !important;
+  line-height: 1.5 !important; /* Espacement entre les lignes */
+}
+
 /* Bouton "Voir complet" pour afficher la signature entière */
 .viewFullBtn {
   background: transparent;
   border: 1px solid rgba(149, 132, 255, 0.3);
-  color: #9584ff;
-  border-radius: 6px;
+  color: #9584ff !important; /* Forcer la couleur */
+  border-radius: 16px; /* Même border-radius que le bouton "Générer empreinte" */
   padding: 0.2em 0.5em;
   font-size: 0.75em;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
   margin-left: 0.3em;
   white-space: nowrap;
   font-family: inherit;
+  position: relative;
+  z-index: 1000 !important; /* Z-index très élevé pour être au-dessus de tout */
+  isolation: isolate; /* Créer un nouveau contexte d'empilement */
+  pointer-events: auto; /* S'assurer que le bouton est cliquable */
+  opacity: 1 !important; /* Forcer l'opacité */
+}
+
+.viewFullBtn::before,
+.viewFullBtn::after {
+  display: none !important; /* Désactiver tous les pseudo-éléments */
+}
+
+.viewFullBtn *,
+.viewFullBtn > * {
+  position: relative !important;
+  z-index: 1001 !important; /* Le contenu du bouton est au-dessus */
+  color: #9584ff !important; /* Forcer la couleur du texte */
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 .viewFullBtn:hover {
-  background: rgba(149, 132, 255, 0.1);
-  border-color: #9584ff;
+  background: rgba(149, 132, 255, 0.1) !important;
+  border-color: #9584ff !important;
   transform: translateY(-1px);
+  color: #9584ff !important; /* Forcer la couleur au hover */
+  z-index: 1002 !important; /* Augmenter le z-index au hover */
+  opacity: 1 !important;
+}
+
+.viewFullBtn:hover *,
+.viewFullBtn:hover > * {
+  color: #9584ff !important; /* Forcer la couleur du texte au hover */
+  z-index: 1003 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 /* Tooltip informatif sur le hover */
@@ -225,8 +270,8 @@
   opacity: 0;
   pointer-events: none;
   transition: all 0.3s ease;
-  z-index: 10;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 10001;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(10px);
 }
 
@@ -264,11 +309,11 @@
 .copyBtn {
   background: linear-gradient(135deg, #9584ff 0%, #b8aaff 50%, #7fffa7 100%);
   color: #fff;
-  border-radius: 10px;
+  border-radius: 16px;
   border: none;
   font-weight: 700;
   font-size: 0.95em;
-  padding: 0.5em 1em;
+  padding: 0.6em 1.2em;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -280,11 +325,10 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   outline: none;
-  min-width: 0;
+  min-width: 120px;
   border: 1px solid transparent;
   font-family: inherit;
   height: auto;
-  width: auto;
   overflow: hidden;
   z-index: 1;
 }
@@ -301,6 +345,7 @@
   background: rgba(255, 255, 255, 0.3);
   transform: translate(-50%, -50%);
   transition: width 0.6s, height 0.6s;
+  z-index: 0; /* Derrière le contenu */
 }
 
 .copyBtn:hover::before {
@@ -358,7 +403,7 @@
   box-shadow: 
     0 4px 12px rgba(127, 255, 167, 0.4),
     0 8px 24px rgba(127, 255, 167, 0.2);
-  z-index: 100;
+  z-index: 10001;
   animation: copyFeedbackAppear 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
 }
 
@@ -396,11 +441,103 @@
   margin-right: 0;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  z-index: 2;
+  z-index: 1000 !important; /* Z-index très élevé pour être visible */
+  color: #fff !important; /* Forcer la couleur blanche pour les icônes */
+  pointer-events: none; /* Ne pas bloquer les clics */
+  opacity: 1 !important; /* Forcer l'opacité */
+}
+
+.copyBtn .btnIcon,
+.downloadBtn .btnIcon {
+  color: #fff !important; /* Forcer la couleur blanche */
+  opacity: 1 !important; /* Forcer l'opacité */
+}
+
+.copyBtn:hover .btnIcon,
+.downloadBtn:hover .btnIcon {
+  color: #fff !important; /* Maintenir la couleur blanche au hover */
+  z-index: 1001 !important;
+  opacity: 1 !important;
 }
 
 .copyBtn:not(.copied):hover .btnIcon {
   transform: rotate(-10deg) scale(1.1);
+  color: #fff !important; /* Forcer la couleur blanche au hover */
+}
+
+/* Bouton de téléchargement */
+.downloadBtn {
+  background: linear-gradient(135deg, #9584ff 0%, #b8aaff 50%, #7fffa7 100%);
+  color: #fff;
+  border-radius: 16px;
+  border: none;
+  font-weight: 700;
+  font-size: 0.95em;
+  padding: 0.6em 1.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  box-shadow: 
+    0 2px 8px rgba(149, 132, 255, 0.3),
+    0 4px 16px rgba(149, 132, 255, 0.2);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  outline: none;
+  min-width: 120px;
+  border: 1px solid transparent;
+  font-family: inherit;
+  height: auto;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.downloadBtn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+  z-index: 0; /* Derrière le contenu */
+}
+
+.downloadBtn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.downloadBtn:hover, .downloadBtn:focus {
+  background: linear-gradient(135deg, #b8aaff 0%, #9584ff 50%, #7fffa7 100%);
+  box-shadow: 
+    0 4px 16px rgba(149, 132, 255, 0.4),
+    0 8px 32px rgba(149, 132, 255, 0.3);
+  transform: translateY(-2px) scale(1.05);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.downloadBtn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.downloadBtn:not(.downloading):hover .btnIcon {
+  transform: rotate(10deg) scale(1.1);
+  color: inherit;
+}
+
+.downloadBtn.downloading {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.downloadBtn .btnIcon {
+  z-index: 2;
+  color: inherit;
 }
 
 .copyBtn.copied .btnIcon {
@@ -512,6 +649,83 @@
       0 8px 32px rgba(149, 132, 255, 0.3);
   }
 }
+/* Dark Mode Styles */
+[data-theme="dark"] .card {
+  background: rgba(37, 32, 48, 0.85);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.4),
+    0 8px 32px rgba(149, 132, 255, 0.15),
+    0 16px 64px rgba(149, 132, 255, 0.08),
+    inset 0 1px 0 rgba(149, 132, 255, 0.1);
+}
+
+[data-theme="dark"] .card:hover,
+[data-theme="dark"] .card:focus-within {
+  background: rgba(45, 37, 64, 0.9);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.5),
+    0 16px 48px rgba(149, 132, 255, 0.2),
+    0 32px 64px rgba(149, 132, 255, 0.15),
+    inset 0 1px 0 rgba(149, 132, 255, 0.2);
+}
+
+[data-theme="dark"] .label {
+  color: var(--accent-light, #b8aaff);
+}
+
+[data-theme="dark"] .value {
+  color: var(--text-main, #f0eaff);
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.2) 0%, 
+    rgba(184, 170, 255, 0.15) 100%);
+  border-color: rgba(149, 132, 255, 0.3);
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 2px rgba(149, 132, 255, 0.1);
+}
+
+[data-theme="dark"] .value:hover {
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.25) 0%, 
+    rgba(184, 170, 255, 0.2) 100%);
+  box-shadow: 
+    0 4px 8px rgba(149, 132, 255, 0.2),
+    inset 0 1px 2px rgba(149, 132, 255, 0.15);
+}
+
+[data-theme="dark"] .viewFullBtn {
+  color: var(--accent-light, #b8aaff);
+  border-color: rgba(149, 132, 255, 0.4);
+}
+
+[data-theme="dark"] .viewFullBtn:hover {
+  background: rgba(149, 132, 255, 0.15);
+  border-color: var(--accent, #9584ff);
+}
+
+[data-theme="dark"] .valueTooltip {
+  background: rgba(26, 22, 37, 0.95);
+  color: var(--text-main, #f0eaff);
+  border: 1px solid rgba(149, 132, 255, 0.3);
+}
+
+[data-theme="dark"] .valueTooltip::after {
+  border-top-color: rgba(26, 22, 37, 0.95);
+}
+
+[data-theme="dark"] .qrCodeContainer {
+  background: rgba(45, 37, 64, 0.8);
+  border-color: rgba(149, 132, 255, 0.3);
+}
+
+[data-theme="dark"] .helpText {
+  color: var(--text-muted, #a8a0c7);
+}
+
+[data-theme="dark"] .card:hover .helpText {
+  color: var(--accent-light, #b8aaff);
+}
+
 @media (max-width: 700px) {
   .card {
     flex-direction: column;

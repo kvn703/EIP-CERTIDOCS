@@ -6,13 +6,19 @@ const CustomTextInput = ({
     rows,
     cols,
     placeholder,
+    value,
+    onChange,
+    ...props
 }) => {
     return (
         <textarea
             id={id}
             placeholder={placeholder}
+            value={value}
+            onChange={onChange}
             {...(rows && { rows })}
             {...(cols && { cols })}
+            {...props}
         ></textarea>
     );
 };

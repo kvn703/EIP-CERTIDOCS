@@ -234,6 +234,7 @@ function readFileAsArrayBuffer(file) {
 
 
 async function signMessage() {
+    console.log("🔐 signMessage() appelée - Début de la signature...");
     let messageHash;
     let message;
     let signature;
@@ -275,7 +276,9 @@ async function signMessage() {
             console.log("Message déjà hashé :", messageHash);
         }
 
+        console.log("📝 Signature du message avec MetaMask...");
         signature = await signer.signMessage(ethers.getBytes(messageHash));
+        console.log("✅ Signature obtenue:", signature);
         console.log("hash:", messageHash);
     } else if (currentTab === 2) {
         if (!currentPDFFile) {
@@ -601,5 +604,58 @@ window.addEventListener('imageFileSelected', (event) => {
     console.log("Image file selected:", imageFile);
 });
 
-document.getElementById("signMessage").addEventListener("click", signMessage);
+// Fonction pour attacher l'event listener de manière robuste
+function attachSignMessageListener() {
+    const signBtn = document.getElementById("signMessage");
+    if (signBtn) {
+        // Retirer l'ancien listener s'il existe pour éviter les doublons
+        signBtn.removeEventListener("click", signMessage);
+        signBtn.addEventListener("click", signMessage);
+        console.log("✅ Event listener attaché au bouton signMessage");
+        return true;
+    }
+    return false;
+}
+
+// Écouter l'événement émis par React quand le bouton est prêt
+window.addEventListener('signMessageButtonReady', (event) => {
+    console.log("📢 Bouton signMessage prêt, attachement de l'event listener...");
+    attachSignMessageListener();
+});
+
+// Essayer d'attacher immédiatement (au cas où le bouton existe déjà)
+if (!attachSignMessageListener()) {
+    // Si le bouton n'existe pas encore, utiliser MutationObserver
+    const observer = new MutationObserver((mutations, obs) => {
+        if (attachSignMessageListener()) {
+            obs.disconnect(); // Arrêter d'observer une fois attaché
+        }
+    });
+    
+    // Observer les changements dans le body
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+    
+    // Timeout de sécurité (au cas où)
+    setTimeout(() => {
+        observer.disconnect();
+        attachSignMessageListener();
+    }, 5000);
+}
+
+// Réattacher quand le wallet se connecte (au cas où le bouton est recréé)
+window.addEventListener('walletConnected', () => {
+    setTimeout(attachSignMessageListener, 100);
+});
+
+// Exposer la fonction signMessage globalement pour pouvoir l'appeler depuis React
+window.signMessage = signMessage;
+console.log("✅ signMessage exposée globalement sur window");
+
+// Exposer la fonction hideTextInImageReturnBlob globalement pour le téléchargement
+window.hideTextInImageReturnBlob = hideTextInImageReturnBlob;
+console.log("✅ hideTextInImageReturnBlob exposée globalement sur window");
+
 // document.addEventListener("DOMContentLoaded", connectMetaMask);

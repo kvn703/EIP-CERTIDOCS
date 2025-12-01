@@ -1,15 +1,87 @@
 textarea {
   width: 100%;
-  padding: 12px;
-  margin: 8px 0;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 16px;
-  background-color: #f9fafb;
-  transition: border-color 0.3s ease, background-color 0.3s ease;
+  padding: 8px 10px;
+  margin: 4px 0;
+  border: 2px solid var(--input-border, rgba(149, 132, 255, 0.2));
+  border-radius: 10px;
+  font-size: 13px;
+  background: var(--input-bg, rgba(255, 255, 255, 0.7));
+  color: var(--text-main, #2d2346);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: relative;
+  box-shadow: 
+    0 2px 8px rgba(149, 132, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+textarea::placeholder {
+  color: var(--text-muted, #8d8ba7);
+  transition: opacity 0.3s ease;
+  opacity: 0.6;
+}
+
+textarea:not(:placeholder-shown)::placeholder,
+textarea:focus::placeholder {
+  opacity: 0;
+}
+
+textarea:hover {
+  border-color: var(--input-border-hover, rgba(149, 132, 255, 0.4));
+  box-shadow: 
+    0 4px 12px rgba(149, 132, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transform: translateY(-1px);
 }
 
 textarea:focus {
-  border-color: #9584ff;
-  background-color: #f0eaff;
+  outline: none;
+  border-color: var(--input-border-focus, #9584ff);
+  background: var(--overlay-bg-hover, rgba(255, 255, 255, 0.9));
+  box-shadow: 
+    0 0 0 4px rgba(149, 132, 255, 0.15),
+    0 8px 24px rgba(149, 132, 255, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  transform: translateY(-2px) scale(1.01);
+  animation: inputFocusGlow 2s ease-in-out infinite;
+}
+
+@keyframes inputFocusGlow {
+  0%, 100% {
+    box-shadow: 
+      0 0 0 4px rgba(149, 132, 255, 0.15),
+      0 8px 24px rgba(149, 132, 255, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  }
+  50% {
+    box-shadow: 
+      0 0 0 6px rgba(149, 132, 255, 0.2),
+      0 12px 32px rgba(149, 132, 255, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+}
+
+[data-theme="dark"] textarea {
+  background: var(--input-bg, rgba(45, 37, 64, 0.8));
+  border-color: var(--input-border, rgba(149, 132, 255, 0.3));
+  color: var(--text-main, #f0eaff);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(149, 132, 255, 0.1);
+}
+
+[data-theme="dark"] textarea:hover {
+  border-color: var(--input-border-hover, rgba(184, 170, 255, 0.5));
+  box-shadow: 
+    0 4px 12px rgba(149, 132, 255, 0.2),
+    inset 0 1px 0 rgba(149, 132, 255, 0.15);
+}
+
+[data-theme="dark"] textarea:focus {
+  background: var(--overlay-bg-hover, rgba(45, 37, 64, 0.95));
+  box-shadow: 
+    0 0 0 4px rgba(149, 132, 255, 0.2),
+    0 8px 24px rgba(149, 132, 255, 0.3),
+    inset 0 1px 0 rgba(149, 132, 255, 0.2);
 }
