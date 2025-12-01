@@ -332,108 +332,63 @@ const GeneratePage = () => {
         return false;
     };
 
-    // Mettre à jour le bouton caché quand les conditions changent
+    // Mettre à jour le bouton quand les conditions changent (unifié en un seul useEffect)
     useEffect(() => {
         const updateButtonState = () => {
+            // Utiliser la fonction isButtonEnabled() pour une logique cohérente
+            const enabled = isButtonEnabled();
+            
+            // Mettre à jour le bouton caché pour script.js
             const signBtn = document.getElementById("signMessage");
             if (signBtn) {
-                // Vérifier les destinataires
-                const hasRecipients = recipients && recipients.length > 0;
-                
-                // Vérifier le message selon l'onglet
-                const messageInput = document.getElementById("messageInput");
-                const hasMessage = messageInput && messageInput.value && messageInput.value.trim().length > 0;
-                
-                // IMPORTANT: Le format (IsString) est OPTIONNEL et ne doit PAS bloquer l'activation du bouton
-                // Synchroniser la checkbox avec IsString (indépendamment du format, le bouton doit fonctionner)
-                // Si IsString est null (optionnel), on utilise false (Image) par défaut
-                const checkbox = document.getElementById("signatureCheckbox");
-                if (checkbox) {
-                    // La checkbox doit être checked seulement si IsString est explicitement true (Textuel)
-                    // Si IsString est null ou false, la checkbox est unchecked (Image par défaut)
-                    checkbox.checked = IsString === true;
-                }
-                
-                // Calculer si le bouton doit être activé (SANS vérifier IsString)
-                let enabled = false;
-                if (isConnected && hasRecipients) {
-                    if (activeTab === 0) {
-                        // Onglet Mail
-                        enabled = !!mailMessage && mailMessage.trim().length > 0;
-                    } else if (activeTab === 1) {
-                        // Onglet Texte - vérifier à la fois texteValue (React) et messageInput (DOM)
-                        // Le bouton fonctionne indépendamment du format (Image ou Textuel)
-                        // IsString n'est PAS vérifié ici - le format est optionnel
-                        enabled = (!!texteValue && texteValue.trim().length > 0) || hasMessage;
-                    } else if (activeTab === 2) {
-                        // Onglet PDF - disponible dès qu'un fichier est sélectionné (indépendamment du format)
-                        enabled = pdfFile !== null;
-                    } else if (activeTab === 3) {
-                        // Onglet Image - disponible immédiatement dès qu'un fichier est sélectionné
-                        // Fonctionne pour Image ET Textuel, pas besoin d'attendre de validation
-                        enabled = imageFile !== null;
-                    }
-                }
-                
                 signBtn.disabled = !enabled;
                 
-                // Mettre à jour aussi l'état React pour le bouton sticky
-                setButtonEnabledState(enabled);
+                // Synchroniser la checkbox avec IsString
+                const checkbox = document.getElementById("signatureCheckbox");
+                if (checkbox) {
+                    checkbox.checked = IsString === true;
+                }
             }
+            
+            // Mettre à jour l'état React pour le bouton sticky (une seule source de vérité)
+            setButtonEnabledState(enabled);
         };
 
         // Mettre à jour immédiatement
         updateButtonState();
 
-        // Écouter les changements dans les champs
+        // Écouter les changements dans les champs DOM
         const messageInput = document.getElementById("messageInput");
-        
-        // Les destinataires sont maintenant gérés via le state React (recipients)
-        
         if (messageInput) {
             messageInput.addEventListener('input', updateButtonState);
             messageInput.addEventListener('change', updateButtonState);
         }
 
-        // Écouter les événements de sélection de fichier image
+        // Écouter les événements de sélection de fichier
         const handleImageFileSelected = () => {
-            // Mettre à jour immédiatement quand un fichier image est sélectionné
-            setTimeout(updateButtonState, 0);
+            setTimeout(updateButtonState, 50);
         };
+        const handlePdfFileSelected = () => {
+            setTimeout(updateButtonState, 50);
+        };
+        
         window.addEventListener('imageFileSelected', handleImageFileSelected);
+        window.addEventListener('pdfFileSelected', handlePdfFileSelected);
 
-        // Réexécuter périodiquement pour capturer les changements (intervalle réduit pour réactivité)
-        const interval = setInterval(updateButtonState, 100);
+        // Réexécuter périodiquement pour capturer les changements (intervalle augmenté pour éviter le clignotement)
+        const interval = setInterval(updateButtonState, 500);
 
         return () => {
-            // Les destinataires sont maintenant gérés via le state React
             if (messageInput) {
                 messageInput.removeEventListener('input', updateButtonState);
                 messageInput.removeEventListener('change', updateButtonState);
             }
             window.removeEventListener('imageFileSelected', handleImageFileSelected);
+            window.removeEventListener('pdfFileSelected', handlePdfFileSelected);
             clearInterval(interval);
         };
-    }, [isConnected, texteValue, mailMessage, pdfFile, imageFile, activeTab, IsString]); // eslint-disable-line react-hooks/exhaustive-deps
-
-    // Forcer la mise à jour du bouton sticky quand les conditions changent (sans dépendre de IsString)
-    useEffect(() => {
-        // Mettre à jour l'état React pour forcer le re-render du bouton sticky
-        // Le format (IsString) ne doit pas affecter l'activation du bouton
-        const updateButtonEnabledState = () => {
-            const enabled = isButtonEnabled();
-            setButtonEnabledState(enabled);
-        };
-        
-        // Mettre à jour immédiatement
-        updateButtonEnabledState();
-        
-        // Mettre à jour périodiquement pour capturer les changements
-        const interval = setInterval(updateButtonEnabledState, 200);
-        
-        return () => clearInterval(interval);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isConnected, texteValue, mailMessage, pdfFile, imageFile, activeTab, recipients]); // isButtonEnabled est une fonction, pas besoin de dépendance
+    }, [isConnected, texteValue, mailMessage, pdfFile, imageFile, activeTab, recipients, IsString]);
 
     return (
         <>
@@ -469,10 +424,11 @@ const GeneratePage = () => {
                                     <div className="modern-input-wrapper">
                                         <CustomTextInput
                                             id="messageInput"
-                                            rows="3"
+                                            rows="4"
                                             placeholder="Saisissez votre message..."
                                             value={texteValue}
                                             onChange={(e) => setTexteValue(e.target.value)}
+                                            showCharCount={true}
                                         />
                                     </div>
                                 </div>
@@ -550,11 +506,8 @@ const GeneratePage = () => {
                             {/* Bouton Sticky - Placé juste en dessous du FormatToggle, en dehors du conteneur */}
                             <StickyButton
                                 onClick={async () => {
-                                    // IMPORTANT: Le format (IsString) est OPTIONNEL - ne pas vérifier ici
-                                    // Vérifier que le bouton peut être activé (sans dépendre de IsString)
-                                    const buttonEnabled = isButtonEnabled();
-                                    
-                                    if (!buttonEnabled) {
+                                    // Utiliser l'état React au lieu d'appeler la fonction
+                                    if (!buttonEnabledState) {
                                         return;
                                     }
                                     
@@ -600,7 +553,7 @@ const GeneratePage = () => {
                     <button
                         id="signMessage"
                         className="button-3d gpu-accelerated interaction-debounce scroll-reveal transform-3d-hover micro-interaction"
-                        disabled={!isButtonEnabled()}
+                        disabled={!buttonEnabledState}
                         style={{ 
                             display: 'none', // Caché mais toujours dans le DOM pour script.js
                         }}
