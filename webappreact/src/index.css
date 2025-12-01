@@ -21,6 +21,8 @@ html, body, #root, .App {
     margin: 0;
     padding: 0;
     overflow-y: hidden;
+    width: 100%;
+    max-width: 100%;
 }
 
 code {
