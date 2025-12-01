@@ -349,9 +349,11 @@ async function signMessage() {
     console.log("→ expiration:", expiration);
     console.log("→ contractAddress:", contractAddress);
 
-    document.getElementById("status").innerHTML =
-        '<div class="loader"></div>⏳ Transaction en cours...';
-    document.getElementById("status").style.display = "flex";
+    // Ancienne interface supprimée - on utilise maintenant ResultModal
+    const statusEl = document.getElementById("status");
+    if (statusEl) {
+        statusEl.style.display = "none";
+    }
 
     requestAnimationFrame(async () => {
         try {
@@ -389,198 +391,25 @@ async function signMessage() {
                 signatureIdString += signatureId[i];
             }
 
-            // Nouveau container pro pour la signature et le bouton
+            // Ancienne interface supprimée - on utilise maintenant ResultModal
+            // La signature est gérée par React via l'événement signatureGenerated
             const status = document.getElementById("status");
-            status.innerHTML = "";
-            status.style.display = "flex";
-            status.style.position = "relative";
-
-            const container = document.createElement("div");
-            container.className = "signature-copy-container";
-
-            const sigSpan = document.createElement("span");
-            sigSpan.className = "signature-id";
-            sigSpan.innerText = signatureIdString;
-            sigSpan.title = signatureId;
-            container.appendChild(sigSpan);
-
-            // Crée un conteneur flex pour les boutons
-            const buttonContainer = document.createElement("div");
-            buttonContainer.style.display = "flex";
-            buttonContainer.style.gap = "8px";
-            buttonContainer.style.alignItems = "center";
-            buttonContainer.style.width = "100%";
-            container.appendChild(buttonContainer);
-
-            // Bouton de copie
-            const copyBtn = document.createElement("button");
-            copyBtn.className = "signature-copy-btn";
-            copyBtn.setAttribute("aria-label", "Copier la signature");
-            copyBtn.innerHTML = '<span class="icon"><i class="fas fa-copy"></i></span> Copier';
-            copyBtn.style.flex = "1";
-            buttonContainer.appendChild(copyBtn);
-
-            // Bouton de téléchargement
-            const downloadBtn = document.createElement("button");
-            downloadBtn.className = "signature-download-btn";
-            downloadBtn.setAttribute("aria-label", "Télécharger la signature");
-            downloadBtn.innerHTML = '<span class="icon"><i class="fas fa-download"></i></span>';
-            downloadBtn.style.flex = "0 0 25%";
-            downloadBtn.style.minWidth = "80px";
-            if (!isString) {
-                buttonContainer.appendChild(downloadBtn);
+            if (status) {
+                status.style.display = "none";
+                status.innerHTML = "";
             }
-            // Toast
-            const toast = document.createElement("div");
-            toast.className = "signature-toast";
-            toast.style.display = "none";
-            container.appendChild(toast);
-
-            // Handler bouton de téléchargement
-            downloadBtn.onclick = () => {
-                downloadBtn.classList.add("copied");
-                setTimeout(() => {
-                    downloadBtn.classList.remove("copied");
-                }, 1800);
-                toast.innerText = "✅ Signature téléchargée !";
-                toast.style.display = "block";
-                toast.classList.remove("hide");
-                setTimeout(() => {
-                    toast.classList.add("hide");
-                    setTimeout(() => {
-                        toast.style.display = "none";
-                        toast.classList.remove("hide");
-                    }, 400);
-                }, 1600);
-
-                const imageUrl =
-                    currentTab === 0 ? `${baseUrl}/EMAIL_SIGNATURE.png` :
-                        currentTab === 1 ? `${baseUrl}/TEXT_SIGNATURE.png` :
-                            currentTab === 2 ? `${baseUrl}/PDF_SIGNATURE.png` :
-                                `${baseUrl}/IMAGE_SIGNATURE.png`;
-
-                hideTextInImageReturnBlob(imageUrl, "[CERTIDOCS]" + signatureId)
-                    .then((blob) => {
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement("a");
-                        a.href = url;
-                        a.download = "signature.png";
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        URL.revokeObjectURL(url);
-                        console.log("📥 Signature téléchargée !");
-                    })
-                    .catch((error) => {
-                        toast.innerText = "❌ Erreur lors de la copie !";
-                        toast.style.background = "#ffeaea";
-                        toast.style.color = "#d32f2f";
-                        toast.style.display = "block";
-                        setTimeout(() => {
-                            toast.classList.add("hide");
-                            setTimeout(() => {
-                                toast.style.display = "none";
-                                toast.classList.remove("hide");
-                                toast.innerText = "✅ Signature téléchargée !";
-                                toast.style.background = "#fff";
-                                toast.style.color = "#7a67e4";
-                            }, 400);
-                        }, 2000);
-                    });
-            };
-
-            // Handler bouton de copie
-            copyBtn.onclick = () => {
-                copyBtn.classList.add("copied");
-                copyBtn.innerHTML = '<span class="icon"><i class="fas fa-check-circle"></i></span> Copié!';
-                setTimeout(() => {
-                    copyBtn.classList.remove("copied");
-                    copyBtn.innerHTML = '<span class="icon"><i class="fas fa-copy"></i></span> Copier';
-                }, 1800);
-
-                toast.innerText = "✅ Signature copiée !";
-                toast.style.display = "block";
-                toast.classList.remove("hide");
-                setTimeout(() => {
-                    toast.classList.add("hide");
-                    setTimeout(() => {
-                        toast.style.display = "none";
-                        toast.classList.remove("hide");
-                    }, 400);
-                }, 1600);
-
-                const imageUrl =
-                    currentTab === 0 ? `${baseUrl}/EMAIL_SIGNATURE.png` :
-                        currentTab === 1 ? `${baseUrl}/TEXT_SIGNATURE.png` :
-                            currentTab === 2 ? `${baseUrl}/PDF_SIGNATURE.png` :
-                                `${baseUrl}/IMAGE_SIGNATURE.png`;
-                if (isString) {
-                    // put [CERTIDOCS] + signatureId in the clipboard
-                    const item = new ClipboardItem({
-                        "text/plain": new Blob(["[CERTIDOCS]" + signatureId], { type: "text/plain" })
-                    });
-                    navigator.clipboard.write([item])
-                        .then(() => {
-                            console.log("📋 Signature copiée dans le presse-papiers !");
-                            toast.innerText = "✅ Signature copiée !";
-                            toast.style.background = "#fff";
-                            toast.style.color = "#7a67e4";
-                            toast.style.display = "block";
-                            setTimeout(() => {
-                                toast.classList.add("hide");
-                                setTimeout(() => {
-                                    toast.style.display = "none";
-                                    toast.classList.remove("hide");
-                                    toast.innerText = "✅ Signature copiée !";
-                                    toast.style.background = "#fff";
-                                    toast.style.color = "#7a67e4";
-                                }, 400);
-                            }
-                                , 2000);
-                        })
-                        .catch((error) => {
-                            console.error("❌ Erreur lors de la copie :", error);
-                            toast.innerText = "❌ Erreur lors de la copie !";
-                            toast.style.background = "#ffeaea";
-                            toast.style.color = "#d32f2f";
-                            toast.style.display = "block";
-                            setTimeout(() => {
-                                toast.classList.add("hide");
-                                setTimeout(() => {
-                                    toast.style.display = "none";
-                                    toast.classList.remove("hide");
-                                    toast.innerText = "✅ Signature copiée !";
-                                    toast.style.background = "#fff";
-                                    toast.style.color = "#7a67e4";
-                                }, 400);
-                            }, 2000);
-                        });
-                } else {
-                    hideTextInImage(imageUrl, "[CERTIDOCS]" + signatureId)
-                        .catch((error) => {
-                            toast.innerText = "❌ Erreur lors de la copie !";
-                            toast.style.background = "#ffeaea";
-                            toast.style.color = "#d32f2f";
-                            toast.style.display = "block";
-                            setTimeout(() => {
-                                toast.classList.add("hide");
-                                setTimeout(() => {
-                                    toast.style.display = "none";
-                                    toast.classList.remove("hide");
-                                    toast.innerText = "✅ Signature copiée !";
-                                    toast.style.background = "#fff";
-                                    toast.style.color = "#7a67e4";
-                                }, 400);
-                            }, 2000);
-                        });
-                }
-            };
-
-
-            status.appendChild(container);
+            
+            // Déclencher l'événement pour React (ResultModal)
+            window.dispatchEvent(new CustomEvent('signatureGenerated', {
+                detail: { signatureId, signatureIdString }
+            }));
         } catch (error) {
             console.error(error);
-            document.getElementById("status").innerText = "❌ Erreur lors du stockage.";
+            const statusEl = document.getElementById("status");
+            if (statusEl) {
+                statusEl.style.display = "none";
+            }
+            // L'erreur sera gérée par React si nécessaire
         }
     });
 }

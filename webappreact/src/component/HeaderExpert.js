@@ -7,18 +7,15 @@ import { useAppKitAccount, useDisconnect, modal } from '@reown/appkit/react';
 const HeaderExpert = ({ showProgress = false, currentStep = 0, steps = [] }) => {
   const { isConnected, address } = useAppKitAccount();
   const { disconnect } = useDisconnect();
-  const [showTooltip, setShowTooltip] = useState(false);
-  const [copyStatus, setCopyStatus] = useState('');
+  const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
     if (address) {
       navigator.clipboard.writeText(address);
-      setCopyStatus('copied');
-      setShowTooltip(true);
+      setCopied(true);
       setTimeout(() => {
-        setCopyStatus('');
-        setShowTooltip(false);
-      }, 1200);
+        setCopied(false);
+      }, 2000);
     }
   };
 
@@ -90,22 +87,37 @@ const HeaderExpert = ({ showProgress = false, currentStep = 0, steps = [] }) => 
       </div>
       <div className="header-actions">
         {isConnected && address ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div style={{ position: 'relative' }}>
-              <span className="wallet-badge-compact" style={{ marginBottom: 0 }}>
-                {address.slice(0, 4)}...{address.slice(-3)}
-                <button
-                  className="wallet-copy-btn-compact"
-                  onClick={handleCopy}
-                  title="Copier mon adresse"
-                  tabIndex={0}
-                >
-                  <FaRegCopy />
-                </button>
-              </span>
-              {showTooltip && (
-                <div className="wallet-tooltip-2025" style={{ top: '100%', marginTop: '4px' }}>
-                  {copyStatus === 'copied' ? 'Copié !' : address}
+              <button
+                className={`wallet-copy-btn-header ${copied ? 'copied' : ''}`}
+                onClick={handleCopy}
+                title="Copier mon adresse"
+                tabIndex={0}
+              >
+                <span className="wallet-address-text">
+                  {address.slice(0, 4)}...{address.slice(-3)}
+                </span>
+                <span className="wallet-copy-icon">
+                  {copied ? (
+                    <svg viewBox="0 0 24 24" className="check-icon">
+                      <path 
+                        d="M5 13l4 4L19 7" 
+                        stroke="currentColor" 
+                        strokeWidth="2.5" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        fill="none"
+                      />
+                    </svg>
+                  ) : (
+                    <FaRegCopy />
+                  )}
+                </span>
+              </button>
+              {copied && (
+                <div className="wallet-copy-feedback">
+                  ✓ Copié !
                 </div>
               )}
             </div>

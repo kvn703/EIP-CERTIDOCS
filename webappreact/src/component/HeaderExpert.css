@@ -4,22 +4,23 @@
   justify-content: space-between;
   gap: 12px;
   background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.95) 0%, 
-    rgba(255, 255, 255, 0.9) 100%);
-  backdrop-filter: blur(30px) saturate(180%);
-  -webkit-backdrop-filter: blur(30px) saturate(180%);
-  border-radius: 12px;
+    rgba(255, 255, 255, 0.98) 0%, 
+    rgba(255, 255, 255, 0.95) 100%);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border-radius: 16px;
   box-shadow: 
-    0 8px 24px rgba(149, 132, 255, 0.1),
-    0 4px 12px rgba(149, 132, 255, 0.08),
-    0 2px 6px rgba(149, 132, 255, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  padding: 6px 10px;
-  margin-bottom: 4px;
+    0 8px 32px rgba(149, 132, 255, 0.12),
+    0 4px 16px rgba(149, 132, 255, 0.1),
+    0 2px 8px rgba(149, 132, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(149, 132, 255, 0.1);
+  padding: 8px 14px;
+  margin-bottom: 6px;
   position: relative;
   overflow: hidden;
   animation: headerEntrance 1s cubic-bezier(0.34, 1.56, 0.64, 1);
-  border: 1.5px solid rgba(149, 132, 255, 0.2);
+  border: 2px solid rgba(149, 132, 255, 0.15);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -94,13 +95,16 @@
 
 .header-expert:hover {
   box-shadow: 
-    0 28px 80px rgba(149, 132, 255, 0.2),
-    0 12px 32px rgba(149, 132, 255, 0.15),
-    0 6px 16px rgba(149, 132, 255, 0.1),
+    0 12px 48px rgba(149, 132, 255, 0.25),
+    0 6px 24px rgba(149, 132, 255, 0.18),
+    0 3px 12px rgba(149, 132, 255, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 1),
-    inset 0 -1px 0 rgba(149, 132, 255, 0.15);
+    inset 0 -1px 0 rgba(149, 132, 255, 0.2);
   transform: translateY(-2px);
-  border-color: rgba(149, 132, 255, 0.3);
+  border-color: rgba(149, 132, 255, 0.35);
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 1) 0%, 
+    rgba(255, 255, 255, 0.98) 100%);
 }
 
 [data-theme="dark"] .header-expert:hover {
@@ -417,119 +421,295 @@
   }
 }
 
-/* Wallet Badge Compact */
-.wallet-badge-compact {
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.95) 0%, 
-    rgba(255, 255, 255, 0.85) 100%);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(149, 132, 255, 0.25);
-  border-radius: 10px;
-  padding: 4px 8px;
-  box-shadow: 
-    0 4px 12px rgba(149, 132, 255, 0.15),
-    0 2px 6px rgba(149, 132, 255, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  position: relative;
-  overflow: hidden;
-  font-weight: 600;
+/* Wallet Copy Button Header - Style moderne avec effet SignatureCard */
+.wallet-copy-btn-header {
+  background: linear-gradient(135deg, #9584ff 0%, #b8aaff 50%, #7fffa7 100%);
+  color: #fff;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
   font-size: 0.75rem;
-  letter-spacing: 0.02em;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--text-main, #2d2346);
-  font-family: 'Courier New', monospace;
-}
-
-.wallet-badge-compact:hover {
-  transform: translateY(-1px);
-  box-shadow: 
-    0 6px 16px rgba(149, 132, 255, 0.2),
-    0 3px 8px rgba(149, 132, 255, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
-  border-color: rgba(149, 132, 255, 0.4);
-}
-
-.wallet-copy-btn-compact {
-  background: linear-gradient(135deg, 
-    rgba(149, 132, 255, 0.12) 0%, 
-    rgba(184, 170, 255, 0.08) 100%);
-  border: 1px solid rgba(149, 132, 255, 0.2);
-  border-radius: 6px;
-  padding: 3px 5px;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  margin-left: 4px;
-  display: inline-flex;
+  padding: 6px 12px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.7rem;
-  color: var(--accent, #9584ff);
+  gap: 6px;
+  box-shadow: 
+    0 2px 8px rgba(149, 132, 255, 0.3),
+    0 4px 16px rgba(149, 132, 255, 0.2);
   cursor: pointer;
-  min-width: 20px;
-  min-height: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  outline: none;
+  font-family: 'Courier New', monospace;
+  overflow: hidden;
+  z-index: 1;
 }
 
-.wallet-copy-btn-compact:hover {
-  background: linear-gradient(135deg, 
-    rgba(149, 132, 255, 0.2) 0%, 
-    rgba(184, 170, 255, 0.15) 100%);
-  transform: scale(1.1);
-  box-shadow: 0 2px 8px rgba(149, 132, 255, 0.25);
+.wallet-copy-btn-header::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+  z-index: 0;
+}
+
+.wallet-copy-btn-header:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.wallet-copy-btn-header:hover {
+  background: linear-gradient(135deg, #b8aaff 0%, #9584ff 50%, #7fffa7 100%);
+  box-shadow: 
+    0 4px 16px rgba(149, 132, 255, 0.4),
+    0 8px 32px rgba(149, 132, 255, 0.3);
+  transform: translateY(-2px) scale(1.05);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.wallet-copy-btn-header:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.wallet-copy-btn-header.copied {
+  background: linear-gradient(135deg, #7fffa7 0%, #a8ffc4 50%, #c4ffd9 100%);
+  color: #2d2346;
+  animation: copySuccessHeader 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes copySuccessHeader {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1) rotate(5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.wallet-address-text {
+  position: relative;
+  z-index: 2;
+  color: inherit;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.wallet-copy-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  position: relative;
+  z-index: 2;
+  color: inherit;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.wallet-copy-btn-header:not(.copied):hover .wallet-copy-icon {
+  transform: rotate(-10deg) scale(1.1);
+}
+
+.wallet-copy-btn-header.copied .wallet-copy-icon {
+  animation: checkmarkDrawHeader 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes checkmarkDrawHeader {
+  0% {
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.3) rotate(10deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.check-icon {
+  width: 14px;
+  height: 14px;
+  display: block;
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: checkmarkPathHeader 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+@keyframes checkmarkPathHeader {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.wallet-copy-feedback {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #7fffa7 0%, #a8ffc4 100%);
+  color: #2d2346;
+  padding: 0.35em 0.7em;
+  border-radius: 8px;
+  font-size: 0.75em;
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 
+    0 4px 12px rgba(127, 255, 167, 0.4),
+    0 8px 24px rgba(127, 255, 167, 0.2);
+  z-index: 10001;
+  animation: copyFeedbackAppearHeader 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+@keyframes copyFeedbackAppearHeader {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px) scale(0.8);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-5px) scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+.wallet-copy-feedback::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #7fffa7;
 }
 
 .connect-btn-compact {
-  background: linear-gradient(135deg, #f0eaff 0%, #e0e7ff 100%);
-  color: #6f5cc3;
-  border: 1px solid rgba(149, 132, 255, 0.2);
-  border-radius: 8px;
-  padding: 4px 10px;
+  background: linear-gradient(135deg, #9584ff 0%, #b8aaff 50%, #7fffa7 100%);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 6px 14px;
   font-size: 0.75rem;
-  font-weight: 600;
-  box-shadow: 0 2px 6px rgba(149, 132, 255, 0.12);
+  font-weight: 700;
+  box-shadow: 
+    0 2px 8px rgba(149, 132, 255, 0.3),
+    0 4px 16px rgba(149, 132, 255, 0.2);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.connect-btn-compact::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+  z-index: 0;
+}
+
+.connect-btn-compact:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .connect-btn-compact:hover {
-  background: linear-gradient(135deg, #e0e7ff 0%, #d0d7ff 100%);
-  color: #9584ff;
-  box-shadow: 0 4px 12px rgba(149, 132, 255, 0.2);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #b8aaff 0%, #9584ff 50%, #7fffa7 100%);
+  box-shadow: 
+    0 4px 16px rgba(149, 132, 255, 0.4),
+    0 8px 32px rgba(149, 132, 255, 0.3);
+  transform: translateY(-2px) scale(1.05);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.connect-btn-compact > * {
+  position: relative;
+  z-index: 1;
 }
 
 .header-action-btn-compact {
   background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.9) 0%, 
-    rgba(255, 255, 255, 0.8) 100%);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(149, 132, 255, 0.2);
-  border-radius: 8px;
-  padding: 4px 8px;
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(255, 255, 255, 0.9) 100%);
+  backdrop-filter: blur(15px);
+  border: 1.5px solid rgba(149, 132, 255, 0.2);
+  border-radius: 12px;
+  padding: 6px 10px;
   color: var(--accent);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.8rem;
-  box-shadow: 0 2px 6px rgba(149, 132, 255, 0.1);
-  min-width: 28px;
-  min-height: 28px;
+  font-size: 0.85rem;
+  box-shadow: 
+    0 2px 8px rgba(149, 132, 255, 0.15),
+    0 1px 4px rgba(149, 132, 255, 0.1);
+  min-width: 32px;
+  min-height: 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+.header-action-btn-compact::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(149, 132, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.4s, height 0.4s;
+  z-index: 0;
+}
+
+.header-action-btn-compact:hover::before {
+  width: 200px;
+  height: 200px;
 }
 
 .header-action-btn-compact:hover {
   background: linear-gradient(135deg, 
-    rgba(149, 132, 255, 0.1) 0%, 
-    rgba(184, 170, 255, 0.08) 100%);
-  border-color: rgba(149, 132, 255, 0.3);
-  box-shadow: 0 4px 10px rgba(149, 132, 255, 0.2);
-  transform: translateY(-1px) scale(1.05);
+    rgba(149, 132, 255, 0.15) 0%, 
+    rgba(184, 170, 255, 0.12) 100%);
+  border-color: rgba(149, 132, 255, 0.4);
+  box-shadow: 
+    0 4px 16px rgba(149, 132, 255, 0.25),
+    0 2px 8px rgba(149, 132, 255, 0.15);
+  transform: translateY(-2px) scale(1.08);
+}
+
+.header-action-btn-compact > * {
+  position: relative;
+  z-index: 1;
 }
 
 .header-action-btn-compact.header-action-btn-danger {
@@ -546,20 +726,24 @@
   color: #ff5252;
 }
 
-[data-theme="dark"] .wallet-badge-compact {
-  background: linear-gradient(135deg, 
-    rgba(45, 37, 64, 0.95) 0%, 
-    rgba(37, 32, 48, 0.85) 100%);
-  border-color: rgba(149, 132, 255, 0.3);
-  color: var(--text-main, #e0d9ff);
+[data-theme="dark"] .wallet-copy-btn-header {
+  box-shadow: 
+    0 2px 8px rgba(149, 132, 255, 0.4),
+    0 4px 16px rgba(149, 132, 255, 0.3),
+    0 0 0 1px rgba(149, 132, 255, 0.2);
 }
 
-[data-theme="dark"] .wallet-copy-btn-compact {
-  background: linear-gradient(135deg, 
-    rgba(149, 132, 255, 0.15) 0%, 
-    rgba(184, 170, 255, 0.1) 100%);
-  border-color: rgba(149, 132, 255, 0.3);
-  color: var(--accent-light, #b8aaff);
+[data-theme="dark"] .wallet-copy-btn-header:hover {
+  box-shadow: 
+    0 4px 16px rgba(149, 132, 255, 0.5),
+    0 8px 32px rgba(149, 132, 255, 0.4),
+    0 0 0 1px rgba(149, 132, 255, 0.3);
+}
+
+[data-theme="dark"] .wallet-copy-btn-header.copied {
+  box-shadow: 
+    0 4px 16px rgba(127, 255, 167, 0.4),
+    0 8px 32px rgba(127, 255, 167, 0.3);
 }
 
 [data-theme="dark"] .connect-btn-compact {
@@ -577,18 +761,22 @@
 
 [data-theme="dark"] .header-action-btn-compact {
   background: linear-gradient(135deg, 
-    rgba(45, 37, 64, 0.85) 0%, 
-    rgba(37, 32, 48, 0.75) 100%);
-  border: 1px solid rgba(149, 132, 255, 0.3);
-  box-shadow: 0 2px 6px rgba(149, 132, 255, 0.15);
+    rgba(45, 37, 64, 0.9) 0%, 
+    rgba(37, 32, 48, 0.8) 100%);
+  border: 1.5px solid rgba(149, 132, 255, 0.3);
+  box-shadow: 
+    0 2px 8px rgba(149, 132, 255, 0.2),
+    0 1px 4px rgba(149, 132, 255, 0.15);
 }
 
 [data-theme="dark"] .header-action-btn-compact:hover {
   background: linear-gradient(135deg, 
-    rgba(149, 132, 255, 0.15) 0%, 
-    rgba(184, 170, 255, 0.12) 100%);
-  border-color: rgba(149, 132, 255, 0.4);
-  box-shadow: 0 4px 10px rgba(149, 132, 255, 0.25);
+    rgba(149, 132, 255, 0.2) 0%, 
+    rgba(184, 170, 255, 0.15) 100%);
+  border-color: rgba(149, 132, 255, 0.5);
+  box-shadow: 
+    0 4px 16px rgba(149, 132, 255, 0.3),
+    0 2px 8px rgba(149, 132, 255, 0.2);
 }
 
 @keyframes fadeInDown {

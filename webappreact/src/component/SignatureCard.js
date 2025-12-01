@@ -7,6 +7,7 @@ export default function SignatureCard({ signature, onCopy, isString, activeTab }
   const [showFull, setShowFull] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [isReducing, setIsReducing] = useState(false);
 
   const handleCopy = () => {
     if (!signature) return;
@@ -57,8 +58,12 @@ export default function SignatureCard({ signature, onCopy, isString, activeTab }
 
   const displaySignature = showFull ? signature : (signature ? `${signature.slice(0,8)}...${signature.slice(-4)}` : '');
   
-  // Classe conditionnelle pour l'affichage complet
-  const valueClassName = showFull ? `${styles.value} ${styles.valueFull}` : styles.value;
+  // Classe conditionnelle pour l'affichage complet ou la réduction
+  const valueClassName = isReducing
+    ? `${styles.value} ${styles.valueReducing}`
+    : showFull 
+      ? `${styles.value} ${styles.valueFull}` 
+      : styles.value;
 
   return (
     <section className={styles.card} aria-label="Empreinte générée">
@@ -96,7 +101,15 @@ export default function SignatureCard({ signature, onCopy, isString, activeTab }
           {showFull && (
             <button
               className={styles.viewFullBtn}
-              onClick={() => setShowFull(false)}
+              onClick={() => {
+                setIsReducing(true);
+                // Attendre que l'animation se joue avant de changer showFull
+                setTimeout(() => {
+                  setShowFull(false);
+                  // Nettoyer l'état après l'animation
+                  setTimeout(() => setIsReducing(false), 1100);
+                }, 50);
+              }}
               aria-label="Réduire l'empreinte"
               type="button"
             >
