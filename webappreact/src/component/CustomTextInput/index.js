@@ -24,16 +24,16 @@ const CustomTextInput = ({
 
     return (
         <div className="custom-text-input-wrapper">
-            <textarea
-                id={id}
-                placeholder={placeholder}
+        <textarea
+            id={id}
+            placeholder={placeholder}
                 value={value}
                 onChange={onChange}
                 maxLength={maxLength}
-                {...(rows && { rows })}
-                {...(cols && { cols })}
+            {...(rows && { rows })}
+            {...(cols && { cols })}
                 {...props}
-            ></textarea>
+        ></textarea>
             {showCharCount && (
                 <div className="char-count">
                     <span className={charCount > 0 ? 'char-count-active' : ''}>

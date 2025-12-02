@@ -118,15 +118,15 @@ export default function SignatureCard({ signature, onCopy, isString, activeTab }
           )}
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center', justifyContent: 'center', width: '100%', marginTop: '8px' }}>
             <div style={{ position: 'relative' }}>
-              <button
-                className={`${styles.copyBtn} ${copied ? styles.copied : ''}`}
-                onClick={handleCopy}
+          <button
+            className={`${styles.copyBtn} ${copied ? styles.copied : ''}`}
+            onClick={handleCopy}
                 aria-label={copied ? 'Empreinte copiée !' : "Copier l'empreinte"}
-                type="button"
-                tabIndex={0}
-              >
+            type="button"
+            tabIndex={0}
+          >
                 <span className={styles.btnIcon} aria-hidden="true" style={{ zIndex: 1000, position: 'relative', color: 'inherit' }}>
-                  {copied ? (
+              {copied ? (
                     <svg viewBox="0 0 24 24" className={styles.checkSvg} style={{ color: 'inherit', fill: 'currentColor' }}>
                       <path 
                         d="M5 13l4 4L19 7" 
@@ -137,13 +137,13 @@ export default function SignatureCard({ signature, onCopy, isString, activeTab }
                         fill="none"
                       />
                     </svg>
-                  ) : (
+              ) : (
                     <svg viewBox="0 0 24 24" className={styles.clipboardSvg} style={{ color: 'inherit', fill: 'currentColor' }}>
                       <rect x="7" y="4" width="10" height="16" rx="3" fill="currentColor" opacity="0.2"/>
                       <rect x="9" y="2" width="6" height="4" rx="2" fill="currentColor" opacity="0.4"/>
                       <rect x="9" y="8" width="6" height="2" rx="1" fill="currentColor" opacity="0.6"/>
                     </svg>
-                  )}
+              )}
                 </span>
               </button>
               {copied && (
@@ -179,7 +179,7 @@ export default function SignatureCard({ signature, onCopy, isString, activeTab }
           {isString === true && (
             <span className={styles.helpText} style={{ textAlign: 'center', display: 'block', width: '100%', marginTop: '8px' }}>
               Veuillez copier et coller l'empreinte dans votre mail
-            </span>
+          </span>
           )}
         </div>
       </div>

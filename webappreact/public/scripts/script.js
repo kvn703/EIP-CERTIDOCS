@@ -372,7 +372,7 @@ async function signMessage() {
             const status = document.getElementById("status");
             if (status) {
                 status.style.display = "none";
-                status.innerHTML = "";
+            status.innerHTML = "";
             }
             
             // Déclencher l'événement pour React (ResultModal)

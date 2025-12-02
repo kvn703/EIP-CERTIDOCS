@@ -36,27 +36,27 @@ const HeaderExpert = ({ showProgress = false, currentStep = 0, steps = [] }) => 
   };
 
   return (
-    <header className="header-expert">
+  <header className="header-expert">
       <div className="header-left">
         <div className="logo-modern">
-          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
               <linearGradient id="shieldGradientModern" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor="#9584ff" />
                 <stop offset="100%" stopColor="#7fffa7" />
               </linearGradient>
-            </defs>
+        </defs>
             <path d="M24 8L40 14V24C40 34 24 40 24 40C24 40 8 34 8 24V14L24 8Z" 
                   fill="url(#shieldGradientModern)" 
                   stroke="rgba(255, 255, 255, 0.2)" 
                   strokeWidth="1.5" />
-          </svg>
-        </div>
+      </svg>
+    </div>
         <div className="header-title-modern">
           <h1 className="title-modern">CERTIDOCS</h1>
         </div>
-      </div>
-      <div className="header-actions">
+    </div>
+    <div className="header-actions">
         {isConnected && address ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div style={{ position: 'relative' }}>
@@ -139,10 +139,10 @@ const HeaderExpert = ({ showProgress = false, currentStep = 0, steps = [] }) => 
               <div className="progress-step-label-2025">{step}</div>
             </div>
           ))}
-        </div>
+    </div>
       )}
-    </header>
-  );
+  </header>
+);
 };
 
 export default HeaderExpert; 

@@ -1,7 +1,8 @@
 .format-toggle-container {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0px; /* Supprimé pour rapprocher du bouton */
+  margin-bottom: 0px; /* Supprimé */
 }
 
 .format-toggle-label {
@@ -21,7 +22,7 @@
   color: var(--text-muted, #8d8ba7);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 6px;
+  margin-bottom: 0px; /* Supprimé pour rapprocher au maximum du bouton */
 }
 
 .format-toggle-optional-hint {
@@ -39,7 +40,7 @@
     rgba(149, 132, 255, 0.08) 0%, 
     rgba(184, 170, 255, 0.04) 100%);
   border-radius: 10px;
-  padding: 3px;
+  padding: 1px; /* Réduit au minimum */
   border: 1px solid rgba(149, 132, 255, 0.15);
   backdrop-filter: blur(8px);
 }
@@ -50,7 +51,7 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 8px 12px;
+  padding: 6px 10px; /* Réduit pour rapprocher du bouton */
   border: none;
   border-radius: 8px;
   background: transparent;

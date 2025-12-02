@@ -2,12 +2,13 @@ import React from 'react';
 import { FaCheckCircle, FaCircle, FaSpinner } from 'react-icons/fa';
 import './Timeline.css';
 
-const Timeline = ({ currentStep = 1 }) => {
-  const steps = [
+const Timeline = ({ currentStep = 1, steps: customSteps }) => {
+  const defaultSteps = [
     { id: 1, label: 'Génération', icon: FaCircle },
     { id: 2, label: 'Contenu', icon: FaCircle },
     { id: 3, label: 'Empreinte', icon: FaCircle },
   ];
+  const steps = customSteps || defaultSteps;
 
   return (
     <div className="timeline-container">

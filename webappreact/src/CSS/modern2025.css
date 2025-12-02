@@ -953,7 +953,7 @@ input, textarea, select, button {
     font-size: var(--font-size-2xl);
     margin-bottom: var(--margin-sm);
   }
-  h2, .custom-text { 
+  h2, .custom-text {
     font-size: var(--font-size-xl);
     margin-bottom: var(--margin-sm);
   }
@@ -966,7 +966,7 @@ input, textarea, select, button {
   }
   
   /* Optimisation des espacements pour petits écrans */
-  .card-3d {
+.card-3d {
     padding: var(--padding-md) var(--padding-sm);
     margin-bottom: var(--margin-sm);
     border-radius: var(--radius);
@@ -1577,7 +1577,7 @@ small,
       0 4px 12px rgba(127, 255, 167, 0.3),
       0 0 0 1px rgba(255, 255, 255, 0.1),
       inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  }
+}
   50% {
     box-shadow: 
       0 12px 32px rgba(149, 132, 255, 0.5),
@@ -1877,7 +1877,7 @@ small,
   100% { 
     transform: perspective(1000px) rotateY(360deg) rotateX(0deg) scale(1);
     filter: drop-shadow(0 2px 8px rgba(149, 132, 255, 0.3));
-  }
+}
 }
 
 .wallet-icon-2025:hover { 

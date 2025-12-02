@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaSpinner, FaCheckCircle, FaFingerprint } from 'react-icons/fa';
+import { FaSpinner, FaCheckCircle, FaFingerprint, FaTimesCircle } from 'react-icons/fa';
 import './StickyButton.css';
 
 const StickyButton = ({ 
@@ -7,26 +7,35 @@ const StickyButton = ({
   disabled, 
   isLoading = false, 
   isSuccess = false,
+  isError = false,
+  loadingText = "Génération en cours...",
+  successText = "Empreinte générée !",
+  errorText = "Erreur",
   children = "GÉNÉRER EMPREINTE"
 }) => {
   return (
     <div className="sticky-button-container">
       <button
-        className={`sticky-button ${isLoading ? 'loading' : ''} ${isSuccess ? 'success' : ''} ${disabled ? 'disabled' : ''}`}
+        className={`sticky-button ${isLoading ? 'loading' : ''} ${isSuccess ? 'success' : ''} ${isError ? 'error' : ''} ${disabled ? 'disabled' : ''}`}
         onClick={onClick}
         disabled={disabled || isLoading}
-        aria-label={isLoading ? 'Génération en cours...' : children}
+        aria-label={isLoading ? loadingText : isError ? errorText : children}
       >
         <div className="sticky-button-content">
           {isLoading ? (
             <>
               <FaSpinner className="sticky-button-icon spinning" />
-              <span>Génération en cours...</span>
+              <span>{loadingText}</span>
             </>
           ) : isSuccess ? (
             <>
               <FaCheckCircle className="sticky-button-icon" />
-              <span>Empreinte générée !</span>
+              <span>{successText}</span>
+            </>
+          ) : isError ? (
+            <>
+              <FaTimesCircle className="sticky-button-icon" />
+              <span>{errorText}</span>
             </>
           ) : (
             <>
