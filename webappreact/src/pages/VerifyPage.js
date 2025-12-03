@@ -216,21 +216,6 @@ function VerifyPage() {
         }
     }, [texte1, IsString, activeTab]);
 
-    useEffect(() => {
-        if (activeTab === 1 && texte2) {
-            // Debounce de 300ms
-            const timeoutId = setTimeout(() => {
-                const isValid = texte2.trim().length > 0;
-                setMessageValidation({
-                    isValid,
-                    message: isValid ? '' : 'Le message ne peut pas être vide.'
-                });
-            }, 300);
-            return () => clearTimeout(timeoutId);
-        } else {
-            setMessageValidation({ isValid: null, message: '' });
-        }
-    }, [texte2, activeTab]);
 
     // PHASE 3.2 : Logique d'activation du bouton
     const isButtonEnabled = () => {
