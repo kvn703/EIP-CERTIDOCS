@@ -17,9 +17,21 @@ const ThemeToggle = () => {
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
+    
+    // Ajouter une classe pour la transition
+    document.documentElement.classList.add('theme-transitioning');
+    
+    // Petit délai pour permettre à la transition de commencer
+    setTimeout(() => {
+      setTheme(newTheme);
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      
+      // Retirer la classe après la transition
+      setTimeout(() => {
+        document.documentElement.classList.remove('theme-transitioning');
+      }, 800);
+    }, 50);
   };
 
   return (

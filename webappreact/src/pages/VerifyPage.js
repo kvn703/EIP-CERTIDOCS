@@ -197,7 +197,6 @@ function VerifyPage() {
 
     // État de validation pour chaque champ
     const [signatureValidation, setSignatureValidation] = useState({ isValid: null, message: '' });
-    const [messageValidation, setMessageValidation] = useState({ isValid: null, message: '' });
 
     // PHASE 9.1 : Validation en temps réel avec debounce
     useEffect(() => {
@@ -260,12 +259,12 @@ function VerifyPage() {
     const handleVerifyClick = () => {
         // Validation selon l'onglet actif
         if (activeTab === 0) {
-            if (!signatureId || !message) {
-                setIsVerifying(false);
-                setVerificationResult(null);
-                setShowContentRecovered(false);
-                return;
-            }
+        if (!signatureId || !message) {
+            setIsVerifying(false);
+            setVerificationResult(null);
+            setShowContentRecovered(false);
+            return;
+        }
         } else if (activeTab === 1) {
             if (!texte2 || (!signatureFile && !texte1)) {
                 setIsVerifying(false);
@@ -361,11 +360,11 @@ function VerifyPage() {
                         Récupération du contenu mail
                     </div>
                     <style>{`
-                        @keyframes spin {
-                            0% { transform: rotate(0deg); }
-                            100% { transform: rotate(360deg); }
-                        }
-                    `}</style>
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}</style>
                 </div>
             </div>
         );
@@ -412,8 +411,8 @@ function VerifyPage() {
                                             </p>
                                         </div>
                                     </div>
-                                </div>
-                            )}
+                            </div>
+                        )}
 
                             {/* PHASE 7.1 : Message si contenu perdu */}
                             {mailContentLost && (
@@ -423,12 +422,12 @@ function VerifyPage() {
                                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '28px', height: '28px' }}>
                                                 <path d="M12 9V13M12 17H12.01M5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5H5C3.89543 5 3 5.89543 3 7V17C3 18.1046 3.89543 19 5 19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                                             </svg>
-                                        </div>
+                    </div>
                                         <div className="modern-input-content">
                                             <label className="modern-input-label">
                                                 Contenu du mail perdu ou introuvable
                                             </label>
-                                            <button
+                            <button
                                                 onClick={handleReloadMailContent}
                                                 style={{
                                                     backgroundColor: '#9584ff',
@@ -444,9 +443,9 @@ function VerifyPage() {
                                                 }}
                                                 onMouseEnter={(e) => e.target.style.transform = 'translateY(-2px)'}
                                                 onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
-                                            >
+                            >
                                                 RECHARGER LE CONTENU DU MAIL
-                                            </button>
+                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -787,8 +786,8 @@ function VerifyPage() {
                                                             {signatureValidation.message}
                                                         </div>
                                                     )}
-                                                </>
-                                            ) : (
+                        </>
+                    ) : (
                                                 <ImageSection value={signatureFile} onChange={setSignatureFile} />
                                             )}
                                         </div>
@@ -974,16 +973,16 @@ function VerifyPage() {
                                 { id: 3, label: 'Résultat', icon: FaCircle },
                             ]}
                         />
-                    </div>
+            </div>
 
                     {/* PHASE 5.1 : Sélection du type de contenu */}
                     <div className="verify-tabs-section">
-                        <Tabs activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
+            <Tabs activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
                     </div>
 
                     {/* PHASE 3.1 : Bouton de vérification sticky */}
                     <StickyButton
-                        onClick={handleVerifyClick}
+                    onClick={handleVerifyClick}
                         disabled={!isButtonEnabled()}
                         isLoading={isVerifying}
                         isSuccess={verificationResult === 'success'}

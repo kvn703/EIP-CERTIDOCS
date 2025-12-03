@@ -292,7 +292,7 @@ const GeneratePage = () => {
         const interval = setInterval(calculateStep, 300);
         
         return () => clearInterval(interval);
-    }, [signed, signature, texteValue, mailMessage, pdfFile, imageFile, activeTab]);
+    }, [signed, signature, texteValue, mailMessage, pdfFile, imageFile, activeTab, recipients]);
 
     // Fonction pour déterminer si le bouton peut être activé
     // IMPORTANT: Cette fonction ne dépend PAS de IsString (format choisi)
@@ -471,9 +471,8 @@ const GeneratePage = () => {
                                         value={recipients.join(', ')}
                                     />
                                 </div>
-                                <p className="modern-input-hint info-tooltip">
-                                    <span>Séparées par des virgules</span>
-                                    <span className="info-tooltip-content">Format attendu : 0x1234..., 0x5678..., etc.</span>
+                                <p className="modern-input-hint">
+                                    <span>Appuyez sur Entrée pour valider un destinataire</span>
                                 </p>
                             </div>
                         </div>
@@ -485,7 +484,6 @@ const GeneratePage = () => {
                             <div className="generate-options-card">
                                 <div className="format-toggle-optional-label">
                                     <span>Format d'empreinte</span>
-                                    <span className="format-toggle-optional-hint">(optionnel)</span>
                                 </div>
                                 <FormatToggle 
                                     value={IsString === null ? false : IsString} 

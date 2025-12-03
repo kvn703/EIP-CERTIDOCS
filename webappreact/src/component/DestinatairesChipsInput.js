@@ -1,21 +1,57 @@
 import React, { useState, useRef } from 'react';
-import { FaUser, FaTimes } from 'react-icons/fa';
+import { FaWallet, FaTimes } from 'react-icons/fa';
 import './DestinatairesChipsInput.css';
 
 export default function DestinatairesChipsInput({ value = [], onChange, placeholder = 'Adresse1, Adresse2...' }) {
   const [input, setInput] = useState('');
+  const [error, setError] = useState('');
   const inputRef = useRef();
 
+  // Validation d'adresse wallet Ethereum
+  const isValidWalletAddress = (address) => {
+    const trimmed = address.trim();
+    // Format: 0x suivi de 40 caractères hexadécimaux (42 caractères au total)
+    return /^0x[a-fA-F0-9]{40}$/.test(trimmed);
+  };
+
   const handleInput = (e) => {
-    setInput(e.target.value);
+    const newValue = e.target.value;
+    setInput(newValue);
+    
+    // Validation en temps réel (seulement si l'utilisateur a commencé à taper)
+    if (newValue.trim().length > 0) {
+      if (newValue.trim().length >= 2 && !newValue.trim().startsWith('0x')) {
+        setError('L\'adresse doit commencer par 0x');
+      } else if (newValue.trim().length > 2 && !isValidWalletAddress(newValue.trim()) && newValue.trim().length >= 42) {
+        setError('Adresse invalide. Format attendu: 0x suivi de 40 caractères hexadécimaux');
+      } else {
+        setError('');
+      }
+    } else {
+      setError('');
+    }
   };
 
   const addChip = (chip) => {
-    const trimmed = chip.trim();
-    if (trimmed && !value.includes(trimmed)) {
-      onChange([...value, trimmed]);
+    const trimmed = chip.trim().toLowerCase(); // Normaliser en minuscules
+    
+    // Vérifier que l'adresse est valide
+    if (!isValidWalletAddress(trimmed)) {
+      setError('Adresse invalide. Format attendu: 0x suivi de 40 caractères hexadécimaux');
+      return;
     }
+    
+    // Vérifier que l'adresse n'est pas déjà dans la liste (comparaison en minuscules)
+    const normalizedValues = value.map(v => v.toLowerCase());
+    if (normalizedValues.includes(trimmed)) {
+      setError('Cette adresse est déjà ajoutée');
+      return;
+    }
+    
+    // Ajouter l'adresse
+    onChange([...value, trimmed]);
     setInput('');
+    setError('');
   };
 
   const handleKeyDown = (e) => {
@@ -32,7 +68,16 @@ export default function DestinatairesChipsInput({ value = [], onChange, placehol
     const pasted = e.clipboardData.getData('text');
     if (pasted.includes(',')) {
       e.preventDefault();
-      pasted.split(',').forEach(addr => addChip(addr));
+      const addresses = pasted.split(',').map(addr => addr.trim().toLowerCase()).filter(addr => addr.length > 0);
+      const normalizedValues = value.map(v => v.toLowerCase());
+      const validAddresses = addresses.filter(addr => 
+        isValidWalletAddress(addr) && !normalizedValues.includes(addr)
+      );
+      if (validAddresses.length > 0) {
+        onChange([...value, ...validAddresses]);
+      } else if (addresses.length > 0) {
+        setError('Aucune adresse valide trouvée dans le collage');
+      }
     }
   };
 
@@ -42,7 +87,7 @@ export default function DestinatairesChipsInput({ value = [], onChange, placehol
 
   return (
     <div className="chips-input-root">
-      <FaUser className="chips-input-icon" />
+      <FaWallet className="chips-input-icon" />
       <div className="chips-list">
         {value.map((chip, idx) => (
           <span className="chip" key={chip+idx} title={chip}>
@@ -54,15 +99,21 @@ export default function DestinatairesChipsInput({ value = [], onChange, placehol
         ))}
         <input
           ref={inputRef}
-          className="chips-input"
+          className={`chips-input ${error ? 'chips-input-error' : ''}`}
           value={input}
           onChange={handleInput}
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
           placeholder={value.length === 0 ? placeholder : ''}
           aria-label="Ajouter un destinataire"
+          aria-invalid={error ? 'true' : 'false'}
         />
       </div>
+      {error && (
+        <div className="chips-input-error-message" role="alert">
+          {error}
+        </div>
+      )}
     </div>
   );
 } 

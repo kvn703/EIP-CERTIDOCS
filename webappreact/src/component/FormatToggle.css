@@ -55,47 +55,108 @@
   border: none;
   border-radius: 8px;
   background: transparent;
-  color: var(--text-muted, #8d8ba7);
+  color: #6b7280;
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
   overflow: hidden;
+  z-index: 1;
 }
 
 .format-toggle-option::before {
   content: '';
   position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, 
-    rgba(149, 132, 255, 0.15) 0%, 
-    rgba(184, 170, 255, 0.1) 100%);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #9584ff 0%, #b8aaff 50%, #7fffa7 100%);
+  background-size: 200% 200%;
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border-radius: 8px;
+  z-index: -1;
+  animation: gradientShift 3s ease infinite;
+}
+
+.format-toggle-option::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.6) 0%, 
+    rgba(184, 170, 255, 0.4) 50%, 
+    rgba(127, 255, 167, 0.6) 100%);
+  border-radius: 10px;
+  opacity: 0;
+  filter: blur(8px);
+  z-index: -2;
+  transition: opacity 0.4s ease;
+}
+
+.format-toggle-option:hover {
+  color: white;
+  transform: translateY(-2px);
 }
 
 .format-toggle-option:hover::before {
-  opacity: 1;
+  opacity: 0.8;
+}
+
+.format-toggle-option:hover::after {
+  opacity: 0.6;
 }
 
 .format-toggle-option.active {
-  background: linear-gradient(135deg, 
-    #9584ff 0%, 
-    #b8aaff 100%);
+  background: linear-gradient(135deg, #9584ff 0%, #b8aaff 50%, #7fffa7 100%);
+  background-size: 200% 200%;
   color: white;
   box-shadow: 
-    0 4px 12px rgba(149, 132, 255, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  transform: translateY(-1px);
+    0 8px 24px rgba(149, 132, 255, 0.4),
+    0 4px 12px rgba(127, 255, 167, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px) scale(1.02);
+  animation: gradientShift 3s ease infinite, formatToggleGlow 2s ease-in-out infinite;
 }
 
 .format-toggle-option.active::before {
-  opacity: 0;
+  opacity: 1;
+}
+
+.format-toggle-option.active::after {
+  opacity: 0.8;
+  filter: blur(12px);
 }
 
 .format-toggle-option:active {
   transform: translateY(0);
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes formatToggleGlow {
+  0%, 100% {
+    box-shadow: 
+      0 8px 24px rgba(149, 132, 255, 0.4),
+      0 4px 12px rgba(127, 255, 167, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    box-shadow: 
+      0 12px 32px rgba(149, 132, 255, 0.6),
+      0 6px 16px rgba(127, 255, 167, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
 }
 
 .format-toggle-icon {
@@ -115,13 +176,19 @@
   color: var(--text-muted, #a8a0c7);
 }
 
+[data-theme="dark"] .format-toggle-option:hover {
+  color: white;
+}
+
 [data-theme="dark"] .format-toggle-option.active {
-  background: linear-gradient(135deg, 
-    #9584ff 0%, 
-    #b8aaff 100%);
+  background: linear-gradient(135deg, #9584ff 0%, #b8aaff 50%, #7fffa7 100%);
+  background-size: 200% 200%;
+  color: white;
   box-shadow: 
-    0 4px 12px rgba(149, 132, 255, 0.4),
-    inset 0 1px 0 rgba(149, 132, 255, 0.2);
+    0 8px 24px rgba(149, 132, 255, 0.5),
+    0 4px 12px rgba(127, 255, 167, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
 }
 
 /* Responsive */

@@ -4481,20 +4481,32 @@ textarea,
    PHASE 8 : FEATURES MODERNES 2025
    ============================================ */
 
-/* 8.1 Dark Mode - Système de thème */
+/* 8.1 Dark Mode - Système de thème avec transitions fluides */
+* {
+  transition: background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html, body {
+  transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 [data-theme="dark"] {
-  /* Couleurs de base - Dark Mode */
-  --primary-bg: #1a1625;
-  --secondary-bg: #252030;
+  /* Couleurs de base - Dark Mode améliorées */
+  --primary-bg: #0f0b1a;
+  --secondary-bg: #1a1525;
   --accent: #9584ff;
   --accent-light: #b8aaff;
   --accent-dark: #7e6ef2;
-  --text-main: #f0eaff;
-  --text-muted: #a8a0c7;
-  --text-light: #7a6fa0;
+  --text-main: #f5f0ff;
+  --text-muted: #b8aaff;
+  --text-light: #8d7fc7;
   
-  /* Gradients Dark Mode */
-  --accent-gradient: linear-gradient(135deg, #9584ff 0%, #b8aaff 50%, #c9bfff 100%);
+  /* Gradients Dark Mode améliorés */
+  --accent-gradient: linear-gradient(135deg, #9584ff 0%, #b8aaff 50%, #7fffa7 100%);
   --accent-gradient-hover: linear-gradient(135deg, #b8aaff 0%, #9584ff 50%, #7e6ef2 100%);
   --accent-gradient-active: linear-gradient(135deg, #7e6ef2 0%, #9584ff 50%, #b8aaff 100%);
   
@@ -4512,47 +4524,63 @@ textarea,
   --color-info-light: #74c0fc;
   --color-info-dark: #339af0;
   
-  /* Overlays Dark Mode */
-  --overlay-bg: rgba(149, 132, 255, 0.12);
-  --overlay-bg-hover: rgba(149, 132, 255, 0.18);
-  --overlay-bg-active: rgba(149, 132, 255, 0.24);
-  --overlay-success: rgba(127, 255, 167, 0.2);
-  --overlay-warning: rgba(255, 217, 61, 0.2);
-  --overlay-error: rgba(255, 107, 107, 0.2);
-  --overlay-info: rgba(77, 171, 247, 0.2);
+  /* Overlays Dark Mode améliorés */
+  --overlay-bg: rgba(149, 132, 255, 0.15);
+  --overlay-bg-hover: rgba(149, 132, 255, 0.25);
+  --overlay-bg-active: rgba(149, 132, 255, 0.35);
+  --overlay-success: rgba(127, 255, 167, 0.25);
+  --overlay-warning: rgba(255, 217, 61, 0.25);
+  --overlay-error: rgba(255, 107, 107, 0.25);
+  --overlay-info: rgba(77, 171, 247, 0.25);
   
-  /* Inputs Dark Mode */
-  --input-bg: #2d2540;
-  --input-border: rgba(149, 132, 255, 0.3);
-  --input-border-hover: rgba(184, 170, 255, 0.4);
-  --input-border-focus: rgba(201, 191, 255, 0.5);
+  /* Inputs Dark Mode améliorés */
+  --input-bg: rgba(26, 21, 37, 0.8);
+  --input-border: rgba(149, 132, 255, 0.35);
+  --input-border-hover: rgba(184, 170, 255, 0.5);
+  --input-border-focus: rgba(201, 191, 255, 0.6);
   
-  /* Ombres Dark Mode */
-  --card-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.4);
-  --card-shadow-hover: 0 8px 24px 0 rgba(149, 132, 255, 0.2);
-  --card-shadow-active: 0 2px 8px 0 rgba(149, 132, 255, 0.3);
+  /* Ombres Dark Mode améliorées avec plus de profondeur */
+  --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.6),
+                 0 4px 16px rgba(149, 132, 255, 0.15),
+                 inset 0 1px 0 rgba(149, 132, 255, 0.1);
+  --card-shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.7),
+                       0 6px 24px rgba(149, 132, 255, 0.25),
+                       inset 0 1px 0 rgba(149, 132, 255, 0.15);
+  --card-shadow-active: 0 4px 16px rgba(0, 0, 0, 0.5),
+                        0 2px 8px rgba(149, 132, 255, 0.2);
   
-  /* Background global */
-  background: var(--primary-bg);
+  /* Background global avec gradient subtil */
+  background: linear-gradient(135deg, 
+    #0f0b1a 0%, 
+    #1a1525 50%, 
+    #0f0b1a 100%);
+  background-attachment: fixed;
   color: var(--text-main);
 }
 
 [data-theme="dark"] body {
-  background: var(--primary-bg);
+  background: linear-gradient(135deg, 
+    #0f0b1a 0%, 
+    #1a1525 50%, 
+    #0f0b1a 100%);
+  background-attachment: fixed;
   color: var(--text-main);
 }
 
 [data-theme="dark"] .container {
   background: linear-gradient(135deg, 
-    rgba(37, 32, 48, 0.98) 0%, 
-    rgba(26, 22, 37, 0.95) 100%);
-  border-color: rgba(149, 132, 255, 0.3);
+    rgba(26, 21, 37, 0.95) 0%, 
+    rgba(37, 32, 48, 0.92) 50%,
+    rgba(26, 21, 37, 0.95) 100%);
+  border-color: rgba(149, 132, 255, 0.4);
   box-shadow: 
-    0 24px 72px rgba(0, 0, 0, 0.5),
-    0 12px 36px rgba(149, 132, 255, 0.2),
-    0 4px 12px rgba(149, 132, 255, 0.15),
-    inset 0 1px 0 rgba(149, 132, 255, 0.1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+    0 24px 72px rgba(0, 0, 0, 0.7),
+    0 12px 36px rgba(149, 132, 255, 0.25),
+    0 4px 12px rgba(149, 132, 255, 0.2),
+    inset 0 1px 0 rgba(149, 132, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 
 [data-theme="dark"] .container:hover {
@@ -4616,7 +4644,7 @@ textarea,
   color: var(--text-main);
 }
 
-/* Toggle Dark Mode */
+/* Toggle Dark Mode avec animation améliorée */
 .theme-toggle {
   position: fixed;
   bottom: 24px;
@@ -4624,31 +4652,54 @@ textarea,
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: var(--accent-gradient);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, #9584ff 0%, #b8aaff 50%, #7fffa7 100%);
+  background-size: 200% 200%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
   box-shadow: 
-    0 8px 24px rgba(149, 132, 255, 0.3),
-    0 4px 12px rgba(149, 132, 255, 0.2);
+    0 8px 24px rgba(149, 132, 255, 0.4),
+    0 4px 12px rgba(127, 255, 167, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.5em;
   z-index: 1000;
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  will-change: transform;
+  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform, background-position;
   backdrop-filter: blur(10px);
+  animation: themeToggleGradient 3s ease infinite;
+  color: white;
+}
+
+@keyframes themeToggleGradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 .theme-toggle:hover {
-  transform: scale(1.1) rotate(15deg);
+  transform: scale(1.15) rotate(180deg);
   box-shadow: 
-    0 12px 32px rgba(149, 132, 255, 0.4),
-    0 6px 16px rgba(149, 132, 255, 0.3);
+    0 12px 40px rgba(149, 132, 255, 0.5),
+    0 6px 20px rgba(127, 255, 167, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .theme-toggle:active {
-  transform: scale(0.95);
+  transform: scale(1.05) rotate(180deg);
+}
+
+/* Transition globale pour le changement de thème */
+.theme-transitioning * {
+  transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 /* 8.2 Animations avancées - Scroll reveal */

@@ -77,8 +77,12 @@
 }
 
 .tab-btn:hover {
-  color: #9584ff;
+  color: white;
   transform: translateY(-2px);
+}
+
+.tab-btn:hover::before {
+  opacity: 0.8;
 }
 
 .tab-btn:hover::after {
@@ -112,7 +116,7 @@
 }
 
 [data-theme="dark"] .tab-btn:hover {
-  color: var(--accent-light, #b8aaff);
+  color: white;
 }
 
 [data-theme="dark"] .tab-btn.active {

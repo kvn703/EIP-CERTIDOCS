@@ -154,4 +154,38 @@
 }
 [data-theme="dark"] .chips-input::placeholder {
   color: rgba(184, 170, 255, 0.5);
+}
+
+/* Styles d'erreur */
+.chips-input-error {
+  color: #ff6b6b !important;
+}
+
+.chips-input-root:has(.chips-input-error) {
+  border-color: rgba(255, 107, 107, 0.5) !important;
+}
+
+.chips-input-error-message {
+  position: absolute;
+  bottom: -20px;
+  left: 0;
+  right: 0;
+  font-size: 11px;
+  color: #ff6b6b;
+  padding: 4px 8px;
+  background: rgba(255, 107, 107, 0.1);
+  border-radius: 6px;
+  margin-top: 4px;
+  animation: errorShake 0.3s ease;
+}
+
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+[data-theme="dark"] .chips-input-error-message {
+  background: rgba(255, 107, 107, 0.15);
+  color: #ff8a8a;
 } 
