@@ -3,22 +3,71 @@ textarea {
   padding: 18px 26px;
   margin: 0;
   border: 2px solid rgba(149, 132, 255, 0.2);
-  border-radius: 12px;
+  border-radius: 16px;
   font-size: 15px;
-  background: rgba(255, 255, 255, 0.6);
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.7) 0%, 
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0.7) 100%);
+  background-size: 200% 200%;
   color: var(--text-main, #2d2346);
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
   position: relative;
   box-shadow: 
+    0 4px 16px rgba(149, 132, 255, 0.12),
     0 2px 8px rgba(149, 132, 255, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -1px 0 rgba(149, 132, 255, 0.05);
   min-height: 120px;
   resize: vertical;
   line-height: 1.6;
   font-family: inherit;
   box-sizing: border-box;
+  animation: messageInputShimmer 4s ease-in-out infinite;
+  overflow: hidden;
+}
+
+@keyframes messageInputShimmer {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Bordure animée avec gradient */
+textarea::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 18px;
+  padding: 2px;
+  background: linear-gradient(135deg, 
+    #9584ff 0%, 
+    #b8aaff 25%,
+    #7fffa7 50%,
+    #b8aaff 75%,
+    #9584ff 100%);
+  background-size: 300% 300%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  animation: borderGlow 3s ease infinite;
+  z-index: -1;
+}
+
+@keyframes borderGlow {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 textarea::placeholder {
@@ -33,102 +82,319 @@ textarea:focus::placeholder {
 }
 
 textarea:hover {
-  border-color: rgba(149, 132, 255, 0.35);
-  background: rgba(255, 255, 255, 0.75);
+  border-color: rgba(149, 132, 255, 0.5);
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.85) 0%, 
+    rgba(255, 255, 255, 0.7) 50%,
+    rgba(255, 255, 255, 0.85) 100%);
+  background-size: 200% 200%;
   box-shadow: 
-    0 4px 12px rgba(149, 132, 255, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  transform: translateY(-1px);
+    0 8px 24px rgba(149, 132, 255, 0.2),
+    0 4px 12px rgba(127, 255, 167, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 rgba(149, 132, 255, 0.1);
+  transform: translateY(-2px) scale(1.01);
+  animation: messageInputShimmer 3s ease-in-out infinite, messageInputPulse 2s ease-in-out infinite;
+}
+
+@keyframes messageInputPulse {
+  0%, 100% {
+    box-shadow: 
+      0 8px 24px rgba(149, 132, 255, 0.2),
+      0 4px 12px rgba(127, 255, 167, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+  50% {
+    box-shadow: 
+      0 12px 32px rgba(149, 132, 255, 0.3),
+      0 6px 16px rgba(127, 255, 167, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 1);
+  }
 }
 
 textarea:focus {
   outline: none;
-  border-color: rgba(149, 132, 255, 0.6);
-  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(149, 132, 255, 0.8);
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(255, 255, 255, 0.85) 50%,
+    rgba(255, 255, 255, 0.95) 100%);
+  background-size: 200% 200%;
   box-shadow: 
-    0 0 0 4px rgba(149, 132, 255, 0.15),
-    0 8px 24px rgba(149, 132, 255, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  transform: translateY(-2px);
+    0 0 0 6px rgba(149, 132, 255, 0.2),
+    0 12px 40px rgba(149, 132, 255, 0.3),
+    0 6px 20px rgba(127, 255, 167, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 0 rgba(149, 132, 255, 0.15);
+  transform: translateY(-3px) scale(1.02);
+  animation: messageInputShimmer 2s ease-in-out infinite, messageInputFocusGlow 1.5s ease-in-out infinite;
+}
+
+textarea:focus::before {
+  opacity: 0.6;
+}
+
+@keyframes messageInputFocusGlow {
+  0%, 100% {
+    box-shadow: 
+      0 0 0 6px rgba(149, 132, 255, 0.2),
+      0 12px 40px rgba(149, 132, 255, 0.3),
+      0 6px 20px rgba(127, 255, 167, 0.25);
+  }
+  50% {
+    box-shadow: 
+      0 0 0 8px rgba(149, 132, 255, 0.3),
+      0 16px 48px rgba(149, 132, 255, 0.4),
+      0 8px 24px rgba(127, 255, 167, 0.35);
+  }
 }
 
 
 [data-theme="dark"] textarea {
-  background: rgba(45, 37, 64, 0.6);
-  border-color: rgba(149, 132, 255, 0.3);
-  color: var(--text-main, #f0eaff);
+  background: linear-gradient(135deg, 
+    rgba(26, 21, 37, 0.8) 0%, 
+    rgba(37, 32, 48, 0.7) 50%,
+    rgba(26, 21, 37, 0.8) 100%);
+  background-size: 200% 200%;
+  border-color: rgba(149, 132, 255, 0.4);
+  color: var(--text-main, #f5f0ff);
   box-shadow: 
-    0 2px 8px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(149, 132, 255, 0.1);
+    0 4px 16px rgba(0, 0, 0, 0.5),
+    0 2px 8px rgba(149, 132, 255, 0.15),
+    inset 0 1px 0 rgba(149, 132, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+  animation: messageInputShimmerDark 4s ease-in-out infinite;
+}
+
+@keyframes messageInputShimmerDark {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 [data-theme="dark"] textarea:hover {
-  border-color: rgba(149, 132, 255, 0.4);
-  background: rgba(45, 37, 64, 0.75);
+  border-color: rgba(149, 132, 255, 0.6);
+  background: linear-gradient(135deg, 
+    rgba(26, 21, 37, 0.9) 0%, 
+    rgba(37, 32, 48, 0.8) 50%,
+    rgba(26, 21, 37, 0.9) 100%);
+  background-size: 200% 200%;
   box-shadow: 
-    0 4px 12px rgba(149, 132, 255, 0.2),
-    inset 0 1px 0 rgba(149, 132, 255, 0.15);
+    0 8px 24px rgba(0, 0, 0, 0.6),
+    0 4px 12px rgba(149, 132, 255, 0.25),
+    inset 0 1px 0 rgba(149, 132, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px) scale(1.01);
+  animation: messageInputShimmerDark 3s ease-in-out infinite, messageInputPulseDark 2s ease-in-out infinite;
+}
+
+@keyframes messageInputPulseDark {
+  0%, 100% {
+    box-shadow: 
+      0 8px 24px rgba(0, 0, 0, 0.6),
+      0 4px 12px rgba(149, 132, 255, 0.25);
+  }
+  50% {
+    box-shadow: 
+      0 12px 32px rgba(0, 0, 0, 0.7),
+      0 6px 16px rgba(149, 132, 255, 0.35);
+  }
 }
 
 [data-theme="dark"] textarea:focus {
-  background: rgba(45, 37, 64, 0.8);
-  border-color: rgba(149, 132, 255, 0.5);
+  background: linear-gradient(135deg, 
+    rgba(26, 21, 37, 0.95) 0%, 
+    rgba(37, 32, 48, 0.9) 50%,
+    rgba(26, 21, 37, 0.95) 100%);
+  background-size: 200% 200%;
+  border-color: rgba(184, 170, 255, 0.7);
   box-shadow: 
-    0 0 0 4px rgba(149, 132, 255, 0.15),
-    0 8px 24px rgba(149, 132, 255, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 0 0 6px rgba(149, 132, 255, 0.25),
+    0 12px 40px rgba(0, 0, 0, 0.7),
+    0 6px 20px rgba(149, 132, 255, 0.3),
+    inset 0 1px 0 rgba(149, 132, 255, 0.25),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5);
+  transform: translateY(-3px) scale(1.02);
+  animation: messageInputShimmerDark 2s ease-in-out infinite, messageInputFocusGlowDark 1.5s ease-in-out infinite;
+}
+
+@keyframes messageInputFocusGlowDark {
+  0%, 100% {
+    box-shadow: 
+      0 0 0 6px rgba(149, 132, 255, 0.25),
+      0 12px 40px rgba(0, 0, 0, 0.7),
+      0 6px 20px rgba(149, 132, 255, 0.3);
+  }
+  50% {
+    box-shadow: 
+      0 0 0 8px rgba(149, 132, 255, 0.35),
+      0 16px 48px rgba(0, 0, 0, 0.8),
+      0 8px 24px rgba(149, 132, 255, 0.4);
+  }
+}
+
+[data-theme="dark"] textarea:focus::before {
+  opacity: 0.8;
 }
 
 [data-theme="dark"] textarea::placeholder {
   color: rgba(184, 170, 255, 0.5);
 }
 
-/* Wrapper pour le textarea avec compteur */
+/* Wrapper pour le textarea avec compteur et effets */
 .custom-text-input-wrapper {
   position: relative;
   width: 100%;
+  overflow: visible;
 }
 
-/* Compteur de caractères */
+/* Particules flottantes qui apparaissent au focus */
+.custom-text-input-wrapper::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: radial-gradient(circle at 20% 30%, rgba(149, 132, 255, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 80% 70%, rgba(127, 255, 167, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 50% 50%, rgba(184, 170, 255, 0.05) 0%, transparent 50%);
+  border-radius: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+  z-index: 0;
+  animation: particleFloat 4s ease-in-out infinite;
+}
+
+@keyframes particleFloat {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+  50% {
+    transform: translateY(-5px) scale(1.05);
+    opacity: 0.3;
+  }
+}
+
+.custom-text-input-wrapper:focus-within::after {
+  opacity: 0.6;
+  animation: particleFloat 2s ease-in-out infinite, particlePulse 3s ease-in-out infinite;
+}
+
+@keyframes particlePulse {
+  0%, 100% {
+    background: radial-gradient(circle at 20% 30%, rgba(149, 132, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(127, 255, 167, 0.1) 0%, transparent 50%);
+  }
+  50% {
+    background: radial-gradient(circle at 30% 40%, rgba(149, 132, 255, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(127, 255, 167, 0.2) 0%, transparent 50%);
+  }
+}
+
+/* Compteur de caractères avec animation */
 .char-count {
   position: absolute;
-  bottom: 8px;
-  right: 12px;
+  bottom: 10px;
+  right: 14px;
   font-size: 11px;
   color: rgba(141, 139, 167, 0.6);
-  font-weight: 500;
+  font-weight: 600;
   pointer-events: none;
-  transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.8);
-  padding: 2px 6px;
-  border-radius: 6px;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.9) 0%, 
+    rgba(255, 255, 255, 0.7) 100%);
+  padding: 4px 10px;
+  border-radius: 12px;
+  backdrop-filter: blur(8px) saturate(180%);
+  -webkit-backdrop-filter: blur(8px) saturate(180%);
+  box-shadow: 
+    0 2px 8px rgba(149, 132, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(149, 132, 255, 0.2);
+  transform: scale(0.95);
+  opacity: 0.8;
 }
 
 .char-count-active {
-  color: rgba(149, 132, 255, 0.8);
+  color: rgba(149, 132, 255, 1);
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.15) 0%, 
+    rgba(184, 170, 255, 0.1) 100%);
+  border-color: rgba(149, 132, 255, 0.4);
+  box-shadow: 
+    0 4px 12px rgba(149, 132, 255, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transform: scale(1);
+  opacity: 1;
+  animation: charCountPulse 2s ease-in-out infinite;
+}
+
+@keyframes charCountPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 .char-count-max {
   color: rgba(141, 139, 167, 0.5);
 }
 
-textarea:focus + .char-count {
-  color: rgba(149, 132, 255, 0.9);
-  background: rgba(255, 255, 255, 0.95);
+textarea:focus ~ .char-count,
+.custom-text-input-wrapper:focus-within .char-count {
+  color: rgba(149, 132, 255, 1);
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.2) 0%, 
+    rgba(184, 170, 255, 0.15) 100%);
+  border-color: rgba(149, 132, 255, 0.5);
+  box-shadow: 
+    0 6px 16px rgba(149, 132, 255, 0.3),
+    0 2px 8px rgba(127, 255, 167, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  transform: scale(1.05);
+  animation: charCountPulse 1.5s ease-in-out infinite;
 }
 
 [data-theme="dark"] .char-count {
-  background: rgba(45, 37, 64, 0.8);
-  color: rgba(184, 170, 255, 0.6);
+  background: linear-gradient(135deg, 
+    rgba(26, 21, 37, 0.9) 0%, 
+    rgba(37, 32, 48, 0.8) 100%);
+  color: rgba(184, 170, 255, 0.7);
+  border-color: rgba(149, 132, 255, 0.3);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(149, 132, 255, 0.1);
 }
 
 [data-theme="dark"] .char-count-active {
-  color: rgba(184, 170, 255, 0.9);
+  color: rgba(184, 170, 255, 1);
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.2) 0%, 
+    rgba(184, 170, 255, 0.15) 100%);
+  border-color: rgba(149, 132, 255, 0.5);
+  box-shadow: 
+    0 4px 12px rgba(149, 132, 255, 0.3),
+    inset 0 1px 0 rgba(149, 132, 255, 0.2);
 }
 
-[data-theme="dark"] textarea:focus + .char-count {
-  background: rgba(45, 37, 64, 0.95);
-  color: rgba(184, 170, 255, 0.9);
+[data-theme="dark"] textarea:focus ~ .char-count,
+[data-theme="dark"] .custom-text-input-wrapper:focus-within .char-count {
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.25) 0%, 
+    rgba(184, 170, 255, 0.2) 100%);
+  color: rgba(184, 170, 255, 1);
+  border-color: rgba(149, 132, 255, 0.6);
+  box-shadow: 
+    0 6px 16px rgba(149, 132, 255, 0.4),
+    0 2px 8px rgba(127, 255, 167, 0.25),
+    inset 0 1px 0 rgba(149, 132, 255, 0.3);
 }
