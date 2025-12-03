@@ -515,15 +515,15 @@
 
 [data-theme="dark"] .verify-container .modern-input-wrapper textarea,
 [data-theme="dark"] .verify-container .modern-input-wrapper input {
-  background: rgba(45, 37, 64, 0.6);
-  color: var(--text-main, #e0d9ff);
-  border-color: rgba(149, 132, 255, 0.3);
+  /* Les styles de CustomTextInput avec gradients animés s'appliquent */
+  /* On garde juste les overrides de couleur si nécessaire */
+  color: var(--text-main, #f5f0ff);
 }
 
 [data-theme="dark"] .verify-container .modern-input-wrapper textarea:focus,
 [data-theme="dark"] .verify-container .modern-input-wrapper input:focus {
-  background: rgba(45, 37, 64, 0.8);
-  border-color: rgba(149, 132, 255, 0.5);
+  /* Les effets de focus impressionnants de CustomTextInput sont déjà actifs */
+  /* Pas besoin d'override, les animations sont déjà là ! */
 }
 
 /* Timeline plus compacte pour Verify */
