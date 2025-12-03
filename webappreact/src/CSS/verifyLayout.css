@@ -329,14 +329,16 @@
 }
 
 /* ============================================
-   OVERRIDE TEXTAREA POUR VERIFY PAGE - Plus compact
+   OVERRIDE TEXTAREA POUR VERIFY PAGE - Plus compact avec effets
    ============================================ */
 
 .verify-container textarea {
-  padding: 10px 18px; /* Réduit verticalement */
-  min-height: 60px; /* Réduit de 70px à 60px */
+  padding: 12px 20px; /* Légèrement augmenté pour meilleur confort */
+  min-height: 70px; /* Augmenté pour meilleure visibilité des effets */
   font-size: 14px;
-  line-height: 1.4;
+  line-height: 1.5;
+  /* Les effets de CustomTextInput s'appliquent automatiquement */
+  border-radius: 14px; /* Légèrement plus arrondi */
 }
 
 .verify-container .modern-input-label {
