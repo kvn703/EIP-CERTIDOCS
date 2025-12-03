@@ -61,4 +61,76 @@
 .pdf-remove-btn-2025:hover {
   background: #ffeaea;
   color: #c62828;
+}
+
+/* Dark Mode pour ImageSection */
+[data-theme="dark"] .pdf-dropzone-2025 {
+  background: linear-gradient(135deg, 
+    rgba(26, 21, 37, 0.9) 0%, 
+    rgba(37, 32, 48, 0.85) 50%,
+    rgba(26, 21, 37, 0.9) 100%);
+  background-size: 200% 200%;
+  border-color: rgba(149, 132, 255, 0.5);
+  box-shadow: 
+    0 4px 24px rgba(0, 0, 0, 0.5),
+    0 2px 12px rgba(149, 132, 255, 0.2),
+    inset 0 1px 0 rgba(149, 132, 255, 0.1);
+  animation: popIn 0.7s cubic-bezier(.4,2,.3,1), darkShimmer 4s ease-in-out infinite;
+}
+
+@keyframes darkShimmer {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+[data-theme="dark"] .pdf-dropzone-2025.active {
+  border-color: rgba(127, 255, 167, 0.7);
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.2) 0%, 
+    rgba(184, 170, 255, 0.15) 50%,
+    rgba(127, 255, 167, 0.15) 100%);
+  background-size: 200% 200%;
+  box-shadow: 
+    0 6px 32px rgba(149, 132, 255, 0.4),
+    0 3px 16px rgba(127, 255, 167, 0.3),
+    inset 0 1px 0 rgba(149, 132, 255, 0.2);
+  animation: darkShimmer 3s ease-in-out infinite;
+}
+
+[data-theme="dark"] .pdf-drop-content-2025 {
+  color: var(--text-main, #f5f0ff);
+}
+
+[data-theme="dark"] .pdf-drop-content-2025 div:first-of-type {
+  color: var(--accent-light, #b8aaff) !important;
+}
+
+[data-theme="dark"] .pdf-drop-content-2025 div:last-of-type {
+  color: var(--text-muted, #b8aaff) !important;
+}
+
+[data-theme="dark"] .pdf-file-info-2025 {
+  color: var(--accent-light, #b8aaff);
+}
+
+[data-theme="dark"] .pdf-file-name-2025 {
+  color: var(--accent-light, #b8aaff);
+  background: rgba(149, 132, 255, 0.2);
+  border: 1px solid rgba(149, 132, 255, 0.3);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(149, 132, 255, 0.1);
+}
+
+[data-theme="dark"] .pdf-remove-btn-2025 {
+  color: rgba(255, 107, 107, 0.8);
+}
+
+[data-theme="dark"] .pdf-remove-btn-2025:hover {
+  background: rgba(255, 107, 107, 0.2);
+  color: #ff6b6b;
 } 
