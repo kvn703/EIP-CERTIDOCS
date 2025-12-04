@@ -54,14 +54,14 @@ window.addEventListener('walletDisconnected', () => {
 // Helpers UI (copié/adapté de script.js)
 function createAddressSpan(address, addressShort) {
     const addressSpan = document.createElement("span");
-    addressSpan.innerText = "🟢 Connecté : " + addressShort;
+    addressSpan.innerText = "Connecté : " + addressShort;
     addressSpan.title = address;
     addressSpan.classList.add("address-span");
     addressSpan.addEventListener("mouseover", () => {
         addressSpan.innerText = address;
     });
     addressSpan.addEventListener("mouseout", () => {
-        addressSpan.innerText = "🟢 Connecté : " + addressShort;
+        addressSpan.innerText = "Connecté : " + addressShort;
     });
     return addressSpan;
 }
@@ -120,7 +120,7 @@ function showBeautifulAlert(message, type = 'error') {
     alertDiv.innerHTML = `
         <div class="alert-content">
             <div class="alert-icon">
-                ${type === 'error' ? '❌' : type === 'success' ? '✅' : '⚠️'}
+                ${type === 'error' ? '!' : type === 'success' ? '✓' : '!'}
             </div>
             <div class="alert-message">${message}</div>
             <button class="alert-close" onclick="this.parentElement.parentElement.remove()">×</button>
@@ -234,42 +234,51 @@ async function verifySignature() {
     isString = document.getElementById("signatureCheckbox").checked;
     window.dispatchEvent(new CustomEvent('Error', { detail: 'Vérification de la signature' }));
     if (!signer) {
-        showBeautifulAlert('🔐 Veuillez d\'abord connecter votre wallet pour vérifier une signature', 'error');
+        showBeautifulAlert('Veuillez d\'abord connecter votre wallet pour vérifier une signature', 'error');
         return;
     }
 
     if (currentTab === 0) {
         const signatureId = document.getElementById("signatureId").value.trim();
         if (!/^0x[a-fA-F0-9]{64}$/.test(signatureId)) {
-            alert("❌ L'ID de signature est invalide !");
+            alert("L'ID de signature est invalide !");
             return;
         }
 
         const message = document.getElementById("messageInput").value.trim();
         if (message === "") {
-            alert("❌ Le message ne peut pas être vide !");
+            alert("Le message ne peut pas être vide !");
             return;
         }
 
         messageHash = message;
         const userAddress = await signer.getAddress();
-        document.getElementById("verify").innerText = "⏳ Vérification en cours...";
+        
+        const verify_element = document.getElementById("verify");
+        if (verify_element) {
+            verify_element.innerText = "Vérification en cours...";
+        }
         try {
             const isValid = await contract.verifySignature(
                 signatureId,
                 userAddress,
                 messageHash
             );
-            document.getElementById("verify").innerText = isValid
-                ? "✅ Signature VALIDE !"
-                : "❌ Signature NON VALIDE.";
+            
+            const verify_element = document.getElementById("verify");
+            if (verify_element) {
+                verify_element.innerText = isValid
+                    ? "✅ Empreinte VALIDE"
+                    : "❌ Empreinte NON VALIDE";
+            }
         } catch (error) {
-            // Ne pas afficher d'alerte pour l'erreur de décodage
             if (!error.message.includes("could not decode result data")) {
                 alert(error.message);
             }
-            document.getElementById("verify").innerText =
-                "❌ Erreur lors de la vérification.";
+            const verify_element = document.getElementById("verify");
+            if (verify_element) {
+                verify_element.innerText = "❌ Erreur lors de la vérification.";
+            }
         }
     } else if (currentTab === 1) {
         if (!currentSignatureFile && !isString) {
@@ -278,7 +287,12 @@ async function verifySignature() {
         }
         let signatureId;
         if (isString) {
-            signatureId = document.getElementById("signatureIdString").value.trim();
+            const signature_id_element = document.getElementById("signatureIdString");
+            if (!signature_id_element) {
+                showBeautifulAlert('L\'élément signatureIdString est introuvable', 'error');
+                return;
+            }
+            signatureId = signature_id_element.value.trim();
         } else {
             signatureId = await extractTextFromFileImage(currentSignatureFile).catch((error) => {
                 showBeautifulAlert('Erreur lors de l\'extraction de la signature depuis l\'image', 'error');
@@ -299,7 +313,12 @@ async function verifySignature() {
             window.dispatchEvent(new CustomEvent('Error', { detail: 'Erreur lors de l\'extraction de la signature depuis l\'image' }));
             return;
         }
-        const message = document.getElementById("texte2").value.trim();
+        const message_element = document.getElementById("texte2");
+        if (!message_element) {
+            showBeautifulAlert('L\'élément texte2 est introuvable', 'error');
+            return;
+        }
+        const message = message_element.value.trim();
         if (message === "") {
             showBeautifulAlert("Le message ne peut pas être vide !", 'error');
             window.dispatchEvent(new CustomEvent('Error', { detail: 'Erreur lors de l\'extraction de la signature depuis l\'image' }));
@@ -307,19 +326,19 @@ async function verifySignature() {
         }
         messageHash = ethers.keccak256(ethers.toUtf8Bytes(message));
         const userAddress = await signer.getAddress();
-        // document.getElementById("verify").innerText = "⏳ Vérification en cours...";
+        
         try {
             const isValid = await contract.verifySignature(
                 signatureId,
                 userAddress,
                 messageHash
             );
+            
             document.getElementById("verify").innerText = isValid
-                ? "✅ Signature VALIDE !"
-                : "❌ Signature NON VALIDE.";
+                ? "✅ Empreinte VALIDE"
+                : "❌ Empreinte NON VALIDE";
         }
         catch (error) {
-            // Ne pas afficher d'alerte pour l'erreur de décodage
             if (!error.message.includes("could not decode result data")) {
                 showBeautifulAlert(error.message, 'error');
             }
@@ -339,7 +358,12 @@ async function verifySignature() {
         }
         let signatureId;
         if (isString) {
-            signatureId = document.getElementById("signatureIdString").value.trim();
+            const signature_id_element = document.getElementById("signatureIdString");
+            if (!signature_id_element) {
+                showBeautifulAlert('L\'élément signatureIdString est introuvable', 'error');
+                return;
+            }
+            signatureId = signature_id_element.value.trim();
         } else {
             signatureId = await extractTextFromFileImage(currentSignatureFile).catch((error) => {
                 showBeautifulAlert('Erreur lors de l\'extraction de la signature depuis l\'image', 'error');
@@ -363,19 +387,19 @@ async function verifySignature() {
         const fileBuffer = await readFileAsArrayBuffer(currentPDFFile);
         messageHash = ethers.keccak256(new Uint8Array(fileBuffer));
         const userAddress = await signer.getAddress();
-        // document.getElementById("verify").innerText = "⏳ Vérification en cours...";
+        
         try {
             const isValid = await contract.verifySignature(
                 signatureId,
                 userAddress,
                 messageHash
             );
+            
             document.getElementById("verify").innerText = isValid
-                ? "✅ Signature VALIDE !"
-                : "❌ Signature NON VALIDE.";
+                ? "✅ Empreinte VALIDE"
+                : "❌ Empreinte NON VALIDE";
         }
         catch (error) {
-            // Ne pas afficher d'alerte pour l'erreur de décodage
             if (!error.message.includes("could not decode result data")) {
                 showBeautifulAlert(error.message, 'error');
             }
@@ -395,7 +419,12 @@ async function verifySignature() {
         }
         let signatureId;
         if (isString) {
-            signatureId = document.getElementById("signatureIdString").value.trim();
+            const signature_id_element = document.getElementById("signatureIdString");
+            if (!signature_id_element) {
+                showBeautifulAlert('L\'élément signatureIdString est introuvable', 'error');
+                return;
+            }
+            signatureId = signature_id_element.value.trim();
         } else {
             signatureId = await extractTextFromFileImage(currentSignatureFile).catch((error) => {
                 showBeautifulAlert('Erreur lors de l\'extraction de la signature depuis l\'image', 'error');
@@ -420,19 +449,19 @@ async function verifySignature() {
         const fileBuffer = await readFileAsArrayBuffer(currentImageFile);
         messageHash = ethers.keccak256(new Uint8Array(fileBuffer));
         const userAddress = await signer.getAddress();
-        // document.getElementById("verify").innerText = "⏳ Vérification en cours...";
+        
         try {
             const isValid = await contract.verifySignature(
                 signatureId,
                 userAddress,
                 messageHash
             );
+            
             document.getElementById("verify").innerText = isValid
-                ? "✅ Signature VALIDE !"
-                : "❌ Signature NON VALIDE.";
+                ? "✅ Empreinte VALIDE"
+                : "❌ Empreinte NON VALIDE";
         }
         catch (error) {
-            // Ne pas afficher d'alerte pour l'erreur de décodage
             if (!error.message.includes("could not decode result data")) {
                 showBeautifulAlert(error.message, 'error');
             }

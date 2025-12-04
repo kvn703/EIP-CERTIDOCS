@@ -1,14 +1,13 @@
 .verification-animation-container {
   width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
-  padding: 32px 24px;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(149, 132, 255, 0.2);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(149, 132, 255, 0.1);
-  animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  margin: 12px 0;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  border: none;
+  animation: slideInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes slideInUp {

@@ -142,11 +142,49 @@ if (typeof messageHash === "undefined") {
 }
 
 if (messageHash) {
-    document.getElementById("messageInput").value = messageHash;
-    document.getElementById("messageInput").style.display = "none";
-    document.getElementById("confirmationMessage").style.display = "block";
+    // Attendre que React soit prêt avant d'accéder au DOM
+    const setMessageInput = () => {
+        const messageInput = document.getElementById("messageInput");
+        const confirmationMessage = document.getElementById("confirmationMessage");
+        
+        if (messageInput) {
+            messageInput.value = messageHash;
+            messageInput.style.display = "none";
+        }
+        
+        if (confirmationMessage) {
+            confirmationMessage.style.display = "block";
+        }
+    };
+    
+    // Essayer immédiatement
+    setMessageInput();
+    
+    // Si l'élément n'existe pas encore, attendre que le DOM soit prêt
+    if (!document.getElementById("messageInput") && !document.getElementById("confirmationMessage")) {
+        // Attendre que React ait rendu le composant
+        const observer = new MutationObserver((mutations, obs) => {
+            if (document.getElementById("messageInput") || document.getElementById("confirmationMessage")) {
+                setMessageInput();
+                obs.disconnect();
+            }
+        });
+        
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+        
+        // Timeout de sécurité après 5 secondes
+        setTimeout(() => {
+            observer.disconnect();
+        }, 5000);
+    }
 } else {
-    document.getElementById("confirmationMessage").style.display = "none";
+    const confirmationMessage = document.getElementById("confirmationMessage");
+    if (confirmationMessage) {
+        confirmationMessage.style.display = "none";
+    }
 }
 
 function createAddressSpan(address, addressShort) {
@@ -452,7 +490,8 @@ window.addEventListener('walletConnected', () => {
 // Exposer la fonction signMessage globalement pour pouvoir l'appeler depuis React
 window.signMessage = signMessage;
 
-// Exposer la fonction hideTextInImageReturnBlob globalement pour le téléchargement
+// Exposer les fonctions globalement
 window.hideTextInImageReturnBlob = hideTextInImageReturnBlob;
+window.hideTextInImage = hideTextInImage;
 
 // document.addEventListener("DOMContentLoaded", connectMetaMask);

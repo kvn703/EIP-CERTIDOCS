@@ -1,8 +1,5 @@
-// src/pages/VerifyPage.js
-// 🎨 PAGE VÉRIFICATION - DESIGN PROFESSIONNEL 2025
-// Suit la TODO liste complète : VERIFY_PAGE_IMPROVEMENTS_2025.md
-
 import React, { useState, useEffect, useRef } from "react";
+
 import "../CSS/style.css";
 import "../CSS/copyButton.css";
 import "../CSS/adresse.css";
@@ -10,21 +7,20 @@ import "../CSS/verifyLayout.css";
 import CustomTextInput from "../component/CustomTextInput";
 import StickyButton from "../component/StickyButton";
 import { useAppKitAccount } from "@reown/appkit/react";
-import { FaInbox, FaEdit, FaFileAlt, FaCamera, FaCircle, FaCheckCircle } from "react-icons/fa";
+import { FaInbox, FaEdit, FaFileAlt, FaCamera, FaCircle, FaCheckCircle, FaTimes } from "react-icons/fa";
 import Tabs from "../component/Tabs";
 import "../component/Tabs.css";
 import PDFSection from "../component/PdfPage/PDFSection";
 import ImageSection from "../component/PdfPage/ImageSection";
 import VerificationAnimation from "../component/VerificationAnimation";
+import VerifyLoading from "../component/VerifyLoading";
 import HeaderExpert from "../component/HeaderExpert";
 import Timeline from "../component/Timeline";
 import FormatToggle from "../component/FormatToggle";
 import VerifyResultModal from "../component/VerifyResultModal";
+import HashDisplay from "../component/HashDisplay";
 
 function VerifyPage() {
-    // ============================================
-    // ÉTATS - PHASE 1 & 2
-    // ============================================
     const { isConnected } = useAppKitAccount();
     const [signatureId, setSignatureId] = useState("");
     const [message, setMessage] = useState("");
@@ -38,20 +34,17 @@ function VerifyPage() {
     const [isReloading, setIsReloading] = useState(false);
     const [isVerifying, setIsVerifying] = useState(false);
     const [verificationResult, setVerificationResult] = useState(null);
+    const [hasVerificationCompleted, setHasVerificationCompleted] = useState(false);
     const [showContentRecovered, setShowContentRecovered] = useState(true);
     const [signatureFile, _setSignatureFile] = useState(null);
     const [IsString, setIsString] = useState(false);
-    const [currentStep, setCurrentStep] = useState(1); // PHASE 1.2 : Étape actuelle pour Timeline
-    const [isResultModalOpen, setIsResultModalOpen] = useState(false); // PHASE 4.1
-    const resultProcessedRef = useRef(false); // Pour éviter de traiter le résultat plusieurs fois
-
-    // ============================================
-    // FONCTIONS UTILITAIRES
-    // ============================================
+    const [currentStep, setCurrentStep] = useState(1);
+    const [isResultModalOpen, setIsResultModalOpen] = useState(false);
+    const resultProcessedRef = useRef(false);
     const setActiveTab = (tabIndex) => {
         _setActiveTab(tabIndex);
         if (tabIndex === 0) {
-            setIsString(false); // Reset IsString when switching to Mail tab
+            setIsString(false);
         }
         window.dispatchEvent(new CustomEvent('tabChanged', { detail: tabIndex }));
     };
@@ -71,36 +64,45 @@ function VerifyPage() {
         window.dispatchEvent(new CustomEvent('imageFileChanged', { detail: file }));
     };
 
-    // ============================================
-    // EFFECTS - PHASE 1.2 : Gestion de currentStep
-    // ============================================
     useEffect(() => {
         if (isConnected) {
             window.dispatchEvent(new Event('walletConnected'));
-            setCurrentStep(1); // CONNEXION complétée
+            setCurrentStep(1);
         } else {
-            setCurrentStep(1); // En attente de connexion
+            setCurrentStep(1);
         }
     }, [isConnected]);
 
-    // PHASE 1.2 : Calculer currentStep selon la progression
     useEffect(() => {
-        if (!isConnected) {
-            setCurrentStep(1); // CONNEXION
-        } else if (isVerifying) {
-            setCurrentStep(2); // VÉRIFICATION
-        } else if (verificationResult) {
-            setCurrentStep(3); // RÉSULTAT
-        } else if (isConnected && (signatureId || signatureFile || texte1) && (message || texte2 || pdfFile || imageFile)) {
-            setCurrentStep(2); // Prêt pour vérification
-        } else if (isConnected) {
-            setCurrentStep(1); // CONNEXION complétée, en attente de contenu
+        if (verificationResult || hasVerificationCompleted) {
+            setCurrentStep(4);
         }
-    }, [isConnected, isVerifying, verificationResult, signatureId, signatureFile, texte1, message, texte2, pdfFile, imageFile]);
+    }, [verificationResult, hasVerificationCompleted]);
 
-    // ============================================
-    // RÉCUPÉRATION DES PARAMÈTRES URL - PHASE 5.2
-    // ============================================
+    useEffect(() => {
+        if (verificationResult || hasVerificationCompleted) {
+            return;
+        }
+        
+        if (isVerifying) {
+            setCurrentStep(2);
+            return;
+        }
+        
+        if (!isConnected) {
+            setCurrentStep(1);
+            return;
+        }
+        
+        if (isConnected && (signatureId || signatureFile || texte1) && (message || texte2 || pdfFile || imageFile)) {
+            setCurrentStep(2);
+            return;
+        }
+        
+        if (isConnected) {
+            setCurrentStep(1);
+        }
+    }, [isConnected, isVerifying, verificationResult, hasVerificationCompleted, signatureId, signatureFile, texte1, message, texte2, pdfFile, imageFile]);
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const signatureIdParam = urlParams.get("signatureId");
@@ -108,15 +110,54 @@ function VerifyPage() {
         if (signatureIdParam && messageParam) {
             setSignatureId(signatureIdParam);
             setMessage(messageParam);
-            setActiveTab(0); // Onglet Mail si paramètres présents
+            setActiveTab(0);
         } else {
-            setActiveTab(1); // Switch to Texte tab if no parameters
+            setActiveTab(1);
         }
     }, []);
 
-    // ============================================
-    // GESTION DU CONTENU MAIL PERDU - PHASE 5.2
-    // ============================================
+    useEffect(() => {
+        const signatureIdInput = document.getElementById("signatureId");
+        const messageInput = document.getElementById("messageInput");
+        
+        if (signatureIdInput && signatureId) {
+            let formatted_id = signatureId.trim();
+            if (formatted_id.startsWith("[CERTIDOCS]")) {
+                formatted_id = formatted_id.replace("[CERTIDOCS]", "").trim();
+            }
+            
+            if (!formatted_id.startsWith('0x')) {
+                formatted_id = '0x' + formatted_id;
+            }
+            
+            const hex_part = formatted_id.slice(2);
+            if (hex_part.length < 64) {
+                formatted_id = '0x' + hex_part.padStart(64, '0');
+            } else if (hex_part.length > 64) {
+                formatted_id = '0x' + hex_part.slice(0, 64);
+            }
+            signatureIdInput.value = formatted_id;
+        } else if (signatureIdInput) {
+            signatureIdInput.value = '';
+        }
+        
+        if (messageInput) {
+            messageInput.value = message || '';
+        }
+    }, [signatureId, message]);
+    useEffect(() => {
+        const texte2_element = document.getElementById("texte2");
+        const signature_id_string_element = document.getElementById("signatureIdString");
+        
+        if (texte2_element) {
+            texte2_element.value = texte2 || '';
+        }
+        
+        if (signature_id_string_element) {
+            signature_id_string_element.value = texte1 || '';
+        }
+    }, [texte1, texte2]);
+
     useEffect(() => {
         if (activeTab === 0 && hasVisitedOtherTab && (!signatureId || !message)) {
             setMailContentLost(true);
@@ -131,39 +172,36 @@ function VerifyPage() {
         }
     }, [activeTab]);
 
-    // ============================================
-    // DÉTECTION DU RÉSULTAT DE VÉRIFICATION - PHASE 4
-    // ============================================
     useEffect(() => {
-        const checkVerificationResult = () => {
-            const verifyElement = document.getElementById("verify");
-            if (verifyElement && !resultProcessedRef.current) {
-                const text = verifyElement.innerText;
+        const check_verification_result = () => {
+            const verify_element = document.getElementById("verify");
+            if (verify_element && !resultProcessedRef.current) {
+                const text = verify_element.innerText;
                 if (text.includes("✅ Empreinte VALIDE") || text.includes("✅ Signature VALIDE")) {
+                    setIsVerifying(false);
                     setVerificationResult('success');
-                    setIsVerifying(false);
-                    setIsResultModalOpen(true); // PHASE 4.1 : Ouvrir la modal
+                    setHasVerificationCompleted(true);
+                    setCurrentStep(4);
+                    setIsResultModalOpen(true);
                     resultProcessedRef.current = true;
-                    verifyElement.style.display = 'none';
-                    verifyElement.innerText = '';
+                    verify_element.style.display = 'none';
+                    verify_element.innerText = '';
                 } else if (text.includes("❌ Empreinte NON VALIDE") || text.includes("❌ Signature NON VALIDE") || text.includes("❌ Erreur")) {
-                    setVerificationResult('error');
                     setIsVerifying(false);
-                    setIsResultModalOpen(true); // PHASE 4.1 : Ouvrir la modal
+                    setVerificationResult('error');
+                    setHasVerificationCompleted(true);
+                    setCurrentStep(4);
+                    setIsResultModalOpen(true);
                     resultProcessedRef.current = true;
-                    verifyElement.style.display = 'none';
-                    verifyElement.innerText = '';
+                    verify_element.style.display = 'none';
+                    verify_element.innerText = '';
                 }
             }
         };
 
-        const interval = setInterval(checkVerificationResult, 500);
+        const interval = setInterval(check_verification_result, 500);
         return () => clearInterval(interval);
     }, [resultProcessedRef]);
-
-    // ============================================
-    // HANDLERS - PHASE 3 & 4
-    // ============================================
     const handleReloadMailContent = () => {
         setIsReloading(true);
         setTimeout(() => {
@@ -176,38 +214,29 @@ function VerifyPage() {
         setIsVerifying(false);
     };
 
-    // ============================================
-    // PHASE 7.2 : Validation et Feedback
-    // ============================================
-    // Validation du format de signature
-    const validateSignatureFormat = (sig) => {
+    const validate_signature_format = (sig) => {
         if (!sig) return { isValid: false, message: '' };
         const trimmed = sig.trim();
-        // Supprimer le préfixe [CERTIDOCS] si présent
         const cleaned = trimmed.startsWith("[CERTIDOCS]") 
             ? trimmed.replace("[CERTIDOCS]", "").trim()
             : trimmed;
-        // Vérifier le format hexadécimal (0x suivi de 64 caractères hex)
-        const isValid = /^0x[a-fA-F0-9]{64}$/.test(cleaned);
+        const is_valid = /^0x[a-fA-F0-9]{64}$/.test(cleaned);
         return {
-            isValid,
-            message: isValid ? '' : 'Format invalide. Doit être 0x suivi de 64 caractères hexadécimaux.'
+            isValid: is_valid,
+            message: is_valid ? '' : 'Format invalide. Doit être 0x suivi de 64 caractères hexadécimaux.'
         };
     };
 
-    // État de validation pour chaque champ
     const [signatureValidation, setSignatureValidation] = useState({ isValid: null, message: '' });
 
-    // PHASE 9.1 : Validation en temps réel avec debounce
     useEffect(() => {
         if (activeTab === 1 || activeTab === 2 || activeTab === 3) {
             if (IsString && texte1) {
-                // Debounce de 300ms pour éviter trop de validations
-                const timeoutId = setTimeout(() => {
-                    const validation = validateSignatureFormat(texte1);
+                const timeout_id = setTimeout(() => {
+                    const validation = validate_signature_format(texte1);
                     setSignatureValidation(validation);
                 }, 300);
-                return () => clearTimeout(timeoutId);
+                return () => clearTimeout(timeout_id);
             } else {
                 setSignatureValidation({ isValid: null, message: '' });
             }
@@ -215,9 +244,6 @@ function VerifyPage() {
             setSignatureValidation({ isValid: null, message: '' });
         }
     }, [texte1, IsString, activeTab]);
-
-
-    // PHASE 3.2 : Logique d'activation du bouton
     const isButtonEnabled = () => {
         if (!isConnected) return false;
         
@@ -240,9 +266,7 @@ function VerifyPage() {
         return false;
     };
 
-    // PHASE 3.3 : Intégration avec verify.js
     const handleVerifyClick = () => {
-        // Validation selon l'onglet actif
         if (activeTab === 0) {
         if (!signatureId || !message) {
             setIsVerifying(false);
@@ -270,12 +294,12 @@ function VerifyPage() {
             }
         }
         
-        resultProcessedRef.current = false; // Reset pour permettre un nouveau traitement
+        resultProcessedRef.current = false;
         setShowContentRecovered(false);
         setIsVerifying(true);
         setVerificationResult(null);
+        setHasVerificationCompleted(false);
         
-        // Appeler la fonction de vérification de verify.js
         if (typeof window.verifySignature === 'function') {
             window.verifySignature();
         } else {
@@ -287,15 +311,12 @@ function VerifyPage() {
         }
     };
 
-    // PHASE 4.1 : Fermeture de la modal
     const handleCloseModal = () => {
         setIsResultModalOpen(false);
-        resultProcessedRef.current = false; // Reset pour permettre un nouveau traitement
+        setVerificationResult(null);
+        setIsVerifying(false);
+        resultProcessedRef.current = false;
     };
-
-    // ============================================
-    // ÉTAT DE RECHARGEMENT - PHASE 7.1
-    // ============================================
     if (isReloading) {
         return (
             <div style={{
@@ -355,12 +376,8 @@ function VerifyPage() {
         );
     }
 
-    // ============================================
-    // DÉFINITION DES ONGLETS - PHASE 2 & 5
-    // ============================================
     const tabs = [
         {
-            // PHASE 5.1 : Onglet Mail avec icône
             label: (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <FaInbox style={{ fontSize: '16px' }} />
@@ -369,37 +386,43 @@ function VerifyPage() {
             ),
             content: (
                 <>
-                    {/* PHASE 4.2 : Animation de vérification */}
-                    {(isVerifying || verificationResult) && (
+                    {isVerifying && !verificationResult && (
+                        <VerifyLoading />
+                    )}
+
+                    {verificationResult && (
                         <VerificationAnimation
-                            isVerifying={isVerifying && signatureId && message}
+                            isVerifying={false}
                             result={verificationResult}
                             onComplete={handleVerificationComplete}
                         />
                     )}
 
-                    {(!isVerifying || !verificationResult) && (
+                    {!isVerifying && !verificationResult && (
                         <>
-                            {/* PHASE 7.1 : Message de récupération automatique */}
                             {signatureId && message && showContentRecovered && (
-                                <div className="verify-modern-inputs" style={{ marginBottom: '4px' }}>
-                                    <div className="verify-modern-input-card verify-modern-input-card-primary">
-                                        <div className="modern-input-icon">
-                                            <FaCheckCircle style={{ width: '28px', height: '28px', color: '#7fffa7' }} />
+                                <div className="content-recovered-notification">
+                                    <div className="content-recovered-notification-inner">
+                                        <div className="content-recovered-status-indicator"></div>
+                                        <div className="content-recovered-notification-content">
+                                            <div className="content-recovered-notification-title">
+                                                Contenu récupéré
+                                            </div>
+                                            <div className="content-recovered-notification-message">
+                                                Empreinte et message extraits de votre boîte mail
+                                            </div>
                                         </div>
-                                        <div className="modern-input-content">
-                                            <label className="modern-input-label">
-                                                ✅ Contenu récupéré avec succès
-                                            </label>
-                                            <p style={{ fontSize: '13px', color: 'var(--text-muted, #8d8ba7)', margin: '8px 0 0 0', lineHeight: '1.5' }}>
-                                                Empreinte et message extraits de votre boîte mail.
-                                            </p>
-                                        </div>
+                                        <button 
+                                            className="content-recovered-notification-close"
+                                            onClick={() => setShowContentRecovered(false)}
+                                            aria-label="Fermer"
+                                        >
+                                            <FaTimes />
+                                        </button>
                                     </div>
-                            </div>
-                        )}
+                                </div>
+                            )}
 
-                            {/* PHASE 7.1 : Message si contenu perdu */}
                             {mailContentLost && (
                                 <div className="verify-modern-inputs" style={{ marginBottom: '4px' }}>
                                     <div className="verify-modern-input-card" style={{ borderColor: 'rgba(149, 132, 255, 0.4)', background: 'linear-gradient(135deg, rgba(240, 234, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%)' }}>
@@ -436,7 +459,6 @@ function VerifyPage() {
                                 </div>
                             )}
 
-                            {/* PHASE 2.3 : Affichage du contenu récupéré */}
                             {(signatureId || message) && (
                                 <div className="verify-modern-inputs">
                                     {signatureId && (
@@ -447,18 +469,13 @@ function VerifyPage() {
                                                 </svg>
                                             </div>
                                             <div className="modern-input-content">
-                                                <label className="modern-input-label">
-                                                    Empreinte ID
-                                                </label>
-                                                <div className="modern-input-wrapper">
-                                                    <CustomTextInput
-                                                        id="signatureId"
-                                                        placeholder="0x..."
-                                                        value={signatureId}
-                                                        onChange={e => setSignatureId(e.target.value)}
-                                                        readOnly
-                                                    />
-                                                </div>
+                                                <HashDisplay
+                                                    value={signatureId}
+                                                    label="Empreinte ID"
+                                                    onCopy={async (value) => {
+                                                        await navigator.clipboard.writeText(value);
+                                                    }}
+                                                />
                                             </div>
                                         </div>
                                     )}
@@ -472,49 +489,25 @@ function VerifyPage() {
                                                 </svg>
                                             </div>
                                             <div className="modern-input-content">
-                                                <label className="modern-input-label">
-                                                    Message signé
-                                                </label>
-                                                <div className="modern-input-wrapper">
-                                                    <CustomTextInput
-                                                        id="messageInput"
-                                                        rows={3}
-                                                        placeholder="Message..."
-                                                        value={message}
-                                                        onChange={e => setMessage(e.target.value)}
-                                                        readOnly
-                                                    />
-                                                </div>
+                                                <HashDisplay
+                                                    value={message}
+                                                    label="Message signé"
+                                                    onCopy={async (value) => {
+                                                        await navigator.clipboard.writeText(value);
+                                                    }}
+                                                />
                                             </div>
                                         </div>
                                     )}
                                 </div>
                             )}
-
-                            {/* Champs cachés pour verify.js */}
-                            <div style={{ display: 'none' }}>
-                                <CustomTextInput
-                                    id="signatureId"
-                                    placeholder="0x..."
-                                    value={signatureId}
-                                    onChange={e => setSignatureId(e.target.value)}
-                                />
-                                <CustomTextInput
-                                    id="messageInput"
-                                    rows={4}
-                                    placeholder="Écris le message ici..."
-                                    value={message}
-                                    onChange={e => setMessage(e.target.value)}
-                                />
-                            </div>
-                            <p id="verify" style={{ display: 'none' }}></p>
                         </>
                     )}
+                    <p id="verify" style={{ display: 'none' }}></p>
                 </>
             ),
         },
         {
-            // PHASE 5.1 : Onglet Texte avec icône
             label: (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <FaEdit style={{ fontSize: '16px' }} />
@@ -523,18 +516,20 @@ function VerifyPage() {
             ),
             content: (
                 <>
-                    {/* PHASE 4.2 : Animation de vérification */}
-                    {(isVerifying || verificationResult) && (
+                    {isVerifying && !verificationResult && (
+                        <VerifyLoading />
+                    )}
+
+                    {verificationResult && (
                         <VerificationAnimation
-                            isVerifying={isVerifying && (signatureFile || texte1) && texte2}
+                            isVerifying={false}
                             result={verificationResult}
                             onComplete={handleVerificationComplete}
                         />
                     )}
 
-                    {(!isVerifying || !verificationResult) && (
+                    {!isVerifying && !verificationResult && (
                         <>
-                            {/* PHASE 2.2 : FormatToggle pour basculer entre textuel/image */}
                             <div className="verify-options-card">
                                 <div className="format-toggle-optional-label">
                                     <span>Format d'empreinte</span>
@@ -567,7 +562,7 @@ function VerifyPage() {
                                         <label className="modern-input-label">
                                             Empreinte
                                             {IsString && signatureValidation.isValid === false && (
-                                                <span style={{ color: '#ff6b6b', fontSize: '10px', marginLeft: '8px' }}>⚠️</span>
+                                                <span style={{ color: '#ff6b6b', fontSize: '10px', marginLeft: '8px' }}>!</span>
                                             )}
                                             {IsString && signatureValidation.isValid === true && (
                                                 <span style={{ color: '#7fffa7', fontSize: '10px', marginLeft: '8px' }}>✓</span>
@@ -630,7 +625,6 @@ function VerifyPage() {
                                     </div>
                                 </div>
 
-                                {/* PHASE 2.3 : Input Message signé */}
                                 <div className="verify-modern-input-card verify-modern-input-card-secondary">
                                     <div className="modern-input-icon">
                                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -656,14 +650,18 @@ function VerifyPage() {
                                     </div>
                                 </div>
                             </div>
-                            <p id="verify" style={{ display: 'none' }}></p>
                         </>
                     )}
+                    {/* Éléments toujours présents dans le DOM pour verify.js - Onglet Texte */}
+                    <div style={{ display: 'none' }}>
+                        <textarea id="texte2" value={texte2} onChange={() => {}} readOnly />
+                        <input id="signatureIdString" value={texte1} onChange={() => {}} readOnly />
+                    </div>
+                    <p id="verify" style={{ display: 'none' }}></p>
                 </>
             ),
         },
         {
-            // PHASE 5.1 : Onglet PDF avec icône
             label: (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <FaFileAlt style={{ fontSize: '16px' }} />
@@ -716,7 +714,7 @@ function VerifyPage() {
                                         <label className="modern-input-label">
                                             Empreinte
                                             {IsString && signatureValidation.isValid === false && (
-                                                <span style={{ color: '#ff6b6b', fontSize: '10px', marginLeft: '8px' }}>⚠️</span>
+                                                <span style={{ color: '#ff6b6b', fontSize: '10px', marginLeft: '8px' }}>!</span>
                                             )}
                                             {IsString && signatureValidation.isValid === true && (
                                                 <span style={{ color: '#7fffa7', fontSize: '10px', marginLeft: '8px' }}>✓</span>
@@ -772,14 +770,13 @@ function VerifyPage() {
                                                         </div>
                                                     )}
                         </>
-                    ) : (
+                                            ) : (
                                                 <ImageSection value={signatureFile} onChange={setSignatureFile} />
                                             )}
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* PHASE 2.3 : Input PDF signé */}
                                 <div className="verify-modern-input-card verify-modern-input-card-secondary">
                                     <div className="modern-input-icon">
                                         <FaFileAlt style={{ width: '24px', height: '24px' }} />
@@ -801,7 +798,6 @@ function VerifyPage() {
             ),
         },
         {
-            // PHASE 5.1 : Onglet Image avec icône
             label: (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <FaCamera style={{ fontSize: '16px' }} />
@@ -854,7 +850,7 @@ function VerifyPage() {
                                         <label className="modern-input-label">
                                             Empreinte
                                             {IsString && signatureValidation.isValid === false && (
-                                                <span style={{ color: '#ff6b6b', fontSize: '10px', marginLeft: '8px' }}>⚠️</span>
+                                                <span style={{ color: '#ff6b6b', fontSize: '10px', marginLeft: '8px' }}>!</span>
                                             )}
                                             {IsString && signatureValidation.isValid === true && (
                                                 <span style={{ color: '#7fffa7', fontSize: '10px', marginLeft: '8px' }}>✓</span>
@@ -917,7 +913,6 @@ function VerifyPage() {
                                     </div>
                                 </div>
 
-                                {/* PHASE 2.3 : Input Image signée */}
                                 <div className="verify-modern-input-card verify-modern-input-card-secondary">
                                     <div className="modern-input-icon">
                                         <FaCamera style={{ width: '24px', height: '24px' }} />
@@ -940,18 +935,14 @@ function VerifyPage() {
         },
     ];
 
-    // ============================================
-    // RENDU PRINCIPAL - PHASE 1, 2, 3, 4, 5
-    // ============================================
     return (
         <>
             <HeaderExpert />
             <div className="verify-page-wrapper">
                 <div className="verify-container perspective-container">
-                    {/* PHASE 1.2 : Timeline - Parcours utilisateur */}
                     <div className="verify-timeline-section">
                         <Timeline 
-                            currentStep={currentStep}
+                            currentStep={verificationResult ? 4 : currentStep}
                             steps={[
                                 { id: 1, label: 'Connexion', icon: FaCircle },
                                 { id: 2, label: 'Vérification', icon: FaCircle },
@@ -960,12 +951,10 @@ function VerifyPage() {
                         />
             </div>
 
-                    {/* PHASE 5.1 : Sélection du type de contenu */}
                     <div className="verify-tabs-section">
             <Tabs activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
                     </div>
 
-                    {/* PHASE 3.1 : Bouton de vérification sticky */}
                     <StickyButton
                     onClick={handleVerifyClick}
                         disabled={!isButtonEnabled()}
@@ -981,7 +970,6 @@ function VerifyPage() {
                 </div>
             </div>
 
-            {/* PHASE 4.1 : Modal de résultat de vérification */}
             <VerifyResultModal
                 isOpen={isResultModalOpen}
                 onClose={handleCloseModal}
@@ -989,6 +977,24 @@ function VerifyPage() {
                 signatureId={signatureId || texte1}
                 message={message || texte2}
                 activeTab={activeTab}
+            />
+            
+            <div style={{ display: 'none' }}>
+                <input
+                    type="text"
+                    id="signatureId"
+                />
+                <textarea
+                    id="messageInput"
+                />
+            </div>
+            
+            <input
+                type="checkbox"
+                id="signatureCheckbox"
+                checked={IsString === true}
+                onChange={() => {}}
+                style={{ display: 'none' }}
             />
         </>
     );

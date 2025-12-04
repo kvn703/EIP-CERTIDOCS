@@ -15,8 +15,8 @@ const Timeline = ({ currentStep = 1, steps: customSteps }) => {
       <div className="timeline-line">
         {steps.map((step, index) => {
           const StepIcon = step.icon;
-          const isActive = currentStep === step.id;
-          const isCompleted = currentStep > step.id;
+          const isActive = currentStep === step.id && currentStep <= steps.length;
+          const isCompleted = currentStep > step.id || currentStep > steps.length;
           const isPending = currentStep < step.id;
           const nextStepCompleted = index < steps.length - 1 && currentStep > step.id + 1;
 

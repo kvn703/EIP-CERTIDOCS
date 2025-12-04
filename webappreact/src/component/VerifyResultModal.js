@@ -1,17 +1,22 @@
-import React, { useEffect } from 'react';
-import { FaTimes, FaCheckCircle, FaTimesCircle, FaCopy, FaWallet } from 'react-icons/fa';
+import React, { useEffect, useState } from 'react';
+import { FaCheckCircle, FaTimesCircle, FaCopy, FaWallet, FaFingerprint, FaEnvelope, FaClock, FaShieldAlt } from 'react-icons/fa';
 import { useAppKitAccount } from "@reown/appkit/react";
 import './VerifyResultModal.css';
 
 const VerifyResultModal = ({ 
   isOpen, 
   onClose, 
-  result, // 'success' ou 'error'
+  result,
   signatureId,
   message,
   activeTab
 }) => {
   const { address } = useAppKitAccount();
+  const [copiedStates, setCopiedStates] = useState({
+    signatureId: false,
+    message: false,
+    address: false
+  });
 
   useEffect(() => {
     if (isOpen) {
@@ -34,16 +39,121 @@ const VerifyResultModal = ({
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, onClose]);
 
-  const handleCopy = (text, label) => {
-    if (text) {
+  const handleCopy = async (text, label, key) => {
+    if (!text) return;
+    
+    if (activeTab === 0 && key === 'signatureId') {
+      try {
+        const base_url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+          ? 'http://localhost:3000'
+          : 'https://certidocsweb-xnvzbr.dappling.network';
+        
+        const image_url = `${base_url}/EMAIL_SIGNATURE.png`;
+        const text_to_hide = "[CERTIDOCS]" + text;
+        
+        if (typeof window.hideTextInImage === 'function') {
+          await window.hideTextInImage(image_url, text_to_hide);
+          setCopiedStates(prev => ({ ...prev, [key]: true }));
+          setTimeout(() => {
+            setCopiedStates(prev => ({ ...prev, [key]: false }));
+          }, 2000);
+        } else if (typeof window.hideTextInImageReturnBlob === 'function') {
+          const blob = await window.hideTextInImageReturnBlob(image_url, text_to_hide);
+          
+          if (blob) {
+            await navigator.clipboard.write([
+              new ClipboardItem({ 'image/png': blob })
+            ]);
+            setCopiedStates(prev => ({ ...prev, [key]: true }));
+            setTimeout(() => {
+              setCopiedStates(prev => ({ ...prev, [key]: false }));
+            }, 2000);
+          } else {
+            throw new Error('Blob non disponible');
+          }
+        } else {
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+          img.src = image_url;
+          
+          await new Promise((resolve, reject) => {
+            img.onload = () => {
+              const canvas = document.createElement("canvas");
+              canvas.width = img.width;
+              canvas.height = img.height;
+              const ctx = canvas.getContext("2d");
+              ctx.drawImage(img, 0, 0);
+              
+              const image_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+              const data = image_data.data;
+              
+              const binary_text = text_to_hide.split('').map(char => {
+                return char.charCodeAt(0).toString(2).padStart(8, '0');
+              }).join('') + '00000000';
+              
+              for (let i = 0; i < binary_text.length; i++) {
+                if (i * 4 < data.length) {
+                  data[i * 4] = (data[i * 4] & 0xFE) | parseInt(binary_text[i], 2);
+                } else {
+                  break;
+                }
+              }
+              ctx.putImageData(image_data, 0, 0);
+              
+              canvas.toBlob(async (blob) => {
+                if (blob) {
+                  try {
+                    await navigator.clipboard.write([
+                      new ClipboardItem({ "image/png": blob })
+                    ]);
+                    resolve();
+                  } catch (err) {
+                    reject(err);
+                  }
+                } else {
+                  reject(new Error('Impossible de créer le blob'));
+                }
+              }, "image/png");
+            };
+            img.onerror = () => {
+              reject(new Error("Erreur de chargement de l'image"));
+            };
+          });
+          
+          setCopiedStates(prev => ({ ...prev, [key]: true }));
+          setTimeout(() => {
+            setCopiedStates(prev => ({ ...prev, [key]: false }));
+          }, 2000);
+        }
+      } catch (error) {
+        navigator.clipboard.writeText("[CERTIDOCS]" + text);
+        setCopiedStates(prev => ({ ...prev, [key]: true }));
+        setTimeout(() => {
+          setCopiedStates(prev => ({ ...prev, [key]: false }));
+        }, 2000);
+      }
+    } else {
       navigator.clipboard.writeText(text);
-      // Vous pouvez ajouter un toast ici si nécessaire
+      setCopiedStates(prev => ({ ...prev, [key]: true }));
+      setTimeout(() => {
+        setCopiedStates(prev => ({ ...prev, [key]: false }));
+      }, 2000);
     }
   };
 
-  const shortAddress = (addr) => {
+  const short_address = (addr) => {
     if (!addr) return '';
-    return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+    if (addr.startsWith('[CERTIDOCS]')) {
+      const clean_addr = addr.replace('[CERTIDOCS]', '');
+      if (clean_addr.length > 20) {
+        return `${clean_addr.slice(0, 12)}...${clean_addr.slice(-8)}`;
+      }
+      return clean_addr;
+    }
+    if (addr.length > 20) {
+      return `${addr.slice(0, 12)}...${addr.slice(-8)}`;
+    }
+    return addr;
   };
 
   if (!isOpen) return null;
@@ -59,14 +169,6 @@ const VerifyResultModal = ({
         aria-modal="true"
         aria-labelledby="verify-modal-title"
       >
-        <button
-          className="verify-result-modal-close"
-          onClick={onClose}
-          aria-label="Fermer la modal"
-        >
-          <FaTimes />
-        </button>
-        
         <div className="verify-result-modal-header">
           <div className={`verify-result-modal-icon-container ${isSuccess ? 'success' : 'error'}`}>
             {isSuccess ? (
@@ -88,10 +190,12 @@ const VerifyResultModal = ({
         </div>
 
         <div className="verify-result-modal-body">
-          {/* Détails de vérification */}
           <div className="verify-result-details-card">
             <div className="verify-result-detail-item">
-              <span className="verify-detail-label">Statut :</span>
+              <span className="verify-detail-label">
+                <FaShieldAlt className="verify-detail-label-icon" />
+                Statut
+              </span>
               <span className={`verify-detail-value ${isSuccess ? 'success' : 'error'}`}>
                 {isSuccess ? 'Authentique' : 'Non authentique'}
               </span>
@@ -99,59 +203,89 @@ const VerifyResultModal = ({
             
             {signatureId && (
               <div className="verify-result-detail-item">
-                <span className="verify-detail-label">Empreinte ID :</span>
+                <span className="verify-detail-label">
+                  <FaFingerprint className="verify-detail-label-icon verify-detail-label-icon-purple" />
+                  Empreinte ID
+                </span>
                 <div className="verify-detail-value-with-copy">
-                  <span className="verify-detail-value">{shortAddress(signatureId)}</span>
-                  <button
-                    className="verify-copy-button"
-                    onClick={() => handleCopy(signatureId, 'Empreinte ID')}
-                    aria-label="Copier l'empreinte ID"
-                  >
-                    <FaCopy />
-                  </button>
+                  <span className="verify-detail-value verify-signature-id-value">{short_address(signatureId)}</span>
+                  <div style={{ position: 'relative' }}>
+                    <button
+                      className={`verify-copy-button ${copiedStates.signatureId ? 'copied' : ''}`}
+                      onClick={() => handleCopy(signatureId, 'Empreinte ID', 'signatureId')}
+                      aria-label="Copier l'empreinte ID"
+                    >
+                      <FaCopy />
+                    </button>
+                    {copiedStates.signatureId && (
+                      <div className="verify-copy-feedback">
+                        ✓ Copié !
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
 
             {message && (
               <div className="verify-result-detail-item">
-                <span className="verify-detail-label">Message vérifié :</span>
+                <span className="verify-detail-label">
+                  <FaEnvelope className="verify-detail-label-icon" />
+                  Message vérifié
+                </span>
                 <div className="verify-detail-value-with-copy">
                   <span className="verify-detail-value message-preview">
                     {message.length > 50 ? `${message.slice(0, 50)}...` : message}
                   </span>
-                  <button
-                    className="verify-copy-button"
-                    onClick={() => handleCopy(message, 'Message')}
-                    aria-label="Copier le message"
-                  >
-                    <FaCopy />
-                  </button>
+                  <div style={{ position: 'relative' }}>
+                    <button
+                      className={`verify-copy-button ${copiedStates.message ? 'copied' : ''}`}
+                      onClick={() => handleCopy(message, 'Message', 'message')}
+                      aria-label="Copier le message"
+                    >
+                      <FaCopy />
+                    </button>
+                    {copiedStates.message && (
+                      <div className="verify-copy-feedback">
+                        ✓ Copié !
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
 
             {address && (
               <div className="verify-result-detail-item">
-                <span className="verify-detail-label">Wallet utilisé :</span>
+                <span className="verify-detail-label">
+                  <FaWallet className="verify-detail-label-icon" />
+                  Wallet utilisé
+                </span>
                 <div className="verify-detail-value-with-copy">
-                  <div className="verify-wallet-info">
-                    <FaWallet className="verify-wallet-icon" />
-                    <span className="verify-detail-value">{shortAddress(address)}</span>
+                  <span className="verify-detail-value">{short_address(address)}</span>
+                  <div style={{ position: 'relative' }}>
+                    <button
+                      className={`verify-copy-button ${copiedStates.address ? 'copied' : ''}`}
+                      onClick={() => handleCopy(address, 'Adresse wallet', 'address')}
+                      aria-label="Copier l'adresse wallet"
+                    >
+                      <FaCopy />
+                    </button>
+                    {copiedStates.address && (
+                      <div className="verify-copy-feedback">
+                        ✓ Copié !
+                      </div>
+                    )}
                   </div>
-                  <button
-                    className="verify-copy-button"
-                    onClick={() => handleCopy(address, 'Adresse wallet')}
-                    aria-label="Copier l'adresse wallet"
-                  >
-                    <FaCopy />
-                  </button>
                 </div>
               </div>
             )}
 
             <div className="verify-result-detail-item">
-              <span className="verify-detail-label">Timestamp :</span>
+              <span className="verify-detail-label">
+                <FaClock className="verify-detail-label-icon" />
+                Timestamp
+              </span>
               <span className="verify-detail-value">{new Date().toLocaleString('fr-FR')}</span>
             </div>
           </div>

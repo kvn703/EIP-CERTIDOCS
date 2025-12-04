@@ -61,44 +61,81 @@
   position: absolute;
   top: 20px;
   right: 20px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 2px solid rgba(149, 132, 255, 0.3);
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(149, 132, 255, 0.2);
   background: linear-gradient(135deg, 
     rgba(255, 255, 255, 0.95) 0%, 
-    rgba(255, 255, 255, 0.9) 100%);
-  color: var(--text-main, #2d2346);
+    rgba(255, 255, 255, 0.85) 100%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  color: #9584ff;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  z-index: 100;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
   font-size: 18px;
+  font-weight: 600;
   box-shadow: 
-    0 4px 12px rgba(149, 132, 255, 0.2),
-    0 2px 6px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+    0 4px 16px rgba(149, 132, 255, 0.15),
+    0 2px 8px rgba(149, 132, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(149, 132, 255, 0.05);
+  overflow: hidden;
+  position: relative;
+}
+
+.result-modal-close::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.1) 0%, 
+    rgba(255, 142, 142, 0.05) 100%);
+  opacity: 0;
+  transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+
+.result-modal-close > * {
+  position: relative;
+  z-index: 1;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .result-modal-close:hover {
   background: linear-gradient(135deg, 
     rgba(255, 107, 107, 0.95) 0%, 
-    rgba(255, 135, 135, 0.9) 100%);
-  border-color: rgba(255, 107, 107, 0.5);
+    rgba(255, 142, 142, 0.9) 100%);
   color: white;
-  transform: scale(1.15) rotate(90deg);
+  border-color: rgba(255, 107, 107, 0.4);
+  transform: translateY(-2px) scale(1.05);
   box-shadow: 
-    0 6px 20px rgba(255, 107, 107, 0.4),
-    0 3px 10px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    0 8px 24px rgba(255, 107, 107, 0.35),
+    0 4px 12px rgba(255, 107, 107, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+}
+
+.result-modal-close:hover::before {
+  opacity: 1;
+}
+
+.result-modal-close:hover > * {
+  transform: rotate(90deg) scale(1.1);
 }
 
 .result-modal-close:active {
-  transform: scale(1.05) rotate(90deg);
+  transform: translateY(0) scale(0.98);
+  box-shadow: 
+    0 2px 8px rgba(255, 107, 107, 0.3),
+    inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .result-modal-header {
@@ -251,26 +288,34 @@
 
 [data-theme="dark"] .result-modal-close {
   background: linear-gradient(135deg, 
-    rgba(26, 21, 37, 0.95) 0%, 
+    rgba(45, 37, 64, 0.95) 0%, 
     rgba(37, 32, 48, 0.9) 100%);
-  border-color: rgba(149, 132, 255, 0.4);
-  color: var(--text-main, #f5f0ff);
+  border-color: rgba(149, 132, 255, 0.3);
+  color: #b8aaff;
   box-shadow: 
-    0 4px 12px rgba(0, 0, 0, 0.5),
-    0 2px 6px rgba(149, 132, 255, 0.2),
-    inset 0 1px 0 rgba(149, 132, 255, 0.15);
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 2px 8px rgba(149, 132, 255, 0.15),
+    inset 0 1px 0 rgba(149, 132, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .result-modal-close::before {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.15) 0%, 
+    rgba(255, 142, 142, 0.1) 100%);
 }
 
 [data-theme="dark"] .result-modal-close:hover {
   background: linear-gradient(135deg, 
-    rgba(255, 107, 107, 0.9) 0%, 
-    rgba(255, 135, 135, 0.85) 100%);
-  border-color: rgba(255, 107, 107, 0.6);
+    rgba(255, 107, 107, 0.95) 0%, 
+    rgba(255, 142, 142, 0.9) 100%);
   color: white;
+  border-color: rgba(255, 107, 107, 0.5);
   box-shadow: 
-    0 6px 20px rgba(255, 107, 107, 0.5),
-    0 3px 10px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    0 8px 24px rgba(255, 107, 107, 0.4),
+    0 4px 12px rgba(255, 107, 107, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
 }
 
 [data-theme="dark"] .result-modal-header {

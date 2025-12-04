@@ -69,19 +69,46 @@ const GeneratePage = () => {
         window.dispatchEvent(new CustomEvent('imageFileSelected', { detail: file }));
     };
 
+    // Récupération des paramètres URL pour le mail
     useEffect(() => {
-        // Ici, tu dois mettre la logique qui récupère le message de confirmation
-        // Par exemple, depuis une API, un state global, etc.
-        // Pour l'exemple, on check si le message de confirmation est dans le DOM
-        const confirmationDiv = document.getElementById("confirmationMessage");
-        if (confirmationDiv && confirmationDiv.style.display !== "none") {
-            setMailMessage("Votre message a bien été récupéré.");
-            setActiveTab(0); // Onglet Mail par défaut
+        const urlParams = new URLSearchParams(window.location.search);
+        const messageHash = urlParams.get("messageHash");
+        
+        if (messageHash) {
+            // Si on a un messageHash dans l'URL, on est sur l'onglet Mail
+            setMailMessage(messageHash);
+            setActiveTab(0); // Onglet Mail
+            // Afficher le message de confirmation
+            const confirmationDiv = document.getElementById("confirmationMessage");
+            if (confirmationDiv) {
+                confirmationDiv.style.display = "block";
+            }
         } else {
-            setMailMessage("");
-            setActiveTab(1); // Onglet Texte par défaut
+            // Sinon, vérifier si le message de confirmation est dans le DOM (pour compatibilité avec script.js)
+            const confirmationDiv = document.getElementById("confirmationMessage");
+            if (confirmationDiv && confirmationDiv.style.display !== "none") {
+                setMailMessage("Votre message a bien été récupéré.");
+                setActiveTab(0); // Onglet Mail par défaut
+            } else {
+                setMailMessage("");
+                setActiveTab(1); // Onglet Texte par défaut
+            }
         }
     }, []);
+
+    // Synchroniser l'input caché messageInput avec mailMessage (onglet Mail) ou texteValue (onglet Texte)
+    useEffect(() => {
+        const messageInput = document.getElementById("messageInput");
+        if (messageInput) {
+            if (activeTab === 0) {
+                // Onglet Mail - synchroniser avec mailMessage
+                messageInput.value = mailMessage || '';
+            } else if (activeTab === 1) {
+                // Onglet Texte - synchroniser avec texteValue
+                messageInput.value = texteValue || '';
+            }
+        }
+    }, [mailMessage, texteValue, activeTab]);
 
     const launchConfetti = () => {
         confetti({
@@ -255,18 +282,34 @@ const GeneratePage = () => {
 
     // État pour forcer la mise à jour de la timeline
     const [currentStep, setCurrentStep] = useState(1);
+    const [hasSignatureCompleted, setHasSignatureCompleted] = useState(false);
+
+    // Mettre à jour currentStep à 4 (pour marquer l'étape 3 comme complétée) quand la signature est générée
+    useEffect(() => {
+        if (signed && signature) {
+            setCurrentStep(4);
+            setHasSignatureCompleted(true);
+        }
+    }, [signed, signature]);
 
     // Calcul et mise à jour de l'étape actuelle pour la timeline
     useEffect(() => {
+        // Si l'empreinte est complétée, toujours rester à l'étape 4 (pour marquer l'étape 3 comme complétée)
+        if (hasSignatureCompleted) {
+            setCurrentStep(4);
+            return;
+        }
+
         const calculateStep = () => {
             // Vérifier aussi dans le DOM au cas où les états React ne sont pas à jour
             const statusEl = document.getElementById("status");
             const hasSignatureInDOM = statusEl?.querySelector(".signature-id") !== null;
             const signatureCard = document.querySelector('[aria-label*="Empreinte"]');
             
-            // Étape 3 : Empreinte générée
+            // Étape 3 : Empreinte générée - mettre à 4 pour marquer comme complétée
             if ((signed && signature) || hasSignatureInDOM || signatureCard) {
-                setCurrentStep(3);
+                setCurrentStep(4);
+                setHasSignatureCompleted(true);
                 return;
             }
             
@@ -292,7 +335,7 @@ const GeneratePage = () => {
         const interval = setInterval(calculateStep, 300);
         
         return () => clearInterval(interval);
-    }, [signed, signature, texteValue, mailMessage, pdfFile, imageFile, activeTab, recipients]);
+    }, [hasSignatureCompleted, signed, signature, texteValue, mailMessage, pdfFile, imageFile, activeTab, recipients]);
 
     // Fonction pour déterminer si le bouton peut être activé
     // IMPORTANT: Cette fonction ne dépend PAS de IsString (format choisi)
@@ -359,9 +402,24 @@ const GeneratePage = () => {
 
         // Écouter les changements dans les champs DOM
         const messageInput = document.getElementById("messageInput");
-        if (messageInput) {
-            messageInput.addEventListener('input', updateButtonState);
-            messageInput.addEventListener('change', updateButtonState);
+        const messageTextarea = document.getElementById("messageTextarea");
+        
+        // Synchroniser l'input caché avec le textarea pour l'onglet Texte
+        let syncInput;
+        if (messageTextarea) {
+            syncInput = () => {
+                if (activeTab === 1 && messageInput) {
+                    messageInput.value = messageTextarea.value;
+                }
+                updateButtonState();
+            };
+            messageTextarea.addEventListener('input', syncInput);
+            messageTextarea.addEventListener('change', syncInput);
+            
+            // Synchroniser immédiatement
+            if (activeTab === 1 && messageInput) {
+                messageInput.value = messageTextarea.value;
+            }
         }
 
         // Écouter les événements de sélection de fichier
@@ -379,9 +437,9 @@ const GeneratePage = () => {
         const interval = setInterval(updateButtonState, 500);
 
         return () => {
-            if (messageInput) {
-                messageInput.removeEventListener('input', updateButtonState);
-                messageInput.removeEventListener('change', updateButtonState);
+            if (messageTextarea && syncInput) {
+                messageTextarea.removeEventListener('input', syncInput);
+                messageTextarea.removeEventListener('change', syncInput);
             }
             window.removeEventListener('imageFileSelected', handleImageFileSelected);
             window.removeEventListener('pdfFileSelected', handlePdfFileSelected);
@@ -423,7 +481,7 @@ const GeneratePage = () => {
                                     </label>
                                     <div className="modern-input-wrapper">
                                         <CustomTextInput
-                                            id="messageInput"
+                                            id="messageTextarea"
                                             rows="4"
                                             placeholder="Saisissez votre message..."
                                             value={texteValue}
@@ -436,6 +494,13 @@ const GeneratePage = () => {
                         )}
 
                         <div id="confirmationMessage" style={{ display: 'none' }}></div>
+                        
+                        {/* Input caché pour script.js - synchronisé avec mailMessage (onglet Mail) ou texteValue (onglet Texte) */}
+                        <input
+                            type="hidden"
+                            id="messageInput"
+                            readOnly
+                        />
 
                         {/* Séparateur visuel élégant */}
                         {!mailMessage && activeTab === 1 && (
@@ -480,72 +545,62 @@ const GeneratePage = () => {
 
                     {/* Options - Format d'empreinte (optionnel, pour tous les onglets sauf Mail) */}
                     {activeTab !== 0 && (
-                        <>
-                            <div className="generate-options-card">
-                                <div className="format-toggle-optional-label">
-                                    <span>Format d'empreinte</span>
-                                </div>
-                                <FormatToggle 
-                                    value={IsString === null ? false : IsString} 
-                                    onChange={(value) => {
-                                        setIsString(value);
-                                    }} 
-                                />
-                                {/* Checkbox cachée pour script.js - synchronisée avec IsString */}
-                                <input
-                                    type="checkbox"
-                                    id="signatureCheckbox"
-                                    checked={IsString === true}
-                                    onChange={() => {}}
-                                    style={{ display: 'none' }}
-                                />
+                        <div className="generate-options-card">
+                            <div className="format-toggle-optional-label">
+                                <span>Format d'empreinte</span>
                             </div>
-                            
-                            {/* Bouton Sticky - Placé juste en dessous du FormatToggle, en dehors du conteneur */}
-                            <StickyButton
-                                onClick={async () => {
-                                    // Utiliser l'état React au lieu d'appeler la fonction
-                                    if (!buttonEnabledState) {
-                                        return;
-                                    }
-                                    
-                                    // S'assurer que la checkbox est correctement synchronisée (même si IsString est null)
-                                    const checkbox = document.getElementById("signatureCheckbox");
-                                    if (checkbox) {
-                                        // Si IsString est null, utiliser false (Image) par défaut
-                                        checkbox.checked = IsString === true;
-                                    }
-                                    
-                                    // Activer le bouton caché avant de cliquer
-                                    const signBtn = document.getElementById("signMessage");
-                                    if (signBtn) {
-                                        // Forcer l'activation du bouton (le format est optionnel)
-                                        signBtn.disabled = false;
-                                        
-                                        // Marquer comme en cours de génération AVANT le clic
-                                        setIsGenerating(true);
-                                        
-                                        // Vérifier si la fonction signMessage existe globalement
-                                        if (typeof window.signMessage === 'function') {
-                                            try {
-                                                await window.signMessage();
-                                            } catch (error) {
-                                                setIsGenerating(false);
-                                            }
-                                        } else {
-                                            // Fallback : cliquer sur le bouton caché
-                                            signBtn.click();
-                                        }
-                                    } else {
-                                        setIsGenerating(false);
-                                    }
-                                }}
-                                disabled={!buttonEnabledState}
-                                isLoading={isGenerating}
-                                isSuccess={isSuccess}
+                            <FormatToggle 
+                                value={IsString === null ? false : IsString} 
+                                onChange={(value) => {
+                                    setIsString(value);
+                                }} 
                             />
-                        </>
+                        </div>
                     )}
+                    
+                    {/* Checkbox cachée pour script.js - toujours présente dans le DOM */}
+                    <input
+                        type="checkbox"
+                        id="signatureCheckbox"
+                        checked={IsString === true}
+                        onChange={() => {}}
+                        style={{ display: 'none' }}
+                    />
+                    
+                    {/* Bouton Sticky - Visible pour tous les onglets */}
+                    <StickyButton
+                        onClick={() => {
+                            // Utiliser l'état React au lieu d'appeler la fonction
+                            if (!buttonEnabledState) {
+                                return;
+                            }
+                            
+                            // S'assurer que la checkbox est correctement synchronisée (même si IsString est null)
+                            const checkbox = document.getElementById("signatureCheckbox");
+                            if (checkbox) {
+                                // Si IsString est null, utiliser false (Image) par défaut
+                                checkbox.checked = IsString === true;
+                            }
+                            
+                            // Cliquer sur le bouton caché qui déclenchera signMessage via script.js
+                            const signBtn = document.getElementById("signMessage");
+                            if (signBtn) {
+                                // Forcer l'activation du bouton (le format est optionnel)
+                                signBtn.disabled = false;
+                                
+                                // Marquer comme en cours de génération AVANT le clic
+                                setIsGenerating(true);
+                                
+                                // Cliquer sur le bouton caché (comme avant)
+                                signBtn.click();
+                            } else {
+                                setIsGenerating(false);
+                            }
+                        }}
+                        disabled={!buttonEnabledState}
+                        isLoading={isGenerating}
+                        isSuccess={isSuccess}
+                    />
 
                     {/* Bouton de génération (caché, utilisé par script.js) */}
                     <button

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { FaTimes, FaCheckCircle } from 'react-icons/fa';
+import { FaCheckCircle } from 'react-icons/fa';
 import SignatureCard from './SignatureCard';
 import './ResultModal.css';
 
@@ -36,14 +36,6 @@ const ResultModal = ({ isOpen, onClose, signature, onCopy, isString, activeTab }
         aria-modal="true"
         aria-labelledby="modal-title"
       >
-        <button
-          className="result-modal-close"
-          onClick={onClose}
-          aria-label="Fermer la modal"
-        >
-          <FaTimes />
-        </button>
-        
         <div className="result-modal-header">
           <div className="result-modal-success-icon">
             <FaCheckCircle />

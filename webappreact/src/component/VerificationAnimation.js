@@ -49,7 +49,8 @@ const VerificationAnimation = ({ isVerifying, result, onComplete }) => {
 
     return (
         <div className="verification-animation-container" style={{ marginTop: isVerifying ? '20px' : '0' }}>
-            {isVerifying && (
+            {/* Masqué : partie "Vérification en cours" */}
+            {/* {isVerifying && (
                 <div className="verification-loading">
                     <div className="verification-header">
                         <div className="verification-icon-container">
@@ -60,7 +61,7 @@ const VerificationAnimation = ({ isVerifying, result, onComplete }) => {
                         <p className="verification-subtitle">Analyse de votre signature électronique</p>
                     </div>
                 </div>
-            )}
+            )} */}
 
             {result && (
                 <div className={`verification-result ${result === 'success' ? 'success' : 'error'}`}>

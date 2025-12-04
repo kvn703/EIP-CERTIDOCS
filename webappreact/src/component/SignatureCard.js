@@ -9,12 +9,101 @@ export default function SignatureCard({ signature, onCopy, isString, activeTab }
   const [downloading, setDownloading] = useState(false);
   const [isReducing, setIsReducing] = useState(false);
 
-  const handleCopy = () => {
+  const handleCopy = async () => {
     if (!signature) return;
-    navigator.clipboard.writeText("[CERTIDOCS]" + signature);
-    setCopied(true);
-    if (onCopy) onCopy();
-    setTimeout(() => setCopied(false), 2000);
+    
+    if (activeTab === 0) {
+      try {
+        const base_url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+          ? 'http://localhost:3000'
+          : 'https://certidocsweb-xnvzbr.dappling.network';
+        
+        const image_url = `${base_url}/EMAIL_SIGNATURE.png`;
+        const text_to_hide = "[CERTIDOCS]" + signature;
+        
+        if (typeof window.hideTextInImage === 'function') {
+          await window.hideTextInImage(image_url, text_to_hide);
+          setCopied(true);
+          if (onCopy) onCopy();
+          setTimeout(() => setCopied(false), 2000);
+        } else if (typeof window.hideTextInImageReturnBlob === 'function') {
+          const blob = await window.hideTextInImageReturnBlob(image_url, text_to_hide);
+          
+          if (blob) {
+            await navigator.clipboard.write([
+              new ClipboardItem({ 'image/png': blob })
+            ]);
+            setCopied(true);
+            if (onCopy) onCopy();
+            setTimeout(() => setCopied(false), 2000);
+          } else {
+            throw new Error('Blob non disponible');
+          }
+        } else {
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+          img.src = image_url;
+          
+          await new Promise((resolve, reject) => {
+            img.onload = () => {
+              const canvas = document.createElement("canvas");
+              canvas.width = img.width;
+              canvas.height = img.height;
+              const ctx = canvas.getContext("2d");
+              ctx.drawImage(img, 0, 0);
+              
+              const image_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+              const data = image_data.data;
+              
+              const binary_text = text_to_hide.split('').map(char => {
+                return char.charCodeAt(0).toString(2).padStart(8, '0');
+              }).join('') + '00000000';
+              
+              for (let i = 0; i < binary_text.length; i++) {
+                if (i * 4 < data.length) {
+                  data[i * 4] = (data[i * 4] & 0xFE) | parseInt(binary_text[i], 2);
+                } else {
+                  break;
+                }
+              }
+              ctx.putImageData(image_data, 0, 0);
+              
+              canvas.toBlob(async (blob) => {
+                if (blob) {
+                  try {
+                    await navigator.clipboard.write([
+                      new ClipboardItem({ "image/png": blob })
+                    ]);
+                    resolve();
+                  } catch (err) {
+                    reject(err);
+                  }
+                } else {
+                  reject(new Error('Impossible de créer le blob'));
+                }
+              }, "image/png");
+            };
+            img.onerror = () => {
+              reject(new Error("Erreur de chargement de l'image"));
+            };
+          });
+          
+          setCopied(true);
+          if (onCopy) onCopy();
+          setTimeout(() => setCopied(false), 2000);
+        }
+      } catch (error) {
+        navigator.clipboard.writeText("[CERTIDOCS]" + signature);
+        setCopied(true);
+        if (onCopy) onCopy();
+        setTimeout(() => setCopied(false), 2000);
+      }
+    } else {
+      navigator.clipboard.writeText("[CERTIDOCS]" + signature);
+      setCopied(true);
+      if (onCopy) onCopy();
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   const handleDownload = async () => {
@@ -23,20 +112,18 @@ export default function SignatureCard({ signature, onCopy, isString, activeTab }
     setDownloading(true);
     
     try {
-      // Utiliser la fonction globale de script.js si disponible
       if (typeof window.hideTextInImageReturnBlob === 'function') {
-        // Déterminer l'URL de l'image selon l'onglet
-        const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        const base_url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
           ? 'http://localhost:3000'
           : 'https://certidocsweb-xnvzbr.dappling.network';
         
-        const imageUrl =
-          activeTab === 0 ? `${baseUrl}/EMAIL_SIGNATURE.png` :
-          activeTab === 1 ? `${baseUrl}/TEXT_SIGNATURE.png` :
-          activeTab === 2 ? `${baseUrl}/PDF_SIGNATURE.png` :
-          `${baseUrl}/IMAGE_SIGNATURE.png`;
+        const image_url =
+          activeTab === 0 ? `${base_url}/EMAIL_SIGNATURE.png` :
+          activeTab === 1 ? `${base_url}/TEXT_SIGNATURE.png` :
+          activeTab === 2 ? `${base_url}/PDF_SIGNATURE.png` :
+          `${base_url}/IMAGE_SIGNATURE.png`;
 
-        const blob = await window.hideTextInImageReturnBlob(imageUrl, "[CERTIDOCS]" + signature);
+        const blob = await window.hideTextInImageReturnBlob(image_url, "[CERTIDOCS]" + signature);
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
@@ -45,21 +132,16 @@ export default function SignatureCard({ signature, onCopy, isString, activeTab }
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        // Téléchargement réussi
-      } else {
-        // Fonction non disponible
       }
     } catch (error) {
-      // Erreur silencieuse
     } finally {
       setDownloading(false);
     }
   };
 
-  const displaySignature = showFull ? signature : (signature ? `${signature.slice(0,8)}...${signature.slice(-4)}` : '');
+  const display_signature = showFull ? signature : (signature ? `${signature.slice(0,8)}...${signature.slice(-4)}` : '');
   
-  // Classe conditionnelle pour l'affichage complet ou la réduction
-  const valueClassName = isReducing
+  const value_class_name = isReducing
     ? `${styles.value} ${styles.valueReducing}`
     : showFull 
       ? `${styles.value} ${styles.valueFull}` 
@@ -76,12 +158,12 @@ export default function SignatureCard({ signature, onCopy, isString, activeTab }
         </div>
         <div className={styles.rowCompact}>
           <div 
-            className={valueClassName}
+            className={value_class_name}
             title={signature}
             onMouseEnter={() => setShowTooltip(true)}
             onMouseLeave={() => setShowTooltip(false)}
           >
-            {displaySignature}
+            {display_signature}
             {showTooltip && signature && (
               <div className={styles.valueTooltip}>
                 {signature}
@@ -103,10 +185,8 @@ export default function SignatureCard({ signature, onCopy, isString, activeTab }
               className={styles.viewFullBtn}
               onClick={() => {
                 setIsReducing(true);
-                // Attendre que l'animation se joue avant de changer showFull
                 setTimeout(() => {
                   setShowFull(false);
-                  // Nettoyer l'état après l'animation
                   setTimeout(() => setIsReducing(false), 1100);
                 }, 50);
               }}
@@ -153,7 +233,6 @@ export default function SignatureCard({ signature, onCopy, isString, activeTab }
               )}
             </div>
             
-            {/* Bouton de téléchargement - seulement pour le format Image (isString !== true) */}
             {isString !== true && (
               <button
                 className={`${styles.downloadBtn} ${downloading ? styles.downloading : ''}`}
@@ -170,7 +249,6 @@ export default function SignatureCard({ signature, onCopy, isString, activeTab }
             )}
           </div>
           
-          {/* Texte d'aide - différent selon le format */}
           {isString !== true && (
             <span className={styles.helpText} style={{ textAlign: 'center', display: 'block', width: '100%', marginTop: '8px' }}>
               Téléchargez l'empreinte image pour l'intégrer dans vos documents
