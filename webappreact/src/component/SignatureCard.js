@@ -100,8 +100,8 @@ export default function SignatureCard({ signature, onCopy, isString, activeTab }
       }
     } else {
       navigator.clipboard.writeText("[CERTIDOCS]" + signature);
-      setCopied(true);
-      if (onCopy) onCopy();
+    setCopied(true);
+    if (onCopy) onCopy();
       setTimeout(() => setCopied(false), 2000);
     }
   };
@@ -224,8 +224,8 @@ export default function SignatureCard({ signature, onCopy, isString, activeTab }
                       <rect x="9" y="8" width="6" height="2" rx="1" fill="currentColor" opacity="0.6"/>
                     </svg>
               )}
-                </span>
-              </button>
+            </span>
+          </button>
               {copied && (
                 <div className={styles.copyFeedback}>
                   ✓ Copié !

@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { FaShieldAlt, FaCheckCircle, FaTimesCircle, FaSpinner } from 'react-icons/fa';
+import React, { useEffect } from 'react';
+import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import './VerificationAnimation.css';
 
 const VerificationAnimation = ({ isVerifying, result, onComplete }) => {
-    const [step, setStep] = useState(0);
-    const [progress, setProgress] = useState(0);
 
     const verificationSteps = [
         { icon: "🔍", label: "Analyse de la signature", color: "#9584ff" },
@@ -15,24 +13,9 @@ const VerificationAnimation = ({ isVerifying, result, onComplete }) => {
 
     useEffect(() => {
         if (isVerifying) {
-            setStep(0);
-            setProgress(0);
-
-            const interval = setInterval(() => {
-                setStep(prev => {
-                    if (prev < verificationSteps.length - 1) {
-                        setProgress(((prev + 1) / verificationSteps.length) * 100);
-                        return prev + 1;
-                    } else {
-                        clearInterval(interval);
-                        return prev;
-                    }
-                });
-            }, 800);
-
-            return () => clearInterval(interval);
+            // Logique de progression pour future utilisation
         }
-    }, [isVerifying, verificationSteps.length]);
+    }, [isVerifying]);
 
     useEffect(() => {
         if (result && onComplete) {

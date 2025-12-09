@@ -7,14 +7,13 @@ import "../CSS/verifyLayout.css";
 import CustomTextInput from "../component/CustomTextInput";
 import StickyButton from "../component/StickyButton";
 import { useAppKitAccount } from "@reown/appkit/react";
-import { FaInbox, FaEdit, FaFileAlt, FaCamera, FaCircle, FaCheckCircle, FaTimes } from "react-icons/fa";
+import { FaInbox, FaEdit, FaFileAlt, FaCamera, FaCircle, FaTimes } from "react-icons/fa";
 import Tabs from "../component/Tabs";
 import "../component/Tabs.css";
 import PDFSection from "../component/PdfPage/PDFSection";
 import ImageSection from "../component/PdfPage/ImageSection";
 import VerificationAnimation from "../component/VerificationAnimation";
 import VerifyLoading from "../component/VerifyLoading";
-import HeaderExpert from "../component/HeaderExpert";
 import Timeline from "../component/Timeline";
 import FormatToggle from "../component/FormatToggle";
 import VerifyResultModal from "../component/VerifyResultModal";
@@ -173,7 +172,27 @@ function VerifyPage() {
     }, [activeTab]);
 
     useEffect(() => {
+        // Ne pas vérifier si on n'est pas en train de vérifier ou si le résultat est déjà traité
+        if (!isVerifying || resultProcessedRef.current || verificationResult) {
+            return;
+        }
+
+        let timeoutId;
+        let checkCount = 0;
+        const maxChecks = 60; // Maximum 30 secondes (60 * 500ms)
+
         const check_verification_result = () => {
+            checkCount++;
+            
+            // Timeout de sécurité : arrêter après 30 secondes
+            if (checkCount > maxChecks) {
+                setIsVerifying(false);
+                setVerificationResult('error');
+                setHasVerificationCompleted(true);
+                setCurrentStep(4);
+                return;
+            }
+
             const verify_element = document.getElementById("verify");
             if (verify_element && !resultProcessedRef.current) {
                 const text = verify_element.innerText;
@@ -200,8 +219,11 @@ function VerifyPage() {
         };
 
         const interval = setInterval(check_verification_result, 500);
-        return () => clearInterval(interval);
-    }, [resultProcessedRef]);
+        return () => {
+            clearInterval(interval);
+            if (timeoutId) clearTimeout(timeoutId);
+        };
+    }, [isVerifying, verificationResult]);
     const handleReloadMailContent = () => {
         setIsReloading(true);
         setTimeout(() => {
@@ -420,8 +442,8 @@ function VerifyPage() {
                                             <FaTimes />
                                         </button>
                                     </div>
-                                </div>
-                            )}
+                            </div>
+                        )}
 
                             {mailContentLost && (
                                 <div className="verify-modern-inputs" style={{ marginBottom: '4px' }}>
@@ -770,7 +792,7 @@ function VerifyPage() {
                                                         </div>
                                                     )}
                         </>
-                                            ) : (
+                    ) : (
                                                 <ImageSection value={signatureFile} onChange={setSignatureFile} />
                                             )}
                                         </div>
@@ -937,7 +959,6 @@ function VerifyPage() {
 
     return (
         <>
-            <HeaderExpert />
             <div className="verify-page-wrapper">
                 <div className="verify-container perspective-container">
                     <div className="verify-timeline-section">

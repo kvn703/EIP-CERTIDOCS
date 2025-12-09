@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './HeaderExpert.css';
 import '../CSS/modern2025.css';
-import { FaWallet, FaRegCopy, FaCog, FaSignOutAlt } from 'react-icons/fa';
+import { FaWallet, FaRegCopy, FaCog, FaSignOutAlt, FaFingerprint, FaCheckCircle } from 'react-icons/fa';
 import { useAppKitAccount, useDisconnect, modal } from '@reown/appkit/react';
 
 const HeaderExpert = ({ showProgress = false, currentStep = 0, steps = [] }) => {
   const { isConnected, address } = useAppKitAccount();
   const { disconnect } = useDisconnect();
   const [copied, setCopied] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  const isGeneratePage = location.pathname === '/';
+  const isVerifyPage = location.pathname === '/verify';
 
   const handleCopy = () => {
     if (address) {
@@ -55,7 +61,30 @@ const HeaderExpert = ({ showProgress = false, currentStep = 0, steps = [] }) => 
         <div className="header-title-modern">
           <h1 className="title-modern">CERTIDOCS</h1>
         </div>
+        
+        {/* Navigation entre Générer et Vérifier - À côté du titre */}
+        <div className="header-navigation">
+          <button
+            className={`header-nav-btn ${isGeneratePage ? 'active' : ''}`}
+            onClick={() => navigate('/')}
+            aria-label="Page Générer"
+            title="Générer une empreinte"
+          >
+            <FaFingerprint className="header-nav-icon" />
+            <span className="header-nav-text">Générer</span>
+          </button>
+          <button
+            className={`header-nav-btn ${isVerifyPage ? 'active' : ''}`}
+            onClick={() => navigate('/verify')}
+            aria-label="Page Vérifier"
+            title="Vérifier une empreinte"
+          >
+            <FaCheckCircle className="header-nav-icon" />
+            <span className="header-nav-text">Vérifier</span>
+          </button>
+        </div>
     </div>
+    
     <div className="header-actions">
         {isConnected && address ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -98,7 +127,14 @@ const HeaderExpert = ({ showProgress = false, currentStep = 0, steps = [] }) => 
               title="Paramètres"
               aria-label="Paramètres"
             >
-              <FaCog />
+              <FaCog style={{ 
+                width: '18px', 
+                height: '18px', 
+                color: '#9584ff', 
+                fill: '#9584ff',
+                display: 'block',
+                flexShrink: 0
+              }} />
             </button>
             <button 
               className="header-action-btn-compact header-action-btn-danger" 
@@ -106,7 +142,14 @@ const HeaderExpert = ({ showProgress = false, currentStep = 0, steps = [] }) => 
               title="Déconnecter"
               aria-label="Déconnecter"
             >
-              <FaSignOutAlt />
+              <FaSignOutAlt style={{ 
+                width: '18px', 
+                height: '18px', 
+                color: '#ff6b6b', 
+                fill: '#ff6b6b',
+                display: 'block',
+                flexShrink: 0
+              }} />
             </button>
           </div>
         ) : (

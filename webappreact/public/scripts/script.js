@@ -41,14 +41,20 @@ window.addEventListener('walletConnected', async () => {
     contract = new ethers.Contract(contractAddress, abi, signer);
 
     updateUI(address);
-    document.getElementById("signMessage").disabled = false;
+    const sign_btn = document.getElementById("signMessage");
+    if (sign_btn) {
+        sign_btn.disabled = false;
+    }
 });
 
 window.addEventListener('walletDisconnected', () => {
     signer = null;
     contract = null;
     updateUI(null);
-    document.getElementById("signMessage").disabled = true;
+    const sign_btn = document.getElementById("signMessage");
+    if (sign_btn) {
+        sign_btn.disabled = true;
+    }
 });
 
 async function hideTextInImageReturnBlob(imageUrl, text) {

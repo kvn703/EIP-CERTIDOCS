@@ -18,7 +18,6 @@ import { FaInbox, FaEdit, FaFileAlt, FaCamera } from "react-icons/fa";
 import confetti from "canvas-confetti";
 import PDFSection from '../component/PdfPage/PDFSection';
 import ImageSection from '../component/PdfPage/ImageSection';
-import HeaderExpert from '../component/HeaderExpert';
 import Timeline from '../component/Timeline';
 import StickyButton from '../component/StickyButton';
 import ResultModal from '../component/ResultModal';
@@ -85,13 +84,13 @@ const GeneratePage = () => {
             }
         } else {
             // Sinon, vérifier si le message de confirmation est dans le DOM (pour compatibilité avec script.js)
-            const confirmationDiv = document.getElementById("confirmationMessage");
-            if (confirmationDiv && confirmationDiv.style.display !== "none") {
-                setMailMessage("Votre message a bien été récupéré.");
-                setActiveTab(0); // Onglet Mail par défaut
-            } else {
-                setMailMessage("");
-                setActiveTab(1); // Onglet Texte par défaut
+        const confirmationDiv = document.getElementById("confirmationMessage");
+        if (confirmationDiv && confirmationDiv.style.display !== "none") {
+            setMailMessage("Votre message a bien été récupéré.");
+            setActiveTab(0); // Onglet Mail par défaut
+        } else {
+            setMailMessage("");
+            setActiveTab(1); // Onglet Texte par défaut
             }
         }
     }, []);
@@ -450,7 +449,6 @@ const GeneratePage = () => {
 
     return (
         <>
-            <HeaderExpert />
             <div className="generate-page-wrapper">
                 <div className="generate-container perspective-container">
 
@@ -490,7 +488,7 @@ const GeneratePage = () => {
                                         />
                                     </div>
                                 </div>
-                            </div>
+                        </div>
                         )}
 
                         <div id="confirmationMessage" style={{ display: 'none' }}></div>
@@ -508,7 +506,7 @@ const GeneratePage = () => {
                                 <div className="modern-input-divider-line"></div>
                                 <div className="modern-input-divider-dot"></div>
                                 <div className="modern-input-divider-line"></div>
-                            </div>
+                    </div>
                         )}
 
                         {/* Configuration - Destinataires */}
@@ -539,23 +537,23 @@ const GeneratePage = () => {
                                 <p className="modern-input-hint">
                                     <span>Appuyez sur Entrée pour valider un destinataire</span>
                                 </p>
-                            </div>
-                        </div>
                     </div>
+                </div>
+            </div>
 
                     {/* Options - Format d'empreinte (optionnel, pour tous les onglets sauf Mail) */}
                     {activeTab !== 0 && (
                         <div className="generate-options-card">
                             <div className="format-toggle-optional-label">
                                 <span>Format d'empreinte</span>
-                            </div>
+            </div>
                             <FormatToggle 
                                 value={IsString === null ? false : IsString} 
                                 onChange={(value) => {
                                     setIsString(value);
                                 }} 
-                            />
-                        </div>
+                />
+            </div>
                     )}
                     
                     {/* Checkbox cachée pour script.js - toujours présente dans le DOM */}
@@ -603,23 +601,23 @@ const GeneratePage = () => {
                     />
 
                     {/* Bouton de génération (caché, utilisé par script.js) */}
-                    <button
-                        id="signMessage"
+            <button
+                id="signMessage"
                         className="button-3d gpu-accelerated interaction-debounce scroll-reveal transform-3d-hover micro-interaction"
                         disabled={!buttonEnabledState}
                         style={{ 
                             display: 'none', // Caché mais toujours dans le DOM pour script.js
                         }}
-                    >
+            >
                         GÉNÉRER EMPREINTE
-                    </button>
+            </button>
 
 
                     {/* Ancienne modale supprimée - maintenant dans ResultModal */}
                     <p id="status" className="gpu-accelerated" style={{ display: 'none' }}></p>
                     <div id="copyMessage" className="gpu-accelerated" style={{ display: 'none' }}></div>
                 </div>
-            </div>
+        </div>
 
             {/* Modal pour afficher le résultat */}
             <ResultModal
