@@ -4705,13 +4705,13 @@ html, body {
   z-index: 1;
 }
 
-/* Cacher le ThemeToggle quand la modal de résultat est ouverte */
-body.verify-modal-open .theme-toggle {
+/* Cacher le ThemeToggle quand la modal de résultat est ouverte - SUPPRIMÉ */
+/* body.verify-modal-open .theme-toggle {
   display: none !important;
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
-}
+} */
 
 .theme-toggle:hover {
   color: white;

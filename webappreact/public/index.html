@@ -32,17 +32,16 @@
     <div id="root"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.6.2/ethers.umd.min.js"></script>
     <script>
-      if (window.location.pathname === "/") {
+      // Charger script.js uniquement pour la page Generate (géré par React maintenant)
+      // Le chargement de verify.js est maintenant géré par React dans VerifyPage.js
+      // pour éviter le double chargement avec React Router
+      if (window.location.pathname === "/" || window.location.pathname === "") {
         var script = document.createElement("script");
         script.src = "%PUBLIC_URL%/scripts/script.js";
         script.async = true;
         document.body.appendChild(script);
-      } else if (window.location.pathname === "/verify") {
-        var script = document.createElement("script");
-        script.src = "%PUBLIC_URL%/scripts/verify.js";
-        script.async = true;
-        document.body.appendChild(script);
       }
+      // verify.js est maintenant chargé dynamiquement par React dans VerifyPage.js
     </script>
     <!--
       This HTML file is a template.

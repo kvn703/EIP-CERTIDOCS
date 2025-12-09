@@ -26,6 +26,128 @@ function VerifyPage() {
     const [signatureId, setSignatureId] = useState("");
     const [message, setMessage] = useState("");
     const [activeTab, _setActiveTab] = useState(0);
+    
+    // IMPORTANT: Charger dynamiquement verify.js si ce n'est pas déjà fait
+    // Le script n'est chargé dans index.html que si on arrive directement sur /verify
+    // Avec React Router, lors de la navigation, le script n'est pas chargé
+    useEffect(() => {
+        // Initialiser les flags globaux si nécessaire
+        if (typeof window.__verifyScriptLoaded === 'undefined') {
+            window.__verifyScriptLoaded = false;
+        }
+        if (typeof window.__verifyScriptLoading === 'undefined') {
+            window.__verifyScriptLoading = false;
+        }
+        
+        // PRIORITÉ 1: Vérifier si la fonction est déjà disponible (script déjà chargé)
+        if (typeof window.verifySignature === 'function') {
+            console.log('[VerifyPage] verifySignature déjà disponible, ne pas charger le script');
+            window.__verifyScriptLoaded = true;
+            window.__verifyScriptLoading = false;
+            return; // Le script est déjà chargé et exécuté
+        }
+        
+        // PRIORITÉ 2: Vérifier le flag global pour éviter le double chargement
+        // Cette vérification doit être faite AVANT de vérifier le DOM car le script peut être en cours de chargement
+        if (window.__verifyScriptLoaded || window.__verifyScriptLoading) {
+            console.log('[VerifyPage] Script verify.js déjà chargé ou en cours de chargement (flag global), ne pas le charger à nouveau');
+            return;
+        }
+        
+        // PRIORITÉ 3: Vérifier si le script est déjà dans le DOM (même s'il n'est pas encore chargé)
+        // Cette vérification doit être faite AVANT de charger le script
+        const allScripts = Array.from(document.querySelectorAll('script[src]'));
+        const existingScript = allScripts.find(script => {
+            const src = script.src || script.getAttribute('src') || '';
+            // Vérifier si le src contient 'verify.js' (peut être avec ou sans PUBLIC_URL)
+            return src.includes('verify.js') || src.includes('/scripts/verify.js');
+        });
+        
+        if (existingScript) {
+            // Le script est déjà présent dans le DOM
+            console.log('[VerifyPage] Script verify.js déjà présent dans le DOM, ne pas le charger à nouveau');
+            window.__verifyScriptLoaded = true;
+            window.__verifyScriptLoading = false;
+            
+            // Attendre qu'il soit chargé si nécessaire
+            if (existingScript.readyState === 'complete' || existingScript.readyState === 'loaded') {
+                // Le script est chargé, vérifier si la fonction est disponible
+                if (typeof window.verifySignature === 'function') {
+                    console.log('[VerifyPage] Script verify.js existant - fonction disponible');
+                    return;
+                }
+                // Le script est chargé mais la fonction n'est pas encore disponible
+                // Attendre un peu plus pour que le script soit complètement exécuté
+                setTimeout(() => {
+                    if (typeof window.verifySignature === 'function') {
+                        console.log('[VerifyPage] Script verify.js existant - fonction disponible après délai');
+                    } else {
+                        console.warn('[VerifyPage] Script verify.js existant mais verifySignature n\'est pas disponible');
+                    }
+                }, 500);
+            } else {
+                // Le script est en cours de chargement, attendre qu'il soit chargé
+                window.__verifyScriptLoading = true;
+                const loadHandler = () => {
+                    console.log('[VerifyPage] Script verify.js existant chargé avec succès');
+                    window.__verifyScriptLoading = false;
+                    window.__verifyScriptLoaded = true;
+                    // Vérifier après un court délai si la fonction est disponible
+                    setTimeout(() => {
+                        if (typeof window.verifySignature === 'function') {
+                            console.log('[VerifyPage] verifySignature disponible après chargement');
+                        } else {
+                            console.warn('[VerifyPage] verifySignature n\'est toujours pas disponible après le chargement');
+                        }
+                    }, 200);
+                };
+                existingScript.addEventListener('load', loadHandler, { once: true });
+                // Si le script est déjà chargé mais l'événement load n'a pas été déclenché
+                if (existingScript.readyState === 'interactive') {
+                    loadHandler();
+                }
+            }
+            return; // Ne JAMAIS charger le script à nouveau
+        }
+        
+        // PRIORITÉ 4: Le script n'est pas dans le DOM et la fonction n'existe pas
+        // Le charger dynamiquement (cas de navigation avec React Router)
+        console.log('[VerifyPage] Chargement dynamique de verify.js (navigation React Router)');
+        window.__verifyScriptLoading = true; // Marquer comme en cours de chargement AVANT de l'ajouter au DOM
+        window.__verifyScriptLoaded = false; // S'assurer que le flag est à false
+        
+        const script = document.createElement('script');
+        const publicUrl = process.env.PUBLIC_URL || '';
+        script.src = publicUrl ? `${publicUrl}/scripts/verify.js` : '/scripts/verify.js';
+        script.async = true; // Charger de manière asynchrone
+        
+        script.onload = () => {
+            console.log('[VerifyPage] Script verify.js chargé avec succès');
+            window.__verifyScriptLoading = false;
+            window.__verifyScriptLoaded = true;
+            // Attendre un peu pour que le script soit complètement exécuté
+            setTimeout(() => {
+                if (typeof window.verifySignature === 'function') {
+                    console.log('[VerifyPage] verifySignature disponible après chargement dynamique');
+                } else {
+                    console.warn('[VerifyPage] verifySignature n\'est toujours pas disponible après le chargement du script');
+                }
+            }, 200);
+        };
+        
+        script.onerror = () => {
+            console.error('[VerifyPage] Erreur lors du chargement du script verify.js');
+            window.__verifyScriptLoading = false;
+            window.__verifyScriptLoaded = false; // Réinitialiser le flag en cas d'erreur
+        };
+        
+        document.body.appendChild(script);
+        
+        return () => {
+            // Ne pas supprimer le script au démontage car il peut être utilisé ailleurs
+            // Le script reste en mémoire même si le composant est démonté
+        };
+    }, []); // Se déclenche une seule fois au montage du composant
     const [texte1, setTexte1] = useState("");
     const [texte2, setTexte2] = useState("");
     const [pdfFile, _setPdfFile] = useState(null);
@@ -67,7 +189,15 @@ function VerifyPage() {
 
     useEffect(() => {
         if (isConnected) {
-            window.dispatchEvent(new Event('walletConnected'));
+            // IMPORTANT: Synchroniser le wallet pour verify.js avant de déclencher l'événement
+            // Cela résout le problème de navigation où le signer n'est pas disponible
+            const syncAndConnect = async () => {
+                if (typeof window.__syncWalletForVerify === 'function') {
+                    await window.__syncWalletForVerify();
+                }
+                window.dispatchEvent(new Event('walletConnected'));
+            };
+            syncAndConnect();
             setCurrentStep(1);
         } else {
             setCurrentStep(1);
@@ -79,6 +209,13 @@ function VerifyPage() {
             setCurrentStep(4);
         }
     }, [verificationResult, hasVerificationCompleted]);
+
+    // S'assurer que la modal s'ouvre automatiquement quand le résultat est disponible
+    useEffect(() => {
+        if (verificationResult && hasVerificationCompleted && !isResultModalOpen) {
+            setIsResultModalOpen(true);
+        }
+    }, [verificationResult, hasVerificationCompleted, isResultModalOpen]);
 
     useEffect(() => {
         if (verificationResult || hasVerificationCompleted) {
@@ -208,8 +345,16 @@ function VerifyPage() {
             signatureIdInput.value = '';
         }
         
-        if (messageInput) {
-            messageInput.value = message || '';
+        if (messageInput && message) {
+            // Normaliser le message : supprimer les espaces et s'assurer qu'il est au bon format
+            let normalizedMessage = message.trim().replace(/\s/g, '');
+            // Si c'est un hash sans préfixe 0x, l'ajouter
+            if (/^[a-fA-F0-9]{64}$/.test(normalizedMessage) && !normalizedMessage.startsWith('0x')) {
+                normalizedMessage = '0x' + normalizedMessage;
+            }
+            messageInput.value = normalizedMessage;
+        } else if (messageInput) {
+            messageInput.value = '';
         }
     }, [signatureId, message]);
     useEffect(() => {
@@ -410,6 +555,42 @@ function VerifyPage() {
         setVerificationResult(null);
         setHasVerificationCompleted(false);
         
+        // IMPORTANT: S'assurer que les inputs DOM sont remplis AVANT d'appeler verifySignature()
+        // Cela garantit que les valeurs sont synchronisées même lors de la première vérification
+        if (activeTab === 0) {
+            const signatureIdInput = document.getElementById("signatureId");
+            const messageInput = document.getElementById("messageInput");
+            
+            if (signatureIdInput && signatureId) {
+                let formatted_id = signatureId.trim();
+                if (formatted_id.startsWith("[CERTIDOCS]")) {
+                    formatted_id = formatted_id.replace("[CERTIDOCS]", "").trim();
+                }
+                
+                if (!formatted_id.startsWith('0x')) {
+                    formatted_id = '0x' + formatted_id;
+                }
+                
+                const hex_part = formatted_id.slice(2);
+                if (hex_part.length < 64) {
+                    formatted_id = '0x' + hex_part.padStart(64, '0');
+                } else if (hex_part.length > 64) {
+                    formatted_id = '0x' + hex_part.slice(0, 64);
+                }
+                signatureIdInput.value = formatted_id;
+            }
+            
+            if (messageInput && message) {
+                // Normaliser le message : supprimer les espaces et s'assurer qu'il est au bon format
+                let normalizedMessage = message.trim().replace(/\s/g, '');
+                // Si c'est un hash sans préfixe 0x, l'ajouter
+                if (/^[a-fA-F0-9]{64}$/.test(normalizedMessage) && !normalizedMessage.startsWith('0x')) {
+                    normalizedMessage = '0x' + normalizedMessage;
+                }
+                messageInput.value = normalizedMessage;
+            }
+        }
+        
         // S'assurer que l'élément verify existe et est prêt
         // IMPORTANT: Garder display: none pour que le texte ne soit pas visible
         const verify_element = document.getElementById("verify");
@@ -418,20 +599,94 @@ function VerifyPage() {
             verify_element.innerText = ''; // Réinitialiser le texte
         }
         
-        if (typeof window.verifySignature === 'function') {
-            window.verifySignature();
-        } else {
-            setTimeout(() => {
-                if (typeof window.verifySignature === 'function') {
+        // IMPORTANT: Attendre que le script verify.js soit chargé et que signer/contract soient initialisés
+        // Le script est chargé de manière asynchrone, donc il peut ne pas être disponible immédiatement
+        // Augmenter le nombre de tentatives pour donner plus de temps au script de se charger
+        const waitForVerifySignature = (maxAttempts = 50, attempt = 0) => {
+            // IMPORTANT: Synchroniser currentTab dans verify.js avec l'onglet actif React
+            // currentTab est une variable globale dans verify.js qui doit être mise à jour
+            if (typeof window.dispatchEvent === 'function') {
+                window.dispatchEvent(new CustomEvent('tabChanged', { detail: activeTab }));
+            }
+            
+            // Vérifier une dernière fois que les inputs sont bien remplis avant d'appeler verifySignature
+            if (activeTab === 0) {
+                const signatureIdInput = document.getElementById("signatureId");
+                const messageInput = document.getElementById("messageInput");
+                
+                // Si les inputs ne sont pas remplis, les remplir à nouveau
+                if (signatureIdInput && signatureId && !signatureIdInput.value.trim()) {
+                    let formatted_id = signatureId.trim();
+                    if (formatted_id.startsWith("[CERTIDOCS]")) {
+                        formatted_id = formatted_id.replace("[CERTIDOCS]", "").trim();
+                    }
+                    if (!formatted_id.startsWith('0x')) {
+                        formatted_id = '0x' + formatted_id;
+                    }
+                    const hex_part = formatted_id.slice(2);
+                    if (hex_part.length < 64) {
+                        formatted_id = '0x' + hex_part.padStart(64, '0');
+                    } else if (hex_part.length > 64) {
+                        formatted_id = '0x' + hex_part.slice(0, 64);
+                    }
+                    signatureIdInput.value = formatted_id;
+                }
+                
+                if (messageInput && message && !messageInput.value.trim()) {
+                    // Normaliser le message : supprimer les espaces et s'assurer qu'il est au bon format
+                    let normalizedMessage = message.trim().replace(/\s/g, '');
+                    // Si c'est un hash sans préfixe 0x, l'ajouter
+                    if (/^[a-fA-F0-9]{64}$/.test(normalizedMessage) && !normalizedMessage.startsWith('0x')) {
+                        normalizedMessage = '0x' + normalizedMessage;
+                    }
+                    messageInput.value = normalizedMessage;
+                }
+            }
+            
+            // Vérifier que verifySignature est disponible ET que signer est initialisé
+            // Note: verifySignature vérifie signer lui-même et affiche une alerte si non disponible
+            // Mais on veut s'assurer que la fonction s'exécute vraiment
+            if (typeof window.verifySignature === 'function') {
+                // Vérifier que les éléments DOM nécessaires existent
+                if (activeTab === 0) {
+                    const signatureIdInput = document.getElementById("signatureId");
+                    const messageInput = document.getElementById("messageInput");
+                    if (!signatureIdInput || !messageInput) {
+                        if (attempt < maxAttempts) {
+                            setTimeout(() => waitForVerifySignature(maxAttempts, attempt + 1), 100);
+                            return;
+                        }
+                    }
+                }
+                
+                try {
+                    // Appeler verifySignature - il vérifiera signer lui-même
                     window.verifySignature();
-                } else {
-                    // Si verifySignature n'est toujours pas disponible, arrêter la vérification
+                } catch (error) {
+                    console.error('[VerifyPage] Erreur lors de l\'appel à verifySignature:', error);
                     setIsVerifying(false);
                     setVerificationResult('error');
                     setHasVerificationCompleted(true);
                 }
-            }, 100);
-        }
+            } else if (attempt < maxAttempts) {
+                // Réessayer après 150ms si le script n'est pas encore chargé
+                // Augmenter le délai pour donner plus de temps au script de se charger
+                setTimeout(() => waitForVerifySignature(maxAttempts, attempt + 1), 150);
+            } else {
+                // Si verifySignature n'est toujours pas disponible après plusieurs tentatives, arrêter la vérification
+                console.error('[VerifyPage] verifySignature n\'est pas disponible après', maxAttempts, 'tentatives');
+                setIsVerifying(false);
+                setVerificationResult('error');
+                setHasVerificationCompleted(true);
+            }
+        };
+        
+        // Commencer à attendre que verifySignature soit disponible
+        // Utiliser setTimeout pour s'assurer que les inputs DOM sont bien mis à jour
+        // Augmenter le délai initial pour donner plus de temps au script de se charger
+        setTimeout(() => {
+            waitForVerifySignature();
+        }, 200);
     };
 
     const handleCloseModal = () => {
@@ -643,7 +898,7 @@ function VerifyPage() {
                         <VerifyLoading />
                     )}
 
-                    {verificationResult && (
+                    {verificationResult && !isResultModalOpen && (
                         <VerificationAnimation
                             isVerifying={false}
                             result={verificationResult}
@@ -781,7 +1036,7 @@ function VerifyPage() {
             content: (
                 <>
                     {/* PHASE 4.2 : Animation de vérification */}
-                    {(isVerifying || verificationResult) && (
+                    {(isVerifying || verificationResult) && !isResultModalOpen && (
                         <VerificationAnimation
                             isVerifying={isVerifying && pdfFile && (signatureFile || texte1)}
                             result={verificationResult}
@@ -904,7 +1159,7 @@ function VerifyPage() {
             content: (
                 <>
                     {/* PHASE 4.2 : Animation de vérification */}
-                    {(isVerifying || verificationResult) && (
+                    {(isVerifying || verificationResult) && !isResultModalOpen && (
                         <VerificationAnimation
                             isVerifying={isVerifying && imageFile && (signatureFile || texte1)}
                             result={verificationResult}
