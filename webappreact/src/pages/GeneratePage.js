@@ -542,18 +542,21 @@ const GeneratePage = () => {
             </div>
 
                     {/* Options - Format d'empreinte (optionnel, pour tous les onglets sauf Mail) */}
-                    {activeTab !== 0 && (
+                    {activeTab !== 0 ? (
                         <div className="generate-options-card">
                             <div className="format-toggle-optional-label">
                                 <span>Format d'empreinte</span>
-            </div>
+                            </div>
                             <FormatToggle 
                                 value={IsString === null ? false : IsString} 
                                 onChange={(value) => {
                                     setIsString(value);
                                 }} 
-                />
-            </div>
+                            />
+                        </div>
+                    ) : (
+                        /* Spacer ajusté manuellement pour l'onglet Mail (30px est un bon compromis) */
+                        <div style={{ height: '30px' }}></div>
                     )}
                     
                     {/* Checkbox cachée pour script.js - toujours présente dans le DOM */}
