@@ -141,8 +141,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 sendResponse({ content: "Aucune div trouvée", signatureId: "" });
                 return;
             }
-            // check if content includes "Vous n’obtenez pas souvent d’e-mail à partir de chamajegogame@gmail.com. Pourquoi c’est important" with chamajecogame@gmail.com a variable
-            if (content.includes("Vous n’obtenez pas souvent d’e-mail à partir de") && content.includes("@")) {
+            // check if content includes "Vous n'obtenez pas souvent d'e-mail à partir de chamajegogame@gmail.com. Pourquoi c'est important" with chamajecogame@gmail.com a variable
+            if (content.includes("Vous n'obtenez pas souvent d'e-mail à partir de") && content.includes("@")) {
                 const index = content.indexOf("\n");
                 if (index !== -1) {
                     content = content.substring(index + 1).trim();
@@ -172,6 +172,71 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         } catch (e) {
             console.error("[getDivContentVerify] Exception :", e);
             sendResponse({ content: "Erreur récupération", signatureId: "" });
+        }
+    }
+});
+
+// Nouveau listener : Écouter les messages de la page React pour récupérer le mail
+window.addEventListener('message', (event) => {
+    // Vérifier que le message vient de la page React
+    if (event.data && event.data.type === 'requestMailContentForVerify' && event.data.source === 'verify-page') {
+        const requestId = event.data.requestId;
+        
+        // Vérifier que chrome.runtime est disponible
+        if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.sendMessage) {
+            window.postMessage({
+                type: 'mailContentResponse',
+                requestId: requestId,
+                error: "Extension Chrome non disponible"
+            }, '*');
+            return;
+        }
+        
+        try {
+            // Transmettre la demande au background script qui peut chercher les onglets
+            chrome.runtime.sendMessage(
+                { 
+                    action: 'getMailContentForVerify',
+                    requestId: requestId
+                },
+                (response) => {
+                    // Vérifier les erreurs Chrome
+                    if (chrome.runtime.lastError) {
+                        const errorMsg = chrome.runtime.lastError.message || "Erreur de communication avec le background script";
+                        window.postMessage({
+                            type: 'mailContentResponse',
+                            requestId: requestId,
+                            error: errorMsg
+                        }, '*');
+                        return;
+                    }
+                    
+                    // Transmettre la réponse du background script à la page React
+                    if (response) {
+                        window.postMessage({
+                            type: 'mailContentResponse',
+                            requestId: requestId,
+                            content: response.content,
+                            signatureId: response.signatureId,
+                            error: response.error
+                        }, '*');
+                    } else {
+                        window.postMessage({
+                            type: 'mailContentResponse',
+                            requestId: requestId,
+                            error: "Aucune réponse du background script"
+                        }, '*');
+                    }
+                }
+            );
+        } catch (error) {
+            // Gérer les erreurs de manière silencieuse
+            console.log('[Content Script] Erreur lors de l\'envoi du message au background:', error);
+            window.postMessage({
+                type: 'mailContentResponse',
+                requestId: requestId,
+                error: error.message || "Erreur inconnue"
+            }, '*');
         }
     }
 });

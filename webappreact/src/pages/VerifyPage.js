@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 
 import "../CSS/style.css";
 import "../CSS/copyButton.css";
@@ -20,6 +21,7 @@ import VerifyResultModal from "../component/VerifyResultModal";
 import HashDisplay from "../component/HashDisplay";
 
 function VerifyPage() {
+    const location = useLocation();
     const { isConnected } = useAppKitAccount();
     const [signatureId, setSignatureId] = useState("");
     const [message, setMessage] = useState("");
@@ -102,6 +104,7 @@ function VerifyPage() {
             setCurrentStep(1);
         }
     }, [isConnected, isVerifying, verificationResult, hasVerificationCompleted, signatureId, signatureFile, texte1, message, texte2, pdfFile, imageFile]);
+    // Détection des paramètres URL (logique existante préservée)
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const signatureIdParam = urlParams.get("signatureId");
@@ -113,7 +116,72 @@ function VerifyPage() {
         } else {
             setActiveTab(1);
         }
-    }, []);
+    }, [location.search]); // Se déclenche aussi lors de la navigation
+
+    // Nouvelle fonctionnalité : Détection du mail lors de la navigation (sans rechargement)
+    useEffect(() => {
+        // Ne rien faire si on a déjà des données (pour préserver la base du code)
+        if (signatureId && message) {
+            return;
+        }
+
+        // Ne rien faire si on vient d'avoir des paramètres dans l'URL (géré par le useEffect précédent)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("signatureId") || urlParams.get("messageHash")) {
+            return;
+        }
+
+        // Essayer de récupérer le mail via l'extension Chrome si disponible
+        const tryDetectMail = async () => {
+            try {
+                // Utiliser window.postMessage pour communiquer avec le content script
+                // Le content script écoutera ce message et le transmettra au background script
+                const requestId = `mailRequest_${Date.now()}_${Math.random()}`;
+                
+                // Écouter la réponse du content script
+                const messageHandler = (event) => {
+                    // Vérifier que le message vient du content script
+                    if (event.data && event.data.type === 'mailContentResponse' && event.data.requestId === requestId) {
+                        window.removeEventListener('message', messageHandler);
+                        
+                        if (event.data.content && event.data.signatureId) {
+                            setMessage(event.data.content); // content est déjà le hash
+                            setSignatureId(event.data.signatureId);
+                            setActiveTab(0);
+                        } else if (event.data.error) {
+                            // Ne pas afficher l'erreur si c'est juste que l'extension n'est pas disponible
+                            // (c'est normal si on n'est pas dans le contexte d'une extension)
+                            if (!event.data.error.includes('Extension Chrome non disponible') && 
+                                !event.data.error.includes('Could not establish connection')) {
+                                console.log('[VerifyPage] Erreur lors de la récupération du mail:', event.data.error);
+                            }
+                        }
+                    }
+                };
+                
+                window.addEventListener('message', messageHandler);
+                
+                // Envoyer la demande au content script
+                window.postMessage({
+                    type: 'requestMailContentForVerify',
+                    requestId: requestId,
+                    source: 'verify-page'
+                }, '*');
+                
+                // Timeout de sécurité : retirer le listener après 5 secondes
+                setTimeout(() => {
+                    window.removeEventListener('message', messageHandler);
+                }, 5000);
+            } catch (error) {
+                console.log('[VerifyPage] Erreur lors de la détection du mail:', error);
+            }
+        };
+
+        // Attendre un peu pour laisser le temps à la page de se charger
+        const timeoutId = setTimeout(tryDetectMail, 500);
+        
+        return () => clearTimeout(timeoutId);
+    }, [location.pathname, signatureId, message]); // Se déclenche à chaque navigation vers /verify
 
     useEffect(() => {
         const signatureIdInput = document.getElementById("signatureId");
@@ -177,11 +245,18 @@ function VerifyPage() {
             return;
         }
 
+        let interval;
         let timeoutId;
         let checkCount = 0;
         const maxChecks = 60; // Maximum 30 secondes (60 * 500ms)
 
         const check_verification_result = () => {
+            // Vérifier si on doit arrêter (si le résultat a été traité ou si on n'est plus en train de vérifier)
+            if (resultProcessedRef.current || !isVerifying || verificationResult) {
+                if (interval) clearInterval(interval);
+                return;
+            }
+
             checkCount++;
             
             // Timeout de sécurité : arrêter après 30 secondes
@@ -190,12 +265,20 @@ function VerifyPage() {
                 setVerificationResult('error');
                 setHasVerificationCompleted(true);
                 setCurrentStep(4);
+                setIsResultModalOpen(true);
+                resultProcessedRef.current = true;
+                if (interval) clearInterval(interval);
                 return;
             }
 
             const verify_element = document.getElementById("verify");
             if (verify_element && !resultProcessedRef.current) {
-                const text = verify_element.innerText;
+                // S'assurer que l'élément reste toujours caché
+                verify_element.style.display = 'none';
+                
+                const text = verify_element.innerText || verify_element.textContent || '';
+                
+                // Vérifier si on a un résultat valide
                 if (text.includes("✅ Empreinte VALIDE") || text.includes("✅ Signature VALIDE")) {
                     setIsVerifying(false);
                     setVerificationResult('success');
@@ -205,6 +288,7 @@ function VerifyPage() {
                     resultProcessedRef.current = true;
                     verify_element.style.display = 'none';
                     verify_element.innerText = '';
+                    if (interval) clearInterval(interval);
                 } else if (text.includes("❌ Empreinte NON VALIDE") || text.includes("❌ Signature NON VALIDE") || text.includes("❌ Erreur")) {
                     setIsVerifying(false);
                     setVerificationResult('error');
@@ -214,13 +298,17 @@ function VerifyPage() {
                     resultProcessedRef.current = true;
                     verify_element.style.display = 'none';
                     verify_element.innerText = '';
+                    if (interval) clearInterval(interval);
                 }
+                // Si le texte est "Vérification en cours...", on continue à vérifier
+                // Sinon, si le texte est vide ou différent, on continue aussi
             }
         };
 
-        const interval = setInterval(check_verification_result, 500);
+        interval = setInterval(check_verification_result, 500);
+        
         return () => {
-            clearInterval(interval);
+            if (interval) clearInterval(interval);
             if (timeoutId) clearTimeout(timeoutId);
         };
     }, [isVerifying, verificationResult]);
@@ -322,12 +410,25 @@ function VerifyPage() {
         setVerificationResult(null);
         setHasVerificationCompleted(false);
         
+        // S'assurer que l'élément verify existe et est prêt
+        // IMPORTANT: Garder display: none pour que le texte ne soit pas visible
+        const verify_element = document.getElementById("verify");
+        if (verify_element) {
+            verify_element.style.display = 'none'; // Toujours caché
+            verify_element.innerText = ''; // Réinitialiser le texte
+        }
+        
         if (typeof window.verifySignature === 'function') {
             window.verifySignature();
         } else {
             setTimeout(() => {
                 if (typeof window.verifySignature === 'function') {
                     window.verifySignature();
+                } else {
+                    // Si verifySignature n'est toujours pas disponible, arrêter la vérification
+                    setIsVerifying(false);
+                    setVerificationResult('error');
+                    setHasVerificationCompleted(true);
                 }
             }, 100);
         }

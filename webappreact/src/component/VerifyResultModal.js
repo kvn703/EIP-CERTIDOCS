@@ -21,11 +21,14 @@ const VerifyResultModal = ({
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      document.body.classList.add('verify-modal-open');
     } else {
       document.body.style.overflow = '';
+      document.body.classList.remove('verify-modal-open');
     }
     return () => {
       document.body.style.overflow = '';
+      document.body.classList.remove('verify-modal-open');
     };
   }, [isOpen]);
 

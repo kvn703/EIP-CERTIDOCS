@@ -128,8 +128,8 @@ const HeaderExpert = ({ showProgress = false, currentStep = 0, steps = [] }) => 
               aria-label="Paramètres"
             >
               <FaCog style={{ 
-                width: '18px', 
-                height: '18px', 
+                width: '14px', 
+                height: '14px', 
                 color: '#9584ff', 
                 fill: '#9584ff',
                 display: 'block',
@@ -143,8 +143,8 @@ const HeaderExpert = ({ showProgress = false, currentStep = 0, steps = [] }) => 
               aria-label="Déconnecter"
             >
               <FaSignOutAlt style={{ 
-                width: '18px', 
-                height: '18px', 
+                width: '14px', 
+                height: '14px', 
                 color: '#ff6b6b', 
                 fill: '#ff6b6b',
                 display: 'block',

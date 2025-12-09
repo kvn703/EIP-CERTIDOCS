@@ -4672,6 +4672,23 @@ html, body {
   color: white;
 }
 
+/* Taille des icônes lune et soleil - même taille que l'icône œil (14px) */
+.theme-toggle svg {
+  width: 14px !important;
+  height: 14px !important;
+  min-width: 14px !important;
+  min-height: 14px !important;
+  font-size: 14px !important;
+}
+
+/* Cacher le ThemeToggle quand la modal de résultat est ouverte */
+body.verify-modal-open .theme-toggle {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
 @keyframes themeToggleGradient {
   0%, 100% {
     background-position: 0% 50%;

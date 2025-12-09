@@ -96,6 +96,16 @@
     visibility: visible !important;
 }
 
+/* Taille uniforme pour toutes les icônes SVG dans les boutons hash-display */
+.hash-display-toggle svg,
+.hash-display-copy svg {
+    width: 14px !important;
+    height: 14px !important;
+    min-width: 14px !important;
+    min-height: 14px !important;
+    font-size: 14px !important;
+}
+
 .hash-display-toggle:hover *,
 .hash-display-copy:hover * {
     color: #fff !important;

@@ -77,9 +77,9 @@
 }
 
 .header-nav-btn .header-nav-icon {
-  font-size: 1.1rem;
-  width: 18px;
-  height: 18px;
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
@@ -171,9 +171,9 @@
   }
   
   .header-nav-btn .header-nav-icon {
-    font-size: 1rem;
-    width: 16px;
-    height: 16px;
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
   }
 }
 
@@ -891,8 +891,8 @@
 }
 
 .header-action-btn-compact svg {
-  width: 18px;
-  height: 18px;
+  width: 14px;
+  height: 14px;
   color: #9584ff;
   fill: #9584ff;
 }

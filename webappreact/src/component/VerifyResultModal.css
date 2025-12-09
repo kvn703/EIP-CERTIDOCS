@@ -11,6 +11,7 @@
   animation: verifyModalOverlayFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 20px;
   box-sizing: border-box;
+  overflow-y: auto;
 }
 
 @keyframes verifyModalOverlayFadeIn {
@@ -36,13 +37,14 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.95);
   width: 100%;
   max-width: 500px;
-  max-height: 90vh;
+  max-height: 85vh;
   display: flex;
   flex-direction: column;
   position: relative;
   animation: verifyModalFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1.5px solid rgba(149, 132, 255, 0.25);
   overflow: hidden;
+  margin-bottom: 40px;
 }
 
 @keyframes verifyModalFadeIn {
@@ -437,10 +439,10 @@
 }
 
 .verify-copy-button svg {
-  width: 16px !important;
-  height: 16px !important;
-  min-width: 16px !important;
-  min-height: 16px !important;
+  width: 14px !important;
+  height: 14px !important;
+  min-width: 14px !important;
+  min-height: 14px !important;
   color: #fff !important;
   fill: #fff !important;
   stroke: #fff !important;
