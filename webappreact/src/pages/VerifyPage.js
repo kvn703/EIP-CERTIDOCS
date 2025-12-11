@@ -154,7 +154,7 @@ function VerifyPage() {
                             if (!event.data.error.includes('Extension Chrome non disponible') && 
                                 !event.data.error.includes('Could not establish connection')) {
                                 console.log('[VerifyPage] Erreur lors de la récupération du mail:', event.data.error);
-                            }
+        }
                         }
                     }
                 };
@@ -727,19 +727,6 @@ function VerifyPage() {
                                                             {signatureValidation.message}
                                                         </div>
                                                     )}
-                                                    {signatureValidation.message && (
-                                                        <div style={{
-                                                            fontSize: '11px',
-                                                            color: '#ff6b6b',
-                                                            marginTop: '4px',
-                                                            padding: '4px 8px',
-                                                            background: 'rgba(255, 107, 107, 0.1)',
-                                                            borderRadius: '6px',
-                                                            border: '1px solid rgba(255, 107, 107, 0.2)'
-                                                        }}>
-                                                            {signatureValidation.message}
-                                                        </div>
-                                                    )}
                                                 </>
                                             ) : (
                                                 <ImageSection value={signatureFile} onChange={setSignatureFile} />
@@ -879,19 +866,6 @@ function VerifyPage() {
                                                             {signatureValidation.message}
                                                         </div>
                                                     )}
-                                                    {signatureValidation.message && (
-                                                        <div style={{
-                                                            fontSize: '11px',
-                                                            color: '#ff6b6b',
-                                                            marginTop: '4px',
-                                                            padding: '4px 8px',
-                                                            background: 'rgba(255, 107, 107, 0.1)',
-                                                            borderRadius: '6px',
-                                                            border: '1px solid rgba(255, 107, 107, 0.2)'
-                                                        }}>
-                                                            {signatureValidation.message}
-                                                        </div>
-                                                    )}
                         </>
                     ) : (
                                                 <ImageSection value={signatureFile} onChange={setSignatureFile} />
@@ -1012,19 +986,6 @@ function VerifyPage() {
                                                                 border: '1px solid rgba(255, 107, 107, 0.2)'
                                                             }}
                                                         >
-                                                            {signatureValidation.message}
-                                                        </div>
-                                                    )}
-                                                    {signatureValidation.message && (
-                                                        <div style={{
-                                                            fontSize: '11px',
-                                                            color: '#ff6b6b',
-                                                            marginTop: '4px',
-                                                            padding: '4px 8px',
-                                                            background: 'rgba(255, 107, 107, 0.1)',
-                                                            borderRadius: '6px',
-                                                            border: '1px solid rgba(255, 107, 107, 0.2)'
-                                                        }}>
                                                             {signatureValidation.message}
                                                         </div>
                                                     )}

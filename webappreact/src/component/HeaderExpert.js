@@ -4,6 +4,7 @@ import './HeaderExpert.css';
 import '../CSS/modern2025.css';
 import { FaWallet, FaRegCopy, FaCog, FaSignOutAlt, FaFingerprint, FaCheckCircle } from 'react-icons/fa';
 import { useAppKitAccount, useDisconnect, modal } from '@reown/appkit/react';
+import ThemeToggle from './ThemeToggle';
 
 const HeaderExpert = ({ showProgress = false, currentStep = 0, steps = [] }) => {
   const { isConnected, address } = useAppKitAccount();
@@ -121,41 +122,47 @@ const HeaderExpert = ({ showProgress = false, currentStep = 0, steps = [] }) => 
                 </div>
               )}
             </div>
-            <button 
-              className="header-action-btn-compact" 
-              onClick={() => modal.open()}
-              title="Paramètres"
-              aria-label="Paramètres"
-            >
-              <FaCog style={{ 
-                width: '14px', 
-                height: '14px', 
-                color: '#9584ff', 
-                fill: '#9584ff',
-                display: 'block',
-                flexShrink: 0
-              }} />
-            </button>
-            <button 
-              className="header-action-btn-compact header-action-btn-danger" 
-              onClick={handleDisconnect}
-              title="Déconnecter"
-              aria-label="Déconnecter"
-            >
-              <FaSignOutAlt style={{ 
-                width: '14px', 
-                height: '14px', 
-                color: '#ff6b6b', 
-                fill: '#ff6b6b',
-                display: 'block',
-                flexShrink: 0
-              }} />
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '200px' }}>
+              <button 
+                className="header-action-btn-compact" 
+                onClick={() => modal.open()}
+                title="Paramètres"
+                aria-label="Paramètres"
+              >
+                <FaCog style={{ 
+                  width: '14px', 
+                  height: '14px', 
+                  color: 'white', 
+                  fill: 'white',
+                  display: 'block',
+                  flexShrink: 0
+                }} />
+              </button>
+              <ThemeToggle />
+              <button 
+                className="header-action-btn-compact header-action-btn-danger" 
+                onClick={handleDisconnect}
+                title="Déconnecter"
+                aria-label="Déconnecter"
+              >
+                <FaSignOutAlt style={{ 
+                  width: '14px', 
+                  height: '14px', 
+                  color: '#ff6b6b', 
+                  fill: '#ff6b6b',
+                  display: 'block',
+                  flexShrink: 0
+                }} />
+              </button>
+            </div>
           </div>
         ) : (
-          <button className="connect-btn-compact" onClick={handleOpenModal}>
-            <FaWallet /> <span>Connecter</span>
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button className="connect-btn-compact" onClick={handleOpenModal}>
+              <FaWallet /> <span>Connecter</span>
+            </button>
+            <ThemeToggle />
+          </div>
         )}
       </div>
       

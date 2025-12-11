@@ -6,7 +6,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import VerifyPage from "./pages/VerifyPage";
 import GeneratePage from "./pages/GeneratePage";
 import NotificationSystem from "./component/NotificationSystem";
-import ThemeToggle from "./component/ThemeToggle";
 import HeaderExpert from "./component/HeaderExpert";
 import "./App.css";
 
@@ -39,7 +38,6 @@ function AppContent() {
   return (
     <div className="App">
       <NotificationSystem />
-      <ThemeToggle />
       <HeaderExpert />
       <div className={`page-transition-container ${transitionStage}`}>
         <Routes location={displayLocation}>

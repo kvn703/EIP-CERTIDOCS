@@ -251,7 +251,14 @@ async function verifySignature() {
             return;
         }
 
-        messageHash = message;
+        // Vérifier si le message est déjà un hash (format 0x + 64 caractères hex)
+        if (/^0x[a-fA-F0-9]{64}$/.test(message)) {
+            // Le message est déjà un hash, l'utiliser directement
+            messageHash = message;
+        } else {
+            // Le message est le contenu brut, le hasher
+            messageHash = ethers.keccak256(ethers.toUtf8Bytes(message));
+        }
         const userAddress = await signer.getAddress();
         
         const verify_element = document.getElementById("verify");

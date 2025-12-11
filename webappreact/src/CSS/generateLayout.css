@@ -46,7 +46,7 @@
 
 /* Section Tabs - Espacement harmonieux */
 .generate-tabs-section {
-  margin-bottom: 0px; /* Supprimé pour rapprocher de "Votre message" */
+  margin-bottom: 16px; /* Même espacement que VerifyPage entre tabs et bouton */
   padding: 0;
 }
 

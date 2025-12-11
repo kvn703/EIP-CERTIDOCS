@@ -134,7 +134,7 @@ chrome.runtime.onMessage.addListener((request) => {
 });
 
 // Nouveau handler : Récupération du mail pour la page React lors de la navigation
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>  {
     if (request.action === "getMailContentForVerify") {
         // Chercher l'onglet Gmail (mail.google.com ou outlook.com)
         chrome.tabs.query({}, (tabs) => {
