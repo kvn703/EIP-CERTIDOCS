@@ -26,7 +26,7 @@ function VerifyPage() {
     const [signatureId, setSignatureId] = useState("");
     const [message, setMessage] = useState("");
     const [activeTab, _setActiveTab] = useState(0);
-    
+
     // IMPORTANT: Charger dynamiquement verify.js si ce n'est pas déjà fait
     // Le script n'est chargé dans index.html que si on arrive directement sur /verify
     // Avec React Router, lors de la navigation, le script n'est pas chargé
@@ -38,7 +38,7 @@ function VerifyPage() {
         if (typeof window.__verifyScriptLoading === 'undefined') {
             window.__verifyScriptLoading = false;
         }
-        
+
         // PRIORITÉ 1: Vérifier si la fonction est déjà disponible (script déjà chargé)
         if (typeof window.verifySignature === 'function') {
             console.log('[VerifyPage] verifySignature déjà disponible, ne pas charger le script');
@@ -46,14 +46,14 @@ function VerifyPage() {
             window.__verifyScriptLoading = false;
             return; // Le script est déjà chargé et exécuté
         }
-        
+
         // PRIORITÉ 2: Vérifier le flag global pour éviter le double chargement
         // Cette vérification doit être faite AVANT de vérifier le DOM car le script peut être en cours de chargement
         if (window.__verifyScriptLoaded || window.__verifyScriptLoading) {
             console.log('[VerifyPage] Script verify.js déjà chargé ou en cours de chargement (flag global), ne pas le charger à nouveau');
             return;
         }
-        
+
         // PRIORITÉ 3: Vérifier si le script est déjà dans le DOM (même s'il n'est pas encore chargé)
         // Cette vérification doit être faite AVANT de charger le script
         const allScripts = Array.from(document.querySelectorAll('script[src]'));
@@ -62,13 +62,13 @@ function VerifyPage() {
             // Vérifier si le src contient 'verify.js' (peut être avec ou sans PUBLIC_URL)
             return src.includes('verify.js') || src.includes('/scripts/verify.js');
         });
-        
+
         if (existingScript) {
             // Le script est déjà présent dans le DOM
             console.log('[VerifyPage] Script verify.js déjà présent dans le DOM, ne pas le charger à nouveau');
             window.__verifyScriptLoaded = true;
             window.__verifyScriptLoading = false;
-            
+
             // Attendre qu'il soit chargé si nécessaire
             if (existingScript.readyState === 'complete' || existingScript.readyState === 'loaded') {
                 // Le script est chargé, vérifier si la fonction est disponible
@@ -109,18 +109,18 @@ function VerifyPage() {
             }
             return; // Ne JAMAIS charger le script à nouveau
         }
-        
+
         // PRIORITÉ 4: Le script n'est pas dans le DOM et la fonction n'existe pas
         // Le charger dynamiquement (cas de navigation avec React Router)
         console.log('[VerifyPage] Chargement dynamique de verify.js (navigation React Router)');
         window.__verifyScriptLoading = true; // Marquer comme en cours de chargement AVANT de l'ajouter au DOM
         window.__verifyScriptLoaded = false; // S'assurer que le flag est à false
-        
+
         const script = document.createElement('script');
         const publicUrl = process.env.PUBLIC_URL || '';
         script.src = publicUrl ? `${publicUrl}/scripts/verify.js` : '/scripts/verify.js';
         script.async = true; // Charger de manière asynchrone
-        
+
         script.onload = () => {
             console.log('[VerifyPage] Script verify.js chargé avec succès');
             window.__verifyScriptLoading = false;
@@ -134,15 +134,15 @@ function VerifyPage() {
                 }
             }, 200);
         };
-        
+
         script.onerror = () => {
             console.error('[VerifyPage] Erreur lors du chargement du script verify.js');
             window.__verifyScriptLoading = false;
             window.__verifyScriptLoaded = false; // Réinitialiser le flag en cas d'erreur
         };
-        
+
         document.body.appendChild(script);
-        
+
         return () => {
             // Ne pas supprimer le script au démontage car il peut être utilisé ailleurs
             // Le script reste en mémoire même si le composant est démonté
@@ -221,22 +221,22 @@ function VerifyPage() {
         if (verificationResult || hasVerificationCompleted) {
             return;
         }
-        
+
         if (isVerifying) {
             setCurrentStep(2);
             return;
         }
-        
+
         if (!isConnected) {
             setCurrentStep(1);
             return;
         }
-        
+
         if (isConnected && (signatureId || signatureFile || texte1) && (message || texte2 || pdfFile || imageFile)) {
             setCurrentStep(2);
             return;
         }
-        
+
         if (isConnected) {
             setCurrentStep(1);
         }
@@ -274,13 +274,13 @@ function VerifyPage() {
                 // Utiliser window.postMessage pour communiquer avec le content script
                 // Le content script écoutera ce message et le transmettra au background script
                 const requestId = `mailRequest_${Date.now()}_${Math.random()}`;
-                
+
                 // Écouter la réponse du content script
                 const messageHandler = (event) => {
                     // Vérifier que le message vient du content script
                     if (event.data && event.data.type === 'mailContentResponse' && event.data.requestId === requestId) {
                         window.removeEventListener('message', messageHandler);
-                        
+
                         if (event.data.content && event.data.signatureId) {
                             setMessage(event.data.content); // content est déjà le hash
                             setSignatureId(event.data.signatureId);
@@ -288,23 +288,23 @@ function VerifyPage() {
                         } else if (event.data.error) {
                             // Ne pas afficher l'erreur si c'est juste que l'extension n'est pas disponible
                             // (c'est normal si on n'est pas dans le contexte d'une extension)
-                            if (!event.data.error.includes('Extension Chrome non disponible') && 
+                            if (!event.data.error.includes('Extension Chrome non disponible') &&
                                 !event.data.error.includes('Could not establish connection')) {
                                 console.log('[VerifyPage] Erreur lors de la récupération du mail:', event.data.error);
-        }
+                            }
                         }
                     }
                 };
-                
+
                 window.addEventListener('message', messageHandler);
-                
+
                 // Envoyer la demande au content script
                 window.postMessage({
                     type: 'requestMailContentForVerify',
                     requestId: requestId,
                     source: 'verify-page'
                 }, '*');
-                
+
                 // Timeout de sécurité : retirer le listener après 5 secondes
                 setTimeout(() => {
                     window.removeEventListener('message', messageHandler);
@@ -316,24 +316,24 @@ function VerifyPage() {
 
         // Attendre un peu pour laisser le temps à la page de se charger
         const timeoutId = setTimeout(tryDetectMail, 500);
-        
+
         return () => clearTimeout(timeoutId);
     }, [location.pathname, signatureId, message]); // Se déclenche à chaque navigation vers /verify
 
     useEffect(() => {
         const signatureIdInput = document.getElementById("signatureId");
         const messageInput = document.getElementById("messageInput");
-        
+
         if (signatureIdInput && signatureId) {
             let formatted_id = signatureId.trim();
             if (formatted_id.startsWith("[CERTIDOCS]")) {
                 formatted_id = formatted_id.replace("[CERTIDOCS]", "").trim();
             }
-            
+
             if (!formatted_id.startsWith('0x')) {
                 formatted_id = '0x' + formatted_id;
             }
-            
+
             const hex_part = formatted_id.slice(2);
             if (hex_part.length < 64) {
                 formatted_id = '0x' + hex_part.padStart(64, '0');
@@ -344,7 +344,7 @@ function VerifyPage() {
         } else if (signatureIdInput) {
             signatureIdInput.value = '';
         }
-        
+
         if (messageInput && message) {
             // Normaliser le message : supprimer les espaces et s'assurer qu'il est au bon format
             let normalizedMessage = message.trim().replace(/\s/g, '');
@@ -360,11 +360,11 @@ function VerifyPage() {
     useEffect(() => {
         const texte2_element = document.getElementById("texte2");
         const signature_id_string_element = document.getElementById("signatureIdString");
-        
+
         if (texte2_element) {
             texte2_element.value = texte2 || '';
         }
-        
+
         if (signature_id_string_element) {
             signature_id_string_element.value = texte1 || '';
         }
@@ -403,7 +403,7 @@ function VerifyPage() {
             }
 
             checkCount++;
-            
+
             // Timeout de sécurité : arrêter après 30 secondes
             if (checkCount > maxChecks) {
                 setIsVerifying(false);
@@ -420,9 +420,9 @@ function VerifyPage() {
             if (verify_element && !resultProcessedRef.current) {
                 // S'assurer que l'élément reste toujours caché
                 verify_element.style.display = 'none';
-                
+
                 const text = verify_element.innerText || verify_element.textContent || '';
-                
+
                 // Vérifier si on a un résultat valide
                 if (text.includes("✅ Empreinte VALIDE") || text.includes("✅ Signature VALIDE")) {
                     setIsVerifying(false);
@@ -451,7 +451,7 @@ function VerifyPage() {
         };
 
         interval = setInterval(check_verification_result, 500);
-        
+
         return () => {
             if (interval) clearInterval(interval);
             if (timeoutId) clearTimeout(timeoutId);
@@ -472,7 +472,7 @@ function VerifyPage() {
     const validate_signature_format = (sig) => {
         if (!sig) return { isValid: false, message: '' };
         const trimmed = sig.trim();
-        const cleaned = trimmed.startsWith("[CERTIDOCS]") 
+        const cleaned = trimmed.startsWith("[CERTIDOCS]")
             ? trimmed.replace("[CERTIDOCS]", "").trim()
             : trimmed;
         const is_valid = /^0x[a-fA-F0-9]{64}$/.test(cleaned);
@@ -501,7 +501,7 @@ function VerifyPage() {
     }, [texte1, IsString, activeTab]);
     const isButtonEnabled = () => {
         if (!isConnected) return false;
-        
+
         if (activeTab === 0) {
             // Onglet Mail
             return !!(signatureId && message);
@@ -523,12 +523,12 @@ function VerifyPage() {
 
     const handleVerifyClick = () => {
         if (activeTab === 0) {
-        if (!signatureId || !message) {
-            setIsVerifying(false);
-            setVerificationResult(null);
-            setShowContentRecovered(false);
-            return;
-        }
+            if (!signatureId || !message) {
+                setIsVerifying(false);
+                setVerificationResult(null);
+                setShowContentRecovered(false);
+                return;
+            }
         } else if (activeTab === 1) {
             if (!texte2 || (!signatureFile && !texte1)) {
                 setIsVerifying(false);
@@ -548,29 +548,29 @@ function VerifyPage() {
                 return;
             }
         }
-        
+
         resultProcessedRef.current = false;
         setShowContentRecovered(false);
         setIsVerifying(true);
         setVerificationResult(null);
         setHasVerificationCompleted(false);
-        
+
         // IMPORTANT: S'assurer que les inputs DOM sont remplis AVANT d'appeler verifySignature()
         // Cela garantit que les valeurs sont synchronisées même lors de la première vérification
         if (activeTab === 0) {
             const signatureIdInput = document.getElementById("signatureId");
             const messageInput = document.getElementById("messageInput");
-            
+
             if (signatureIdInput && signatureId) {
                 let formatted_id = signatureId.trim();
                 if (formatted_id.startsWith("[CERTIDOCS]")) {
                     formatted_id = formatted_id.replace("[CERTIDOCS]", "").trim();
                 }
-                
+
                 if (!formatted_id.startsWith('0x')) {
                     formatted_id = '0x' + formatted_id;
                 }
-                
+
                 const hex_part = formatted_id.slice(2);
                 if (hex_part.length < 64) {
                     formatted_id = '0x' + hex_part.padStart(64, '0');
@@ -579,7 +579,7 @@ function VerifyPage() {
                 }
                 signatureIdInput.value = formatted_id;
             }
-            
+
             if (messageInput && message) {
                 // Normaliser le message : supprimer les espaces et s'assurer qu'il est au bon format
                 let normalizedMessage = message.trim().replace(/\s/g, '');
@@ -590,7 +590,7 @@ function VerifyPage() {
                 messageInput.value = normalizedMessage;
             }
         }
-        
+
         // S'assurer que l'élément verify existe et est prêt
         // IMPORTANT: Garder display: none pour que le texte ne soit pas visible
         const verify_element = document.getElementById("verify");
@@ -598,7 +598,7 @@ function VerifyPage() {
             verify_element.style.display = 'none'; // Toujours caché
             verify_element.innerText = ''; // Réinitialiser le texte
         }
-        
+
         // IMPORTANT: Attendre que le script verify.js soit chargé et que signer/contract soient initialisés
         // Le script est chargé de manière asynchrone, donc il peut ne pas être disponible immédiatement
         // Augmenter le nombre de tentatives pour donner plus de temps au script de se charger
@@ -608,12 +608,12 @@ function VerifyPage() {
             if (typeof window.dispatchEvent === 'function') {
                 window.dispatchEvent(new CustomEvent('tabChanged', { detail: activeTab }));
             }
-            
+
             // Vérifier une dernière fois que les inputs sont bien remplis avant d'appeler verifySignature
             if (activeTab === 0) {
                 const signatureIdInput = document.getElementById("signatureId");
                 const messageInput = document.getElementById("messageInput");
-                
+
                 // Si les inputs ne sont pas remplis, les remplir à nouveau
                 if (signatureIdInput && signatureId && !signatureIdInput.value.trim()) {
                     let formatted_id = signatureId.trim();
@@ -631,7 +631,7 @@ function VerifyPage() {
                     }
                     signatureIdInput.value = formatted_id;
                 }
-                
+
                 if (messageInput && message && !messageInput.value.trim()) {
                     // Normaliser le message : supprimer les espaces et s'assurer qu'il est au bon format
                     let normalizedMessage = message.trim().replace(/\s/g, '');
@@ -642,7 +642,7 @@ function VerifyPage() {
                     messageInput.value = normalizedMessage;
                 }
             }
-            
+
             // Vérifier que verifySignature est disponible ET que signer est initialisé
             // Note: verifySignature vérifie signer lui-même et affiche une alerte si non disponible
             // Mais on veut s'assurer que la fonction s'exécute vraiment
@@ -658,7 +658,7 @@ function VerifyPage() {
                         }
                     }
                 }
-                
+
                 try {
                     // Appeler verifySignature - il vérifiera signer lui-même
                     window.verifySignature();
@@ -680,7 +680,7 @@ function VerifyPage() {
                 setHasVerificationCompleted(true);
             }
         };
-        
+
         // Commencer à attendre que verifySignature soit disponible
         // Utiliser setTimeout pour s'assurer que les inputs DOM sont bien mis à jour
         // Augmenter le délai initial pour donner plus de temps au script de se charger
@@ -790,7 +790,7 @@ function VerifyPage() {
                                                 Empreinte et message extraits de votre boîte mail
                                             </div>
                                         </div>
-                                        <button 
+                                        <button
                                             className="content-recovered-notification-close"
                                             onClick={() => setShowContentRecovered(false)}
                                             aria-label="Fermer"
@@ -798,22 +798,22 @@ function VerifyPage() {
                                             <FaTimes />
                                         </button>
                                     </div>
-                            </div>
-                        )}
+                                </div>
+                            )}
 
                             {mailContentLost && (
                                 <div className="verify-modern-inputs" style={{ marginBottom: '4px' }}>
                                     <div className="verify-modern-input-card" style={{ borderColor: 'rgba(149, 132, 255, 0.4)', background: 'linear-gradient(135deg, rgba(240, 234, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%)' }}>
                                         <div className="modern-input-icon" style={{ background: 'linear-gradient(135deg, rgba(149, 132, 255, 0.25) 0%, rgba(184, 170, 255, 0.18) 100%)' }}>
                                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '28px', height: '28px' }}>
-                                                <path d="M12 9V13M12 17H12.01M5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5H5C3.89543 5 3 5.89543 3 7V17C3 18.1046 3.89543 19 5 19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                                                <path d="M12 9V13M12 17H12.01M5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5H5C3.89543 5 3 5.89543 3 7V17C3 18.1046 3.89543 19 5 19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                                             </svg>
-                    </div>
+                                        </div>
                                         <div className="modern-input-content">
                                             <label className="modern-input-label">
                                                 Contenu du mail perdu ou introuvable
                                             </label>
-                            <button
+                                            <button
                                                 onClick={handleReloadMailContent}
                                                 style={{
                                                     backgroundColor: '#9584ff',
@@ -829,9 +829,9 @@ function VerifyPage() {
                                                 }}
                                                 onMouseEnter={(e) => e.target.style.transform = 'translateY(-2px)'}
                                                 onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
-                            >
+                                            >
                                                 RECHARGER LE CONTENU DU MAIL
-                            </button>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -843,7 +843,7 @@ function VerifyPage() {
                                         <div className="verify-modern-input-card verify-modern-input-card-primary">
                                             <div className="modern-input-icon">
                                                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                                    <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                                 </svg>
                                             </div>
                                             <div className="modern-input-content">
@@ -862,8 +862,8 @@ function VerifyPage() {
                                         <div className="verify-modern-input-card verify-modern-input-card-secondary">
                                             <div className="modern-input-icon">
                                                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M3 7V5C3 3.89543 3.89543 3 5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                                                    <path d="M7 13L10 16L17 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                                    <path d="M3 7V5C3 3.89543 3.89543 3 5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                                    <path d="M7 13L10 16L17 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                                 </svg>
                                             </div>
                                             <div className="modern-input-content">
@@ -912,17 +912,17 @@ function VerifyPage() {
                                 <div className="format-toggle-optional-label">
                                     <span>Format d'empreinte</span>
                                 </div>
-                                <FormatToggle 
-                                    value={IsString === null ? false : IsString} 
+                                <FormatToggle
+                                    value={IsString === null ? false : IsString}
                                     onChange={(value) => {
                                         setIsString(value);
-                                    }} 
+                                    }}
                                 />
                                 <input
                                     type="checkbox"
                                     id="signatureCheckbox"
                                     checked={IsString === true}
-                                    onChange={() => {}}
+                                    onChange={() => { }}
                                     style={{ display: 'none' }}
                                 />
                             </div>
@@ -933,10 +933,10 @@ function VerifyPage() {
                                 <div className="verify-modern-input-card verify-modern-input-card-primary">
                                     <div className="modern-input-icon">
                                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                            <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                         </svg>
                                     </div>
-                                        <div className="modern-input-content">
+                                    <div className="modern-input-content">
                                         <label className="modern-input-label">
                                             Empreinte
                                             {IsString && signatureValidation.isValid === false && (
@@ -958,15 +958,15 @@ function VerifyPage() {
                                                         aria-invalid={signatureValidation.isValid === false}
                                                         aria-describedby={signatureValidation.message ? "signature-error" : undefined}
                                                         style={{
-                                                            borderColor: signatureValidation.isValid === false 
-                                                                ? 'rgba(255, 107, 107, 0.6)' 
-                                                                : signatureValidation.isValid === true 
-                                                                ? 'rgba(127, 255, 167, 0.6)' 
-                                                                : undefined
+                                                            borderColor: signatureValidation.isValid === false
+                                                                ? 'rgba(255, 107, 107, 0.6)'
+                                                                : signatureValidation.isValid === true
+                                                                    ? 'rgba(127, 255, 167, 0.6)'
+                                                                    : undefined
                                                         }}
                                                     />
                                                     {signatureValidation.message && (
-                                                        <div 
+                                                        <div
                                                             id="signature-error"
                                                             role="alert"
                                                             style={{
@@ -993,8 +993,8 @@ function VerifyPage() {
                                 <div className="verify-modern-input-card verify-modern-input-card-secondary">
                                     <div className="modern-input-icon">
                                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M3 7V5C3 3.89543 3.89543 3 5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                                            <path d="M7 13L10 16L17 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                            <path d="M3 7V5C3 3.89543 3.89543 3 5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                            <path d="M7 13L10 16L17 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                         </svg>
                                     </div>
                                     <div className="modern-input-content">
@@ -1019,8 +1019,8 @@ function VerifyPage() {
                     )}
                     {/* Éléments toujours présents dans le DOM pour verify.js - Onglet Texte */}
                     <div style={{ display: 'none' }}>
-                        <textarea id="texte2" value={texte2} onChange={() => {}} readOnly />
-                        <input id="signatureIdString" value={texte1} onChange={() => {}} readOnly />
+                        <textarea id="texte2" value={texte2} onChange={() => { }} readOnly />
+                        <input id="signatureIdString" value={texte1} onChange={() => { }} readOnly />
                     </div>
                     <p id="verify" style={{ display: 'none' }}></p>
                 </>
@@ -1051,17 +1051,17 @@ function VerifyPage() {
                                 <div className="format-toggle-optional-label">
                                     <span>Format d'empreinte</span>
                                 </div>
-                                <FormatToggle 
-                                    value={IsString === null ? false : IsString} 
+                                <FormatToggle
+                                    value={IsString === null ? false : IsString}
                                     onChange={(value) => {
                                         setIsString(value);
-                                    }} 
+                                    }}
                                 />
                                 <input
                                     type="checkbox"
                                     id="signatureCheckbox"
                                     checked={IsString === true}
-                                    onChange={() => {}}
+                                    onChange={() => { }}
                                     style={{ display: 'none' }}
                                 />
                             </div>
@@ -1072,10 +1072,10 @@ function VerifyPage() {
                                 <div className="verify-modern-input-card verify-modern-input-card-primary">
                                     <div className="modern-input-icon">
                                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                            <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                         </svg>
                                     </div>
-                                        <div className="modern-input-content">
+                                    <div className="modern-input-content">
                                         <label className="modern-input-label">
                                             Empreinte
                                             {IsString && signatureValidation.isValid === false && (
@@ -1097,15 +1097,15 @@ function VerifyPage() {
                                                         aria-invalid={signatureValidation.isValid === false}
                                                         aria-describedby={signatureValidation.message ? "signature-error" : undefined}
                                                         style={{
-                                                            borderColor: signatureValidation.isValid === false 
-                                                                ? 'rgba(255, 107, 107, 0.6)' 
-                                                                : signatureValidation.isValid === true 
-                                                                ? 'rgba(127, 255, 167, 0.6)' 
-                                                                : undefined
+                                                            borderColor: signatureValidation.isValid === false
+                                                                ? 'rgba(255, 107, 107, 0.6)'
+                                                                : signatureValidation.isValid === true
+                                                                    ? 'rgba(127, 255, 167, 0.6)'
+                                                                    : undefined
                                                         }}
                                                     />
                                                     {signatureValidation.message && (
-                                                        <div 
+                                                        <div
                                                             id="signature-error"
                                                             role="alert"
                                                             style={{
@@ -1121,8 +1121,8 @@ function VerifyPage() {
                                                             {signatureValidation.message}
                                                         </div>
                                                     )}
-                        </>
-                    ) : (
+                                                </>
+                                            ) : (
                                                 <ImageSection value={signatureFile} onChange={setSignatureFile} />
                                             )}
                                         </div>
@@ -1174,17 +1174,17 @@ function VerifyPage() {
                                 <div className="format-toggle-optional-label">
                                     <span>Format d'empreinte</span>
                                 </div>
-                                <FormatToggle 
-                                    value={IsString === null ? false : IsString} 
+                                <FormatToggle
+                                    value={IsString === null ? false : IsString}
                                     onChange={(value) => {
                                         setIsString(value);
-                                    }} 
+                                    }}
                                 />
                                 <input
                                     type="checkbox"
                                     id="signatureCheckbox"
                                     checked={IsString === true}
-                                    onChange={() => {}}
+                                    onChange={() => { }}
                                     style={{ display: 'none' }}
                                 />
                             </div>
@@ -1195,10 +1195,10 @@ function VerifyPage() {
                                 <div className="verify-modern-input-card verify-modern-input-card-primary">
                                     <div className="modern-input-icon">
                                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                            <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                         </svg>
                                     </div>
-                                        <div className="modern-input-content">
+                                    <div className="modern-input-content">
                                         <label className="modern-input-label">
                                             Empreinte
                                             {IsString && signatureValidation.isValid === false && (
@@ -1220,15 +1220,15 @@ function VerifyPage() {
                                                         aria-invalid={signatureValidation.isValid === false}
                                                         aria-describedby={signatureValidation.message ? "signature-error" : undefined}
                                                         style={{
-                                                            borderColor: signatureValidation.isValid === false 
-                                                                ? 'rgba(255, 107, 107, 0.6)' 
-                                                                : signatureValidation.isValid === true 
-                                                                ? 'rgba(127, 255, 167, 0.6)' 
-                                                                : undefined
+                                                            borderColor: signatureValidation.isValid === false
+                                                                ? 'rgba(255, 107, 107, 0.6)'
+                                                                : signatureValidation.isValid === true
+                                                                    ? 'rgba(127, 255, 167, 0.6)'
+                                                                    : undefined
                                                         }}
                                                     />
                                                     {signatureValidation.message && (
-                                                        <div 
+                                                        <div
                                                             id="signature-error"
                                                             role="alert"
                                                             style={{
@@ -1278,23 +1278,25 @@ function VerifyPage() {
         <>
             <div className="verify-page-wrapper">
                 <div className="verify-container perspective-container">
-                    <div className="verify-timeline-section">
-                        <Timeline 
-                            currentStep={verificationResult ? 4 : currentStep}
-                            steps={[
-                                { id: 1, label: 'Connexion', icon: FaCircle },
-                                { id: 2, label: 'Vérification', icon: FaCircle },
-                                { id: 3, label: 'Résultat', icon: FaCircle },
-                            ]}
-                        />
-            </div>
+                    <div className="verify-scrollable-content">
+                        <div className="verify-timeline-section">
+                            <Timeline
+                                currentStep={verificationResult ? 4 : currentStep}
+                                steps={[
+                                    { id: 1, label: 'Connexion', icon: FaCircle },
+                                    { id: 2, label: 'Contenu', icon: FaEdit },
+                                    { id: 3, label: 'Résultat', icon: FaCircle },
+                                ]}
+                            />
+                        </div>
 
-                    <div className="verify-tabs-section">
-            <Tabs activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
+                        <div className="verify-tabs-section">
+                            <Tabs activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
+                        </div>
                     </div>
 
                     <StickyButton
-                    onClick={handleVerifyClick}
+                        onClick={handleVerifyClick}
                         disabled={!isButtonEnabled()}
                         isLoading={isVerifying}
                         isSuccess={verificationResult === 'success'}
@@ -1316,7 +1318,7 @@ function VerifyPage() {
                 message={message || texte2}
                 activeTab={activeTab}
             />
-            
+
             <div style={{ display: 'none' }}>
                 <input
                     type="text"
@@ -1326,12 +1328,12 @@ function VerifyPage() {
                     id="messageInput"
                 />
             </div>
-            
+
             <input
                 type="checkbox"
                 id="signatureCheckbox"
                 checked={IsString === true}
-                onChange={() => {}}
+                onChange={() => { }}
                 style={{ display: 'none' }}
             />
         </>

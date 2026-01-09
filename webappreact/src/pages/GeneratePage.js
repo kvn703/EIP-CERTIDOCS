@@ -72,7 +72,7 @@ const GeneratePage = () => {
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const messageHash = urlParams.get("messageHash");
-        
+
         if (messageHash) {
             // Si on a un messageHash dans l'URL, on est sur l'onglet Mail
             setMailMessage(messageHash);
@@ -84,13 +84,13 @@ const GeneratePage = () => {
             }
         } else {
             // Sinon, vérifier si le message de confirmation est dans le DOM (pour compatibilité avec script.js)
-        const confirmationDiv = document.getElementById("confirmationMessage");
-        if (confirmationDiv && confirmationDiv.style.display !== "none") {
-            setMailMessage("Votre message a bien été récupéré.");
-            setActiveTab(0); // Onglet Mail par défaut
-        } else {
-            setMailMessage("");
-            setActiveTab(1); // Onglet Texte par défaut
+            const confirmationDiv = document.getElementById("confirmationMessage");
+            if (confirmationDiv && confirmationDiv.style.display !== "none") {
+                setMailMessage("Votre message a bien été récupéré.");
+                setActiveTab(0); // Onglet Mail par défaut
+            } else {
+                setMailMessage("");
+                setActiveTab(1); // Onglet Texte par défaut
             }
         }
     }, []);
@@ -195,8 +195,8 @@ const GeneratePage = () => {
         const signBtn = document.getElementById("signMessage");
         if (signBtn) {
             // Émettre un événement pour que script.js attache l'event listener
-            window.dispatchEvent(new CustomEvent('signMessageButtonReady', { 
-                detail: { button: signBtn } 
+            window.dispatchEvent(new CustomEvent('signMessageButtonReady', {
+                detail: { button: signBtn }
             }));
         }
     }, []); // S'exécute une fois au montage du composant
@@ -208,7 +208,7 @@ const GeneratePage = () => {
         const checkForSignature = () => {
             const statusEl = document.getElementById("status");
             const signatureIdEl = statusEl?.querySelector(".signature-id");
-            
+
             if (signatureIdEl) {
                 const signatureId = signatureIdEl.getAttribute("title") || signatureIdEl.textContent;
                 if (signatureId && !signed) {
@@ -304,35 +304,35 @@ const GeneratePage = () => {
             const statusEl = document.getElementById("status");
             const hasSignatureInDOM = statusEl?.querySelector(".signature-id") !== null;
             const signatureCard = document.querySelector('[aria-label*="Empreinte"]');
-            
+
             // Étape 3 : Empreinte générée - mettre à 4 pour marquer comme complétée
             if ((signed && signature) || hasSignatureInDOM || signatureCard) {
                 setCurrentStep(4);
                 setHasSignatureCompleted(true);
                 return;
             }
-            
+
             // Étape 2 : Contenu saisi (vérifier tous les inputs possibles)
             const hasTextContent = texteValue && texteValue.trim().length > 0;
             const hasMailContent = mailMessage && mailMessage.trim().length > 0;
             const hasPdfContent = pdfFile !== null;
             const hasImageContent = imageFile !== null;
             const hasRecipients = recipients && recipients.length > 0;
-            
+
             if (hasTextContent || hasMailContent || hasPdfContent || hasImageContent || hasRecipients) {
                 setCurrentStep(2);
                 return;
             }
-            
+
             // Étape 1 : Génération (début)
             setCurrentStep(1);
         };
 
         calculateStep();
-        
+
         // Réexécuter périodiquement pour capturer les changements du DOM
         const interval = setInterval(calculateStep, 300);
-        
+
         return () => clearInterval(interval);
     }, [hasSignatureCompleted, signed, signature, texteValue, mailMessage, pdfFile, imageFile, activeTab, recipients]);
 
@@ -370,7 +370,7 @@ const GeneratePage = () => {
             // Le bouton doit être disponible dès qu'un fichier image est sélectionné
             return imageFile !== null;
         }
-        
+
         return false;
     };
 
@@ -379,19 +379,19 @@ const GeneratePage = () => {
         const updateButtonState = () => {
             // Utiliser la fonction isButtonEnabled() pour une logique cohérente
             const enabled = isButtonEnabled();
-            
+
             // Mettre à jour le bouton caché pour script.js
             const signBtn = document.getElementById("signMessage");
             if (signBtn) {
                 signBtn.disabled = !enabled;
-                
+
                 // Synchroniser la checkbox avec IsString
                 const checkbox = document.getElementById("signatureCheckbox");
                 if (checkbox) {
                     checkbox.checked = IsString === true;
                 }
             }
-            
+
             // Mettre à jour l'état React pour le bouton sticky (une seule source de vérité)
             setButtonEnabledState(enabled);
         };
@@ -402,7 +402,7 @@ const GeneratePage = () => {
         // Écouter les changements dans les champs DOM
         const messageInput = document.getElementById("messageInput");
         const messageTextarea = document.getElementById("messageTextarea");
-        
+
         // Synchroniser l'input caché avec le textarea pour l'onglet Texte
         let syncInput;
         if (messageTextarea) {
@@ -414,7 +414,7 @@ const GeneratePage = () => {
             };
             messageTextarea.addEventListener('input', syncInput);
             messageTextarea.addEventListener('change', syncInput);
-            
+
             // Synchroniser immédiatement
             if (activeTab === 1 && messageInput) {
                 messageInput.value = messageTextarea.value;
@@ -428,7 +428,7 @@ const GeneratePage = () => {
         const handlePdfFileSelected = () => {
             setTimeout(updateButtonState, 50);
         };
-        
+
         window.addEventListener('imageFileSelected', handleImageFileSelected);
         window.addEventListener('pdfFileSelected', handlePdfFileSelected);
 
@@ -452,122 +452,125 @@ const GeneratePage = () => {
             <div className="generate-page-wrapper">
                 <div className="generate-container perspective-container">
 
-                    {/* Timeline - Parcours utilisateur */}
-                    <div className="generate-timeline-section">
-                        <Timeline currentStep={currentStep} />
-                    </div>
+                    {/* Zone de contenu scrollable */}
+                    <div className="generate-scrollable-content">
+                        {/* Timeline - Parcours utilisateur */}
+                        <div className="generate-timeline-section">
+                            <Timeline currentStep={currentStep} />
+                        </div>
 
-                    {/* Sélection du type de contenu */}
-                    <div className="generate-tabs-section">
-                        <Tabs activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
-                    </div>
+                        {/* Sélection du type de contenu */}
+                        <div className="generate-tabs-section">
+                            <Tabs activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
+                        </div>
 
-                    {/* Layout horizontal pour utiliser la largeur */}
-                    <div className="generate-modern-inputs">
-                        {/* Saisie du contenu (conditionnel selon l'onglet) */}
-                        {!mailMessage && activeTab === 1 && (
-                            <div className="modern-input-card modern-input-card-primary">
+                        {/* Layout horizontal pour utiliser la largeur */}
+                        <div className="generate-modern-inputs">
+                            {/* Saisie du contenu (conditionnel selon l'onglet) */}
+                            {!mailMessage && activeTab === 1 && (
+                                <div className="modern-input-card modern-input-card-primary">
+                                    <div className="modern-input-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M3 7V5C3 3.89543 3.89543 3 5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                            <path d="M7 13L10 16L17 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    </div>
+                                    <div className="modern-input-content">
+                                        <label className="modern-input-label" htmlFor="messageInput">
+                                            Votre message
+                                        </label>
+                                        <div className="modern-input-wrapper">
+                                            <CustomTextInput
+                                                id="messageTextarea"
+                                                rows="4"
+                                                placeholder="Saisissez votre message..."
+                                                value={texteValue}
+                                                onChange={(e) => setTexteValue(e.target.value)}
+                                                showCharCount={true}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div id="confirmationMessage" style={{ display: 'none' }}></div>
+
+                            {/* Input caché pour script.js - synchronisé avec mailMessage (onglet Mail) ou texteValue (onglet Texte) */}
+                            <input
+                                type="hidden"
+                                id="messageInput"
+                                readOnly
+                            />
+
+                            {/* Séparateur visuel élégant */}
+                            {!mailMessage && activeTab === 1 && (
+                                <div className="modern-input-divider">
+                                    <div className="modern-input-divider-line"></div>
+                                    <div className="modern-input-divider-dot"></div>
+                                    <div className="modern-input-divider-line"></div>
+                                </div>
+                            )}
+
+                            {/* Configuration - Destinataires */}
+                            <div className="modern-input-card modern-input-card-secondary">
                                 <div className="modern-input-icon">
                                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M3 7V5C3 3.89543 3.89543 3 5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                                        <path d="M7 13L10 16L17 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="currentColor" strokeWidth="2" />
+                                        <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" stroke="currentColor" strokeWidth="2" />
                                     </svg>
                                 </div>
                                 <div className="modern-input-content">
-                                    <label className="modern-input-label" htmlFor="messageInput">
-                                        Votre message
+                                    <label className="modern-input-label">
+                                        Destinataires autorisés
                                     </label>
                                     <div className="modern-input-wrapper">
-                                        <CustomTextInput
-                                            id="messageTextarea"
-                                            rows="4"
-                                            placeholder="Saisissez votre message..."
-                                            value={texteValue}
-                                            onChange={(e) => setTexteValue(e.target.value)}
-                                            showCharCount={true}
+                                        <DestinatairesChipsInput
+                                            value={recipients}
+                                            onChange={setRecipients}
+                                            placeholder="0x1234..., 0x5678..."
+                                        />
+                                        {/* Input caché pour script.js */}
+                                        <input
+                                            type="hidden"
+                                            id="recipientsInput"
+                                            value={recipients.join(', ')}
                                         />
                                     </div>
+                                    <p className="modern-input-hint">
+                                        <span>Appuyez sur Entrée pour valider un destinataire</span>
+                                    </p>
                                 </div>
-                        </div>
-                        )}
-
-                        <div id="confirmationMessage" style={{ display: 'none' }}></div>
-                        
-                        {/* Input caché pour script.js - synchronisé avec mailMessage (onglet Mail) ou texteValue (onglet Texte) */}
-                        <input
-                            type="hidden"
-                            id="messageInput"
-                            readOnly
-                        />
-
-                        {/* Séparateur visuel élégant */}
-                        {!mailMessage && activeTab === 1 && (
-                            <div className="modern-input-divider">
-                                <div className="modern-input-divider-line"></div>
-                                <div className="modern-input-divider-dot"></div>
-                                <div className="modern-input-divider-line"></div>
-                    </div>
-                        )}
-
-                        {/* Configuration - Destinataires */}
-                        <div className="modern-input-card modern-input-card-secondary">
-                            <div className="modern-input-icon">
-                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="currentColor" strokeWidth="2"/>
-                                    <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" stroke="currentColor" strokeWidth="2"/>
-                                </svg>
                             </div>
-                            <div className="modern-input-content">
-                                <label className="modern-input-label">
-                                    Destinataires autorisés
-                                </label>
-                                <div className="modern-input-wrapper">
-                                    <DestinatairesChipsInput 
-                                        value={recipients}
-                                        onChange={setRecipients}
-                                        placeholder="0x1234..., 0x5678..." 
-                                    />
-                                    {/* Input caché pour script.js */}
-                                    <input
-                                        type="hidden"
-                                        id="recipientsInput"
-                                        value={recipients.join(', ')}
-                                    />
+                        </div>
+
+                        {/* Options - Format d'empreinte (optionnel, pour tous les onglets sauf Mail) */}
+                        {activeTab !== 0 ? (
+                            <div className="generate-options-card">
+                                <div className="format-toggle-optional-label">
+                                    <span>Format d'empreinte</span>
                                 </div>
-                                <p className="modern-input-hint">
-                                    <span>Appuyez sur Entrée pour valider un destinataire</span>
-                                </p>
-                    </div>
-                </div>
-            </div>
-
-                    {/* Options - Format d'empreinte (optionnel, pour tous les onglets sauf Mail) */}
-                    {activeTab !== 0 ? (
-                        <div className="generate-options-card">
-                            <div className="format-toggle-optional-label">
-                                <span>Format d'empreinte</span>
+                                <FormatToggle
+                                    value={IsString === null ? false : IsString}
+                                    onChange={(value) => {
+                                        setIsString(value);
+                                    }}
+                                />
                             </div>
-                            <FormatToggle 
-                                value={IsString === null ? false : IsString} 
-                                onChange={(value) => {
-                                    setIsString(value);
-                                }} 
-                            />
-                        </div>
-                    ) : (
-                        /* Spacer ajusté manuellement pour l'onglet Mail (30px est un bon compromis) */
-                        <div style={{ height: '30px' }}></div>
-                    )}
-                    
+                        ) : (
+                            /* Spacer ajusté manuellement pour l'onglet Mail (30px est un bon compromis) */
+                            <div style={{ height: '30px' }}></div>
+                        )}
+                    </div>
+
                     {/* Checkbox cachée pour script.js - toujours présente dans le DOM */}
                     <input
                         type="checkbox"
                         id="signatureCheckbox"
                         checked={IsString === true}
-                        onChange={() => {}}
+                        onChange={() => { }}
                         style={{ display: 'none' }}
                     />
-                    
+
                     {/* Bouton Sticky - Visible pour tous les onglets */}
                     <StickyButton
                         onClick={() => {
@@ -575,23 +578,23 @@ const GeneratePage = () => {
                             if (!buttonEnabledState) {
                                 return;
                             }
-                            
+
                             // S'assurer que la checkbox est correctement synchronisée (même si IsString est null)
                             const checkbox = document.getElementById("signatureCheckbox");
                             if (checkbox) {
                                 // Si IsString est null, utiliser false (Image) par défaut
                                 checkbox.checked = IsString === true;
                             }
-                            
+
                             // Cliquer sur le bouton caché qui déclenchera signMessage via script.js
                             const signBtn = document.getElementById("signMessage");
                             if (signBtn) {
                                 // Forcer l'activation du bouton (le format est optionnel)
                                 signBtn.disabled = false;
-                                
+
                                 // Marquer comme en cours de génération AVANT le clic
                                 setIsGenerating(true);
-                                
+
                                 // Cliquer sur le bouton caché (comme avant)
                                 signBtn.click();
                             } else {
@@ -604,23 +607,23 @@ const GeneratePage = () => {
                     />
 
                     {/* Bouton de génération (caché, utilisé par script.js) */}
-            <button
-                id="signMessage"
+                    <button
+                        id="signMessage"
                         className="button-3d gpu-accelerated interaction-debounce scroll-reveal transform-3d-hover micro-interaction"
                         disabled={!buttonEnabledState}
-                        style={{ 
+                        style={{
                             display: 'none', // Caché mais toujours dans le DOM pour script.js
                         }}
-            >
+                    >
                         GÉNÉRER EMPREINTE
-            </button>
+                    </button>
 
 
                     {/* Ancienne modale supprimée - maintenant dans ResultModal */}
                     <p id="status" className="gpu-accelerated" style={{ display: 'none' }}></p>
                     <div id="copyMessage" className="gpu-accelerated" style={{ display: 'none' }}></div>
                 </div>
-        </div>
+            </div>
 
             {/* Modal pour afficher le résultat */}
             <ResultModal

@@ -1,6 +1,6 @@
 .sticky-button-container {
-  position: sticky;
-  bottom: 20px;
+  position: relative;
+  /* Changed from sticky */
   margin: 0 auto;
   z-index: 1000;
   padding: 10px 0;
@@ -13,6 +13,10 @@
   max-width: 100%;
   box-sizing: border-box;
   text-align: center;
+  flex-shrink: 0;
+  /* Prevent shrinking in flex container */
+  background: inherit;
+  /* Match container background if needed */
 }
 
 @keyframes stickyButtonContainerSlideUp {
@@ -20,6 +24,7 @@
     transform: translateY(100%);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -27,15 +32,18 @@
 }
 
 .sticky-button {
-  width: 318.50px; /* Largeur exacte demandée */
-  max-width: calc(100% - 40px); /* S'assurer qu'il ne dépasse pas avec un peu de marge */
-  padding: 12px 20px; /* Réduit pour remonter le bouton */
+  width: 318.50px;
+  /* Largeur exacte demandée */
+  max-width: calc(100% - 40px);
+  /* S'assurer qu'il ne dépasse pas avec un peu de marge */
+  padding: 12px 20px;
+  /* Réduit pour remonter le bouton */
   border: none;
   border-radius: 16px;
-  background: linear-gradient(135deg, 
-    #9584ff 0%, 
-    #b8aaff 50%, 
-    #7fffa7 100%);
+  background: linear-gradient(135deg,
+      #9584ff 0%,
+      #b8aaff 50%,
+      #7fffa7 100%);
   background-size: 200% 200%;
   color: white;
   font-weight: 700;
@@ -44,7 +52,7 @@
   pointer-events: auto;
   position: relative;
   overflow: hidden;
-  box-shadow: 
+  box-shadow:
     0 -8px 32px rgba(149, 132, 255, 0.4),
     0 -4px 16px rgba(127, 255, 167, 0.3),
     0 0 0 1px rgba(255, 255, 255, 0.2) inset;
@@ -52,7 +60,8 @@
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   animation: stickyButtonEntrance 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-  z-index: 1001; /* Au-dessus du conteneur */
+  z-index: 1001;
+  /* Au-dessus du conteneur */
 }
 
 @keyframes stickyButtonEntrance {
@@ -60,6 +69,7 @@
     transform: translateY(100%);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -70,10 +80,10 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.2) 0%, 
-    transparent 50%,
-    rgba(127, 255, 167, 0.2) 100%);
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.2) 0%,
+      transparent 50%,
+      rgba(127, 255, 167, 0.2) 100%);
   opacity: 0;
   transition: opacity 0.3s;
 }
@@ -84,7 +94,7 @@
 
 .sticky-button:hover:not(.disabled):not(.loading):not(.success) {
   transform: translateY(-4px);
-  box-shadow: 
+  box-shadow:
     0 -12px 40px rgba(149, 132, 255, 0.5),
     0 -6px 20px rgba(127, 255, 167, 0.4),
     0 0 0 1px rgba(255, 255, 255, 0.3) inset;
@@ -98,63 +108,79 @@
 .sticky-button.disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background: linear-gradient(135deg, 
-    rgba(149, 132, 255, 0.5) 0%, 
-    rgba(184, 170, 255, 0.4) 50%,
-    rgba(127, 255, 167, 0.4) 100%);
+  background: linear-gradient(135deg,
+      rgba(149, 132, 255, 0.5) 0%,
+      rgba(184, 170, 255, 0.4) 50%,
+      rgba(127, 255, 167, 0.4) 100%);
 }
 
 .sticky-button.loading {
-  background: linear-gradient(135deg, 
-    #9584ff 0%, 
-    #b8aaff 50%,
-    #9584ff 100%);
+  background: linear-gradient(135deg,
+      #9584ff 0%,
+      #b8aaff 50%,
+      #9584ff 100%);
   background-size: 200% 200%;
   animation: stickyButtonGradient 2s ease infinite, stickyButtonPulse 2s ease infinite;
   cursor: wait;
 }
 
 .sticky-button.error {
-  background: linear-gradient(135deg, 
-    rgba(255, 107, 107, 0.9) 0%, 
-    rgba(255, 135, 135, 0.8) 50%,
-    rgba(255, 107, 107, 0.9) 100%);
+  background: linear-gradient(135deg,
+      rgba(255, 107, 107, 0.9) 0%,
+      rgba(255, 135, 135, 0.8) 50%,
+      rgba(255, 107, 107, 0.9) 100%);
   cursor: not-allowed;
   animation: stickyButtonShake 0.5s ease;
 }
 
 @keyframes stickyButtonShake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-4px); }
-  75% { transform: translateX(4px); }
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-4px);
+  }
+
+  75% {
+    transform: translateX(4px);
+  }
 }
 
 @keyframes stickyButtonGradient {
-  0%, 100% {
+
+  0%,
+  100% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
 }
 
 @keyframes stickyButtonPulse {
-  0%, 100% {
-    box-shadow: 
+
+  0%,
+  100% {
+    box-shadow:
       0 -8px 32px rgba(149, 132, 255, 0.4),
       0 -4px 16px rgba(127, 255, 167, 0.3);
   }
+
   50% {
-    box-shadow: 
+    box-shadow:
       0 -12px 40px rgba(149, 132, 255, 0.6),
       0 -6px 20px rgba(127, 255, 167, 0.5);
   }
 }
 
 .sticky-button.success {
-  background: linear-gradient(135deg, 
-    #7fffa7 0%, 
-    #a8ffc4 100%);
+  background: linear-gradient(135deg,
+      #7fffa7 0%,
+      #a8ffc4 100%);
   animation: stickyButtonSuccess 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -162,9 +188,11 @@
   0% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.05);
   }
+
   100% {
     transform: scale(1);
   }
@@ -192,6 +220,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -202,10 +231,10 @@
   bottom: 0;
   left: 0;
   height: 3px;
-  background: linear-gradient(90deg, 
-    transparent 0%,
-    rgba(255, 255, 255, 0.6) 50%,
-    transparent 100%);
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.6) 50%,
+      transparent 100%);
   background-size: 200% 100%;
   animation: stickyButtonProgress 2s ease infinite;
   border-radius: 0 0 16px 16px;
@@ -216,9 +245,11 @@
     background-position: -200% 0;
     width: 0%;
   }
+
   50% {
     width: 100%;
   }
+
   100% {
     background-position: 200% 0;
     width: 100%;
@@ -227,14 +258,14 @@
 
 /* Dark Mode */
 [data-theme="dark"] .sticky-button {
-  box-shadow: 
+  box-shadow:
     0 -8px 32px rgba(149, 132, 255, 0.5),
     0 -4px 16px rgba(127, 255, 167, 0.4),
     0 0 0 1px rgba(149, 132, 255, 0.3) inset;
 }
 
 [data-theme="dark"] .sticky-button:hover:not(.disabled):not(.loading):not(.success) {
-  box-shadow: 
+  box-shadow:
     0 -12px 40px rgba(149, 132, 255, 0.7),
     0 -6px 20px rgba(127, 255, 167, 0.6),
     0 0 0 1px rgba(149, 132, 255, 0.4) inset;
@@ -246,16 +277,16 @@
     margin: 16px auto 0;
     padding: 0;
   }
-  
+
   .sticky-button {
     width: 100%;
-    max-width: 318.50px; /* Même largeur sur mobile */
+    max-width: 318.50px;
+    /* Même largeur sur mobile */
     padding: 14px 20px;
     font-size: 13px;
   }
-  
+
   .sticky-button-icon {
     font-size: 15px;
   }
 }
-
