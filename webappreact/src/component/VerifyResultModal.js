@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaCheckCircle, FaTimesCircle, FaCopy, FaWallet, FaFingerprint, FaEnvelope, FaClock, FaShieldAlt } from 'react-icons/fa';
 import { useAppKitAccount } from "@reown/appkit/react";
 import './VerifyResultModal.css';
 
-const VerifyResultModal = ({ 
-  isOpen, 
-  onClose, 
+const VerifyResultModal = ({
+  isOpen,
+  onClose,
   result,
   signatureId,
   message,
   activeTab
 }) => {
+  const { t } = useTranslation();
   const { address } = useAppKitAccount();
   const [copiedStates, setCopiedStates] = useState({
     signatureId: false,
@@ -44,16 +46,16 @@ const VerifyResultModal = ({
 
   const handleCopy = async (text, label, key) => {
     if (!text) return;
-    
+
     if (activeTab === 0 && key === 'signatureId') {
       try {
         const base_url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
           ? 'http://localhost:3000'
           : 'https://certidocsweb-xnvzbr.dappling.network';
-        
+
         const image_url = `${base_url}/EMAIL_SIGNATURE.png`;
         const text_to_hide = "[CERTIDOCS]" + text;
-        
+
         if (typeof window.hideTextInImage === 'function') {
           await window.hideTextInImage(image_url, text_to_hide);
           setCopiedStates(prev => ({ ...prev, [key]: true }));
@@ -62,7 +64,7 @@ const VerifyResultModal = ({
           }, 2000);
         } else if (typeof window.hideTextInImageReturnBlob === 'function') {
           const blob = await window.hideTextInImageReturnBlob(image_url, text_to_hide);
-          
+
           if (blob) {
             await navigator.clipboard.write([
               new ClipboardItem({ 'image/png': blob })
@@ -78,7 +80,7 @@ const VerifyResultModal = ({
           const img = new Image();
           img.crossOrigin = "anonymous";
           img.src = image_url;
-          
+
           await new Promise((resolve, reject) => {
             img.onload = () => {
               const canvas = document.createElement("canvas");
@@ -86,14 +88,14 @@ const VerifyResultModal = ({
               canvas.height = img.height;
               const ctx = canvas.getContext("2d");
               ctx.drawImage(img, 0, 0);
-              
+
               const image_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
               const data = image_data.data;
-              
+
               const binary_text = text_to_hide.split('').map(char => {
                 return char.charCodeAt(0).toString(2).padStart(8, '0');
               }).join('') + '00000000';
-              
+
               for (let i = 0; i < binary_text.length; i++) {
                 if (i * 4 < data.length) {
                   data[i * 4] = (data[i * 4] & 0xFE) | parseInt(binary_text[i], 2);
@@ -102,7 +104,7 @@ const VerifyResultModal = ({
                 }
               }
               ctx.putImageData(image_data, 0, 0);
-              
+
               canvas.toBlob(async (blob) => {
                 if (blob) {
                   try {
@@ -122,7 +124,7 @@ const VerifyResultModal = ({
               reject(new Error("Erreur de chargement de l'image"));
             };
           });
-          
+
           setCopiedStates(prev => ({ ...prev, [key]: true }));
           setTimeout(() => {
             setCopiedStates(prev => ({ ...prev, [key]: false }));
@@ -165,7 +167,7 @@ const VerifyResultModal = ({
 
   return (
     <div className="verify-result-modal-overlay" onClick={onClose}>
-      <div 
+      <div
         className="verify-result-modal-content"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
@@ -182,12 +184,12 @@ const VerifyResultModal = ({
             <div className="verify-result-modal-pulse-ring"></div>
           </div>
           <h2 id="verify-modal-title" className="verify-result-modal-title">
-            {isSuccess ? 'Empreinte Validée !' : 'Empreinte Invalide'}
+            {isSuccess ? t('fingerprint_validated') : t('fingerprint_invalid')}
           </h2>
           <p className="verify-result-modal-subtitle">
             {isSuccess
-              ? 'Votre empreinte électronique est authentique et valide.'
-              : 'La signature ne correspond pas ou l\'ID est incorrect.'
+              ? t('fingerprint_authentic_desc')
+              : t('fingerprint_invalid_desc')
             }
           </p>
         </div>
@@ -197,18 +199,18 @@ const VerifyResultModal = ({
             <div className="verify-result-detail-item">
               <span className="verify-detail-label">
                 <FaShieldAlt className="verify-detail-label-icon" />
-                Statut
+                {t('status')}
               </span>
               <span className={`verify-detail-value ${isSuccess ? 'success' : 'error'}`}>
-                {isSuccess ? 'Authentique' : 'Non authentique'}
+                {isSuccess ? t('authentic') : t('not_authentic')}
               </span>
             </div>
-            
+
             {signatureId && (
               <div className="verify-result-detail-item">
                 <span className="verify-detail-label">
                   <FaFingerprint className="verify-detail-label-icon verify-detail-label-icon-purple" />
-                  Empreinte ID
+                  {t('fingerprint_id')}
                 </span>
                 <div className="verify-detail-value-with-copy">
                   <span className="verify-detail-value verify-signature-id-value">{short_address(signatureId)}</span>
@@ -222,7 +224,7 @@ const VerifyResultModal = ({
                     </button>
                     {copiedStates.signatureId && (
                       <div className="verify-copy-feedback">
-                        ✓ Copié !
+                        ✓ {t('copied')}
                       </div>
                     )}
                   </div>
@@ -234,7 +236,7 @@ const VerifyResultModal = ({
               <div className="verify-result-detail-item">
                 <span className="verify-detail-label">
                   <FaEnvelope className="verify-detail-label-icon" />
-                  Message vérifié
+                  {t('verified_message')}
                 </span>
                 <div className="verify-detail-value-with-copy">
                   <span className="verify-detail-value message-preview">
@@ -250,7 +252,7 @@ const VerifyResultModal = ({
                     </button>
                     {copiedStates.message && (
                       <div className="verify-copy-feedback">
-                        ✓ Copié !
+                        ✓ {t('copied')}
                       </div>
                     )}
                   </div>
@@ -262,7 +264,7 @@ const VerifyResultModal = ({
               <div className="verify-result-detail-item">
                 <span className="verify-detail-label">
                   <FaWallet className="verify-detail-label-icon" />
-                  Wallet utilisé
+                  {t('wallet_used')}
                 </span>
                 <div className="verify-detail-value-with-copy">
                   <span className="verify-detail-value">{short_address(address)}</span>
@@ -276,7 +278,7 @@ const VerifyResultModal = ({
                     </button>
                     {copiedStates.address && (
                       <div className="verify-copy-feedback">
-                        ✓ Copié !
+                        ✓ {t('copied')}
                       </div>
                     )}
                   </div>
@@ -287,7 +289,7 @@ const VerifyResultModal = ({
             <div className="verify-result-detail-item">
               <span className="verify-detail-label">
                 <FaClock className="verify-detail-label-icon" />
-                Timestamp
+                {t('timestamp')}
               </span>
               <span className="verify-detail-value">{new Date().toLocaleString('fr-FR')}</span>
             </div>
@@ -299,7 +301,7 @@ const VerifyResultModal = ({
             className="verify-result-modal-button-primary"
             onClick={onClose}
           >
-            Fermer
+            {t('close')}
           </button>
         </div>
       </div>

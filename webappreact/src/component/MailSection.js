@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaCheckCircle } from 'react-icons/fa';
 import './MailSection.css';
 
 const MailSection = ({ message, isConnected, active }) => {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [isDone, setIsDone] = useState(false);
 
@@ -23,7 +25,7 @@ const MailSection = ({ message, isConnected, active }) => {
   }, [message, isConnected, active]);
 
   if (!isConnected) {
-    return <div style={{ color: 'var(--text-muted)', textAlign: 'center', margin: '1.5em 0' }}>Connectez votre wallet pour pouvoir signer un message</div>;
+    return <div style={{ color: 'var(--text-muted)', textAlign: 'center', margin: '1.5em 0' }}>{t('connect_wallet_sign')}</div>;
   }
   if (!message) {
     return null;
@@ -32,10 +34,10 @@ const MailSection = ({ message, isConnected, active }) => {
   return (
     <div className={`mail-section-loading ${isDone ? 'completed' : ''}`}>
       {isLoading && (
-        <div style={{ 
-          display: 'flex', 
-          flexDirection: 'row', 
-          alignItems: 'center', 
+        <div style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
           justifyContent: 'center',
           padding: '6px 8px',
           textAlign: 'left'
@@ -51,54 +53,54 @@ const MailSection = ({ message, isConnected, active }) => {
             flexShrink: 0
           }}></div>
           <div>
-            <div style={{ 
-              fontSize: '15px', 
-              fontWeight: '600', 
-              color: '#333', 
-              marginBottom: '2px' 
+            <div style={{
+              fontSize: '15px',
+              fontWeight: '600',
+              color: '#333',
+              marginBottom: '2px'
             }}>
-              Récupération en cours...
+              {t('recovering')}
             </div>
-            <div style={{ 
-              fontSize: '12px', 
+            <div style={{
+              fontSize: '12px',
               color: '#666',
               lineHeight: '1.2'
             }}>
-              Analyse du contenu mail
+              {t('analyzing_mail')}
             </div>
           </div>
         </div>
       )}
 
       {isDone && (
-        <div style={{ 
+        <div style={{
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'center',
           padding: '6px 8px'
         }}>
-          <FaCheckCircle style={{ 
-            fontSize: '18px', 
+          <FaCheckCircle style={{
+            fontSize: '18px',
             marginRight: '8px',
             color: '#4CAF50',
             flexShrink: 0
           }} />
           <div>
-            <div style={{ 
-              fontSize: '15px', 
-              fontWeight: '600', 
-              color: '#333', 
-              marginBottom: '2px' 
+            <div style={{
+              fontSize: '15px',
+              fontWeight: '600',
+              color: '#333',
+              marginBottom: '2px'
             }}>
-              Contenu récupéré !
+              {t('content_ready')}
             </div>
-            <div style={{ 
-              color: '#666', 
+            <div style={{
+              color: '#666',
               fontSize: '12px',
-              lineHeight: '1.2' 
+              lineHeight: '1.2'
             }}>
-              Votre message est prêt à être signé
+              {t('message_ready')}
             </div>
           </div>
         </div>

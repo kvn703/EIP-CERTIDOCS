@@ -23,7 +23,10 @@ import StickyButton from '../component/StickyButton';
 import ResultModal from '../component/ResultModal';
 import FormatToggle from '../component/FormatToggle';
 
+import { useTranslation } from 'react-i18next';
+
 const GeneratePage = () => {
+    const { t } = useTranslation();
     const { isConnected } = useAppKitAccount();
     const [activeTab, _setActiveTab] = useState(0);
     const [mailMessage, setMailMessage] = useState("");
@@ -129,7 +132,7 @@ const GeneratePage = () => {
             label: (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <FaInbox style={{ fontSize: '16px' }} />
-                    <span>Mail</span>
+                    <span>{t('tab_mail')}</span>
                 </div>
             ),
             content: <MailSection message={mailMessage} isConnected={isConnected} active={activeTab === 0} />,
@@ -138,7 +141,7 @@ const GeneratePage = () => {
             label: (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <FaEdit style={{ fontSize: '16px' }} />
-                    <span>Texte</span>
+                    <span>{t('tab_text')}</span>
                 </div>
             ),
             content: <TexteSection value={texteValue} onChange={e => setTexteValue(e.target.value)} />,
@@ -147,7 +150,7 @@ const GeneratePage = () => {
             label: (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <FaFileAlt style={{ fontSize: '16px' }} />
-                    <span>PDF</span>
+                    <span>{t('tab_pdf')}</span>
                 </div>
             ),
             content: <PDFSection value={pdfFile} onChange={setPdfFile} />,
@@ -156,7 +159,7 @@ const GeneratePage = () => {
             label: (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <FaCamera style={{ fontSize: '16px' }} />
-                    <span>Image</span>
+                    <span>{t('tab_image')}</span>
                 </div>
             ),
             content: <ImageSection value={imageFile} onChange={setImageFile} />,
@@ -477,13 +480,13 @@ const GeneratePage = () => {
                                     </div>
                                     <div className="modern-input-content">
                                         <label className="modern-input-label" htmlFor="messageInput">
-                                            Votre message
+                                            {t('your_message')}
                                         </label>
                                         <div className="modern-input-wrapper">
                                             <CustomTextInput
                                                 id="messageTextarea"
                                                 rows="4"
-                                                placeholder="Saisissez votre message..."
+                                                placeholder={t('enter_message')}
                                                 value={texteValue}
                                                 onChange={(e) => setTexteValue(e.target.value)}
                                                 showCharCount={true}
@@ -521,13 +524,13 @@ const GeneratePage = () => {
                                 </div>
                                 <div className="modern-input-content">
                                     <label className="modern-input-label">
-                                        Destinataires autorisés
+                                        {t('authorized_recipients')}
                                     </label>
                                     <div className="modern-input-wrapper">
                                         <DestinatairesChipsInput
                                             value={recipients}
                                             onChange={setRecipients}
-                                            placeholder="0x1234..., 0x5678..."
+                                            placeholder={t('recipients_placeholder')}
                                         />
                                         {/* Input caché pour script.js */}
                                         <input
@@ -537,7 +540,7 @@ const GeneratePage = () => {
                                         />
                                     </div>
                                     <p className="modern-input-hint">
-                                        <span>Appuyez sur Entrée pour valider un destinataire</span>
+                                        <span>{t('recipients_hint')}</span>
                                     </p>
                                 </div>
                             </div>
@@ -547,7 +550,7 @@ const GeneratePage = () => {
                         {activeTab !== 0 ? (
                             <div className="generate-options-card">
                                 <div className="format-toggle-optional-label">
-                                    <span>Format d'empreinte</span>
+                                    <span>{t('fingerprint_format')}</span>
                                 </div>
                                 <FormatToggle
                                     value={IsString === null ? false : IsString}
@@ -604,7 +607,11 @@ const GeneratePage = () => {
                         disabled={!buttonEnabledState}
                         isLoading={isGenerating}
                         isSuccess={isSuccess}
-                    />
+                        loadingText={t('generating')}
+                        successText={t('fingerprint_generated')}
+                    >
+                        {t('generate_button')}
+                    </StickyButton>
 
                     {/* Bouton de génération (caché, utilisé par script.js) */}
                     <button
@@ -615,7 +622,7 @@ const GeneratePage = () => {
                             display: 'none', // Caché mais toujours dans le DOM pour script.js
                         }}
                     >
-                        GÉNÉRER EMPREINTE
+                        {t('generate_button')}
                     </button>
 
 

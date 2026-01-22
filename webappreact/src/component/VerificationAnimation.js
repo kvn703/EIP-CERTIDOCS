@@ -4,13 +4,6 @@ import './VerificationAnimation.css';
 
 const VerificationAnimation = ({ isVerifying, result, onComplete }) => {
 
-    const verificationSteps = [
-        { icon: "🔍", label: "Analyse de la signature", color: "#9584ff" },
-        { icon: "🔐", label: "Vérification blockchain", color: "#7fffa7" },
-        { icon: "⚡", label: "Validation cryptographique", color: "#ffd93d" },
-        { icon: "✅", label: "Résultat final", color: "#4CAF50" }
-    ];
-
     useEffect(() => {
         if (isVerifying) {
             // Logique de progression pour future utilisation

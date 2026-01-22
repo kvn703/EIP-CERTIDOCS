@@ -20,7 +20,10 @@ import FormatToggle from "../component/FormatToggle";
 import VerifyResultModal from "../component/VerifyResultModal";
 import HashDisplay from "../component/HashDisplay";
 
+import { useTranslation } from 'react-i18next';
+
 function VerifyPage() {
+    const { t } = useTranslation();
     const location = useLocation();
     const { isConnected } = useAppKitAccount();
     const [signatureId, setSignatureId] = useState("");
@@ -734,14 +737,14 @@ function VerifyPage() {
                         color: '#333',
                         marginBottom: '12px'
                     }}>
-                        Rechargement en cours...
+                        {t('reloading')}
                     </div>
                     <div style={{
                         fontSize: '16px',
                         color: '#666',
                         lineHeight: '1.5'
                     }}>
-                        Récupération du contenu mail
+                        {t('recovering_mail_content')}
                     </div>
                     <style>{`
             @keyframes spin {
@@ -759,7 +762,7 @@ function VerifyPage() {
             label: (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <FaInbox style={{ fontSize: '16px' }} />
-                    <span>Mail</span>
+                    <span>{t('tab_mail')}</span>
                 </div>
             ),
             content: (
@@ -784,10 +787,10 @@ function VerifyPage() {
                                         <div className="content-recovered-status-indicator"></div>
                                         <div className="content-recovered-notification-content">
                                             <div className="content-recovered-notification-title">
-                                                Contenu récupéré
+                                                {t('content_recovered')}
                                             </div>
                                             <div className="content-recovered-notification-message">
-                                                Empreinte et message extraits de votre boîte mail
+                                                {t('content_recovered_message')}
                                             </div>
                                         </div>
                                         <button
@@ -811,7 +814,7 @@ function VerifyPage() {
                                         </div>
                                         <div className="modern-input-content">
                                             <label className="modern-input-label">
-                                                Contenu du mail perdu ou introuvable
+                                                {t('content_lost')}
                                             </label>
                                             <button
                                                 onClick={handleReloadMailContent}
@@ -830,7 +833,7 @@ function VerifyPage() {
                                                 onMouseEnter={(e) => e.target.style.transform = 'translateY(-2px)'}
                                                 onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
                                             >
-                                                RECHARGER LE CONTENU DU MAIL
+                                                {t('reload_mail_content')}
                                             </button>
                                         </div>
                                     </div>
@@ -849,7 +852,7 @@ function VerifyPage() {
                                             <div className="modern-input-content">
                                                 <HashDisplay
                                                     value={signatureId}
-                                                    label="Empreinte ID"
+                                                    label={t('fingerprint_id')}
                                                     onCopy={async (value) => {
                                                         await navigator.clipboard.writeText(value);
                                                     }}
@@ -869,7 +872,7 @@ function VerifyPage() {
                                             <div className="modern-input-content">
                                                 <HashDisplay
                                                     value={message}
-                                                    label="Message signé"
+                                                    label={t('signed_message')}
                                                     onCopy={async (value) => {
                                                         await navigator.clipboard.writeText(value);
                                                     }}
@@ -999,13 +1002,13 @@ function VerifyPage() {
                                     </div>
                                     <div className="modern-input-content">
                                         <label className="modern-input-label">
-                                            Message signé
+                                            {t('signed_message')}
                                         </label>
                                         <div className="modern-input-wrapper">
                                             <CustomTextInput
                                                 id="texte2"
                                                 rows={3}
-                                                placeholder="Collez ici le message signé..."
+                                                placeholder={t('paste_signed_message')}
                                                 value={texte2}
                                                 onChange={e => setTexte2(e.target.value)}
                                                 aria-label="Message signé à vérifier"
@@ -1135,7 +1138,7 @@ function VerifyPage() {
                                     </div>
                                     <div className="modern-input-content">
                                         <label className="modern-input-label">
-                                            PDF signé
+                                            {t('signed_pdf')}
                                         </label>
                                         <div className="modern-input-wrapper">
                                             <PDFSection value={pdfFile} onChange={setPdfFile} />
@@ -1258,7 +1261,7 @@ function VerifyPage() {
                                     </div>
                                     <div className="modern-input-content">
                                         <label className="modern-input-label">
-                                            Image signée
+                                            {t('signed_image')}
                                         </label>
                                         <div className="modern-input-wrapper">
                                             <ImageSection value={imageFile} onChange={setImageFile} />
@@ -1283,9 +1286,9 @@ function VerifyPage() {
                             <Timeline
                                 currentStep={verificationResult ? 4 : currentStep}
                                 steps={[
-                                    { id: 1, label: 'Connexion', icon: FaCircle },
-                                    { id: 2, label: 'Contenu', icon: FaEdit },
-                                    { id: 3, label: 'Résultat', icon: FaCircle },
+                                    { id: 1, label: t('step_connection'), icon: FaCircle },
+                                    { id: 2, label: t('step_content'), icon: FaEdit },
+                                    { id: 3, label: t('step_result'), icon: FaCircle },
                                 ]}
                             />
                         </div>
@@ -1301,11 +1304,11 @@ function VerifyPage() {
                         isLoading={isVerifying}
                         isSuccess={verificationResult === 'success'}
                         isError={verificationResult === 'error'}
-                        loadingText="Vérification en cours..."
-                        successText="Empreinte valide !"
-                        errorText="Empreinte Invalide"
+                        loadingText={t('verifying')}
+                        successText={t('valid_fingerprint')}
+                        errorText={t('invalid_fingerprint')}
                     >
-                        VÉRIFIER L'EMPREINTE
+                        {t('verify_button')}
                     </StickyButton>
                 </div>
             </div>
