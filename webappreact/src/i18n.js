@@ -73,7 +73,17 @@ const resources = {
             "verified_message": "VERIFIED MESSAGE",
             "wallet_used": "WALLET USED",
             "timestamp": "TIMESTAMP",
-            "close": "Close"
+            "close": "Close",
+            "tutorial_welcome_title": "Welcome to Certidocs",
+            "tutorial_welcome_desc": "The secure solution to certify and verify your documents on the blockchain.",
+            "tutorial_generate_title": "Generate Authenticity",
+            "tutorial_generate_desc": "Create a unique digital fingerprint for your files (PDF, Image) or text. This fingerprint is anchored in the blockchain.",
+            "tutorial_verify_title": "Verify Authenticity",
+            "tutorial_verify_desc": "Check if a document or message is authentic by comparing its fingerprint with the one on the blockchain.",
+            "tutorial_next": "Next",
+            "tutorial_prev": "Previous",
+            "tutorial_finish": "Start using Certidocs",
+            "tutorial_skip": "Skip"
         }
     },
     fr: {
@@ -146,7 +156,17 @@ const resources = {
             "verified_message": "MESSAGE VÉRIFIÉ",
             "wallet_used": "WALLET UTILISÉ",
             "timestamp": "TIMESTAMP",
-            "close": "Fermer"
+            "close": "Fermer",
+            "tutorial_welcome_title": "Bienvenue sur Certidocs",
+            "tutorial_welcome_desc": "La solution sécurisée pour certifier et vérifier vos documents sur la blockchain.",
+            "tutorial_generate_title": "Générer une authenticité",
+            "tutorial_generate_desc": "Créez une empreinte numérique unique pour vos fichiers (PDF, Image) ou texte. Cette empreinte est ancrée dans la blockchain.",
+            "tutorial_verify_title": "Vérifier une authenticité",
+            "tutorial_verify_desc": "Vérifiez si un document ou un message est authentique en comparant son empreinte avec celle sur la blockchain.",
+            "tutorial_next": "Suivant",
+            "tutorial_prev": "Précédent",
+            "tutorial_finish": "Commencer",
+            "tutorial_skip": "Passer"
         }
     }
 };

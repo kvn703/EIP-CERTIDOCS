@@ -7,6 +7,7 @@ import VerifyPage from "./pages/VerifyPage";
 import GeneratePage from "./pages/GeneratePage";
 import NotificationSystem from "./component/NotificationSystem";
 import HeaderExpert from "./component/HeaderExpert";
+import OnboardingModal from "./component/OnboardingModal";
 import "./App.css";
 
 // 🧹 Import propre
@@ -39,6 +40,7 @@ function AppContent() {
     <div className="App">
       <NotificationSystem />
       <HeaderExpert />
+      <OnboardingModal />
       <div className={`page-transition-container ${transitionStage}`}>
         <Routes location={displayLocation}>
           <Route path="/verify" element={<VerifyPage />} />
