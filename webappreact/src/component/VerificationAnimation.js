@@ -1,38 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { FaShieldAlt, FaCheckCircle, FaTimesCircle, FaSpinner } from 'react-icons/fa';
+import React, { useEffect } from 'react';
+import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import './VerificationAnimation.css';
 
 const VerificationAnimation = ({ isVerifying, result, onComplete }) => {
-    const [step, setStep] = useState(0);
-    const [progress, setProgress] = useState(0);
-
-    const verificationSteps = [
-        { icon: "🔍", label: "Analyse de la signature", color: "#9584ff" },
-        { icon: "🔐", label: "Vérification blockchain", color: "#7fffa7" },
-        { icon: "⚡", label: "Validation cryptographique", color: "#ffd93d" },
-        { icon: "✅", label: "Résultat final", color: "#4CAF50" }
-    ];
 
     useEffect(() => {
         if (isVerifying) {
-            setStep(0);
-            setProgress(0);
-
-            const interval = setInterval(() => {
-                setStep(prev => {
-                    if (prev < verificationSteps.length - 1) {
-                        setProgress(((prev + 1) / verificationSteps.length) * 100);
-                        return prev + 1;
-                    } else {
-                        clearInterval(interval);
-                        return prev;
-                    }
-                });
-            }, 800);
-
-            return () => clearInterval(interval);
+            // Logique de progression pour future utilisation
         }
-    }, [isVerifying, verificationSteps.length]);
+    }, [isVerifying]);
 
     useEffect(() => {
         if (result && onComplete) {
@@ -49,7 +25,8 @@ const VerificationAnimation = ({ isVerifying, result, onComplete }) => {
 
     return (
         <div className="verification-animation-container" style={{ marginTop: isVerifying ? '20px' : '0' }}>
-            {isVerifying && (
+            {/* Masqué : partie "Vérification en cours" */}
+            {/* {isVerifying && (
                 <div className="verification-loading">
                     <div className="verification-header">
                         <div className="verification-icon-container">
@@ -60,7 +37,7 @@ const VerificationAnimation = ({ isVerifying, result, onComplete }) => {
                         <p className="verification-subtitle">Analyse de votre signature électronique</p>
                     </div>
                 </div>
-            )}
+            )} */}
 
             {result && (
                 <div className={`verification-result ${result === 'success' ? 'success' : 'error'}`}>

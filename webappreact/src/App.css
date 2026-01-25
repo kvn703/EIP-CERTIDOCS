@@ -1,5 +1,49 @@
 .App {
   text-align: center;
+  position: relative;
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-transition-container {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  overflow: hidden;
+}
+
+.page-transition-container.exit {
+  animation: slideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.page-transition-container.enter {
+  animation: slideInLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes slideOutRight {
+  0% {
+    transform: translateX(0) rotateY(0deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(100%) rotateY(-15deg);
+    opacity: 0;
+  }
+}
+
+@keyframes slideInLeft {
+  0% {
+    transform: translateX(-100%) rotateY(15deg);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateX(0) rotateY(0deg);
+    opacity: 1;
+  }
 }
 
 .App-logo {
@@ -32,6 +76,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }

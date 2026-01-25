@@ -1,0 +1,253 @@
+.hash-display-container {
+    position: relative;
+    width: 100%;
+    margin-top: 0;
+}
+
+.hash-display-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.hash-display-label {
+    font-size: 11px;
+    font-weight: 600;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-muted, #8d8ba7);
+}
+
+.hash-display-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.hash-display-toggle,
+.hash-display-copy {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #9584ff 0%, #b8aaff 50%, #7fffa7 100%);
+    color: #fff !important;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 14px;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    box-shadow: 
+        0 2px 8px rgba(149, 132, 255, 0.3),
+        0 4px 16px rgba(149, 132, 255, 0.2);
+}
+
+.hash-display-toggle::before,
+.hash-display-copy::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+    z-index: 0;
+}
+
+.hash-display-toggle:hover::before,
+.hash-display-copy:hover::before {
+    width: 200px;
+    height: 200px;
+}
+
+.hash-display-toggle:hover,
+.hash-display-copy:hover {
+    background: linear-gradient(135deg, #b8aaff 0%, #9584ff 50%, #7fffa7 100%);
+    box-shadow: 
+        0 4px 16px rgba(149, 132, 255, 0.4),
+        0 8px 32px rgba(149, 132, 255, 0.3);
+    transform: translateY(-2px) scale(1.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.hash-display-toggle:active,
+.hash-display-copy:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.hash-display-toggle *,
+.hash-display-copy * {
+    color: #fff !important;
+    fill: #fff !important;
+    stroke: #fff !important;
+    position: relative;
+    z-index: 2;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Taille uniforme pour toutes les icônes SVG dans les boutons hash-display */
+.hash-display-toggle svg,
+.hash-display-copy svg {
+    width: 14px !important;
+    height: 14px !important;
+    min-width: 14px !important;
+    min-height: 14px !important;
+    font-size: 14px !important;
+}
+
+.hash-display-toggle:hover *,
+.hash-display-copy:hover * {
+    color: #fff !important;
+    fill: #fff !important;
+    stroke: #fff !important;
+    transform: rotate(-10deg) scale(1.1);
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.hash-display-copy.copied {
+    background: linear-gradient(135deg, #7fffa7 0%, #a8ffc4 50%, #c4ffd9 100%);
+    color: #2d2346;
+    animation: hashDisplayCopySuccess 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.hash-display-copy.copied * {
+    color: #2d2346 !important;
+    fill: #2d2346 !important;
+    stroke: #2d2346 !important;
+}
+
+@keyframes hashDisplayCopySuccess {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1) rotate(5deg);
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+.hash-display-value {
+    font-size: 12px;
+    font-weight: 500;
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Consolas', 'Courier New', monospace;
+    letter-spacing: 0.05em;
+    color: var(--text-main, #2d2346);
+    padding: 14px 16px;
+    background: rgba(149, 132, 255, 0.04);
+    border-radius: 8px;
+    border: 1px solid rgba(149, 132, 255, 0.1);
+    word-break: break-all;
+    line-height: 1.6;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.hash-display-value:hover {
+    background: rgba(149, 132, 255, 0.06);
+    border-color: rgba(149, 132, 255, 0.2);
+}
+
+.hash-display-feedback {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #7fffa7 0%, #a8ffc4 100%);
+    color: #2d2346;
+    padding: 0.5em 1em;
+    border-radius: 10px;
+    font-size: 0.85em;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: 
+        0 4px 12px rgba(127, 255, 167, 0.4),
+        0 8px 24px rgba(127, 255, 167, 0.2),
+        0 16px 48px rgba(127, 255, 167, 0.15);
+    z-index: 99999;
+    animation: hashDisplayFeedbackAppear 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    pointer-events: none;
+}
+
+.hash-display-feedback::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    right: 12px;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #7fffa7;
+}
+
+@keyframes hashDisplayFeedbackAppear {
+    0% {
+        opacity: 0;
+        transform: translateY(10px) scale(0.8);
+    }
+    50% {
+        transform: translateY(-5px) scale(1.1);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+[data-theme="dark"] .hash-display-value {
+    background: rgba(149, 132, 255, 0.08);
+    border-color: rgba(149, 132, 255, 0.15);
+    color: var(--text-main, #e0d9ff);
+}
+
+[data-theme="dark"] .hash-display-toggle,
+[data-theme="dark"] .hash-display-copy {
+    background: linear-gradient(135deg, #9584ff 0%, #b8aaff 50%, #7fffa7 100%);
+    box-shadow: 
+        0 2px 8px rgba(149, 132, 255, 0.4),
+        0 4px 16px rgba(149, 132, 255, 0.3);
+}
+
+[data-theme="dark"] .hash-display-toggle:hover,
+[data-theme="dark"] .hash-display-copy:hover {
+    background: linear-gradient(135deg, #b8aaff 0%, #9584ff 50%, #7fffa7 100%);
+    box-shadow: 
+        0 4px 16px rgba(149, 132, 255, 0.5),
+        0 8px 32px rgba(149, 132, 255, 0.4);
+}
+
+[data-theme="dark"] .hash-display-toggle *,
+[data-theme="dark"] .hash-display-copy * {
+    color: #fff !important;
+    fill: #fff !important;
+    stroke: #fff !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+[data-theme="dark"] .hash-display-copy.copied {
+    background: linear-gradient(135deg, #7fffa7 0%, #a8ffc4 50%, #c4ffd9 100%);
+}
+
+[data-theme="dark"] .hash-display-copy.copied * {
+    color: #2d2346 !important;
+    fill: #2d2346 !important;
+    stroke: #2d2346 !important;
+}
+

@@ -38,19 +38,23 @@ window.addEventListener('walletConnected', async () => {
     const provider = new ethers.BrowserProvider(window.ethereum);
     signer = await provider.getSigner();
     const address = await signer.getAddress();
-    console.log(address);
     contract = new ethers.Contract(contractAddress, abi, signer);
-    console.log("✅ Connexion établie via script.js :", { provider, signer, address, contract });
 
     updateUI(address);
-    document.getElementById("signMessage").disabled = false;
+    const sign_btn = document.getElementById("signMessage");
+    if (sign_btn) {
+        sign_btn.disabled = false;
+    }
 });
 
 window.addEventListener('walletDisconnected', () => {
     signer = null;
     contract = null;
     updateUI(null);
-    document.getElementById("signMessage").disabled = true;
+    const sign_btn = document.getElementById("signMessage");
+    if (sign_btn) {
+        sign_btn.disabled = true;
+    }
 });
 
 async function hideTextInImageReturnBlob(imageUrl, text) {
@@ -144,11 +148,49 @@ if (typeof messageHash === "undefined") {
 }
 
 if (messageHash) {
-    document.getElementById("messageInput").value = messageHash;
-    document.getElementById("messageInput").style.display = "none";
-    document.getElementById("confirmationMessage").style.display = "block";
+    // Attendre que React soit prêt avant d'accéder au DOM
+    const setMessageInput = () => {
+        const messageInput = document.getElementById("messageInput");
+        const confirmationMessage = document.getElementById("confirmationMessage");
+        
+        if (messageInput) {
+            messageInput.value = messageHash;
+            messageInput.style.display = "none";
+        }
+        
+        if (confirmationMessage) {
+            confirmationMessage.style.display = "block";
+        }
+    };
+    
+    // Essayer immédiatement
+    setMessageInput();
+    
+    // Si l'élément n'existe pas encore, attendre que le DOM soit prêt
+    if (!document.getElementById("messageInput") && !document.getElementById("confirmationMessage")) {
+        // Attendre que React ait rendu le composant
+        const observer = new MutationObserver((mutations, obs) => {
+            if (document.getElementById("messageInput") || document.getElementById("confirmationMessage")) {
+                setMessageInput();
+                obs.disconnect();
+            }
+        });
+        
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+        
+        // Timeout de sécurité après 5 secondes
+        setTimeout(() => {
+            observer.disconnect();
+        }, 5000);
+    }
 } else {
-    document.getElementById("confirmationMessage").style.display = "none";
+    const confirmationMessage = document.getElementById("confirmationMessage");
+    if (confirmationMessage) {
+        confirmationMessage.style.display = "none";
+    }
 }
 
 function createAddressSpan(address, addressShort) {
@@ -266,17 +308,13 @@ async function signMessage() {
         if (!ethers.isBytesLike(message)) {
             // hash message using keccak256
             const hash = ethers.keccak256(ethers.toUtf8Bytes(message));
-            console.log("Message non hashé, hash en cours...");
-            console.log("Message hashé :", hash);
             messageHash = hash;
         } else {
             // if message is already a bytes-like value, use it directly
             messageHash = message;
-            console.log("Message déjà hashé :", messageHash);
         }
 
         signature = await signer.signMessage(ethers.getBytes(messageHash));
-        console.log("hash:", messageHash);
     } else if (currentTab === 2) {
         if (!currentPDFFile) {
             alert("❌ Veuillez sélectionner un fichier PDF avant de signer !");
@@ -299,9 +337,7 @@ async function signMessage() {
         // Hash du fichier PDF
         const fileBuffer = await readFileAsArrayBuffer(currentPDFFile);
         messageHash = ethers.keccak256(new Uint8Array(fileBuffer));
-        console.log("Fichier PDF hashé :", messageHash);
         signature = await signer.signMessage(ethers.getBytes(messageHash));
-        console.log("Signature du fichier PDF :", signature);
     } else if (currentTab === 3) {
         if (!currentImageFile) {
             alert("❌ Veuillez sélectionner un fichier image avant de signer !");
@@ -324,37 +360,27 @@ async function signMessage() {
         // Hash du fichier image
         const fileBuffer = await readFileAsArrayBuffer(currentImageFile);
         messageHash = ethers.keccak256(new Uint8Array(fileBuffer));
-        console.log("Fichier image hashé :", messageHash);
         signature = await signer.signMessage(ethers.getBytes(messageHash));
-        console.log("Signature du fichier image :", signature);
     } else {
-        console.error("❌ Type de signature non supporté !");
         return;
     }
     if (!messageHash || !signature) {
-        console.error("❌ Impossible de signer le message !");
         return;
     }
 
     // const expirationSelect = document.getElementById("expirationSelect");
     // const expiration = Math.floor(Date.now() / 1000) + parseInt(expirationSelect.value);
     const expiration = Math.floor(Date.now() / 1000) + 31536000
-    console.log("📩 Données envoyées à storeSignature:");
-    console.log("→ messageHash:", messageHash);
-    console.log("→ signature:", signature);
-    console.log("→ authorizedRecipients:", authorizedRecipients);
-    console.log("→ expiration:", expiration);
-    console.log("→ contractAddress:", contractAddress);
 
-    document.getElementById("status").innerHTML =
-        '<div class="loader"></div>⏳ Transaction en cours...';
-    document.getElementById("status").style.display = "flex";
+    // Ancienne interface supprimée - on utilise maintenant ResultModal
+    const statusEl = document.getElementById("status");
+    if (statusEl) {
+        statusEl.style.display = "none";
+    }
 
     requestAnimationFrame(async () => {
         try {
             const timestamp = Math.floor(Date.now() / 1000);
-            console.log("→ timestamp:", timestamp);
-            console.log("📡 Envoi de la transaction...");
             const tx = await contract.storeSignature(
                 messageHash,
                 expiration,
@@ -373,7 +399,6 @@ async function signMessage() {
             }
 
             if (!signatureId) {
-                console.error("❌ Impossible de récupérer `signatureId` !");
                 return;
             }
 
@@ -386,198 +411,24 @@ async function signMessage() {
                 signatureIdString += signatureId[i];
             }
 
-            // Nouveau container pro pour la signature et le bouton
+            // Ancienne interface supprimée - on utilise maintenant ResultModal
+            // La signature est gérée par React via l'événement signatureGenerated
             const status = document.getElementById("status");
+            if (status) {
+                status.style.display = "none";
             status.innerHTML = "";
-            status.style.display = "flex";
-            status.style.position = "relative";
-
-            const container = document.createElement("div");
-            container.className = "signature-copy-container";
-
-            const sigSpan = document.createElement("span");
-            sigSpan.className = "signature-id";
-            sigSpan.innerText = signatureIdString;
-            sigSpan.title = signatureId;
-            container.appendChild(sigSpan);
-
-            // Crée un conteneur flex pour les boutons
-            const buttonContainer = document.createElement("div");
-            buttonContainer.style.display = "flex";
-            buttonContainer.style.gap = "8px";
-            buttonContainer.style.alignItems = "center";
-            buttonContainer.style.width = "100%";
-            container.appendChild(buttonContainer);
-
-            // Bouton de copie
-            const copyBtn = document.createElement("button");
-            copyBtn.className = "signature-copy-btn";
-            copyBtn.setAttribute("aria-label", "Copier la signature");
-            copyBtn.innerHTML = '<span class="icon"><i class="fas fa-copy"></i></span> Copier';
-            copyBtn.style.flex = "1";
-            buttonContainer.appendChild(copyBtn);
-
-            // Bouton de téléchargement
-            const downloadBtn = document.createElement("button");
-            downloadBtn.className = "signature-download-btn";
-            downloadBtn.setAttribute("aria-label", "Télécharger la signature");
-            downloadBtn.innerHTML = '<span class="icon"><i class="fas fa-download"></i></span>';
-            downloadBtn.style.flex = "0 0 25%";
-            downloadBtn.style.minWidth = "80px";
-            if (!isString) {
-                buttonContainer.appendChild(downloadBtn);
             }
-            // Toast
-            const toast = document.createElement("div");
-            toast.className = "signature-toast";
-            toast.style.display = "none";
-            container.appendChild(toast);
-
-            // Handler bouton de téléchargement
-            downloadBtn.onclick = () => {
-                downloadBtn.classList.add("copied");
-                setTimeout(() => {
-                    downloadBtn.classList.remove("copied");
-                }, 1800);
-                toast.innerText = "✅ Signature téléchargée !";
-                toast.style.display = "block";
-                toast.classList.remove("hide");
-                setTimeout(() => {
-                    toast.classList.add("hide");
-                    setTimeout(() => {
-                        toast.style.display = "none";
-                        toast.classList.remove("hide");
-                    }, 400);
-                }, 1600);
-
-                const imageUrl =
-                    currentTab === 0 ? `${baseUrl}/EMAIL_SIGNATURE.png` :
-                        currentTab === 1 ? `${baseUrl}/TEXT_SIGNATURE.png` :
-                            currentTab === 2 ? `${baseUrl}/PDF_SIGNATURE.png` :
-                                `${baseUrl}/IMAGE_SIGNATURE.png`;
-
-                hideTextInImageReturnBlob(imageUrl, "[CERTIDOCS]" + signatureId)
-                    .then((blob) => {
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement("a");
-                        a.href = url;
-                        a.download = "signature.png";
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        URL.revokeObjectURL(url);
-                        console.log("📥 Signature téléchargée !");
-                    })
-                    .catch((error) => {
-                        toast.innerText = "❌ Erreur lors de la copie !";
-                        toast.style.background = "#ffeaea";
-                        toast.style.color = "#d32f2f";
-                        toast.style.display = "block";
-                        setTimeout(() => {
-                            toast.classList.add("hide");
-                            setTimeout(() => {
-                                toast.style.display = "none";
-                                toast.classList.remove("hide");
-                                toast.innerText = "✅ Signature téléchargée !";
-                                toast.style.background = "#fff";
-                                toast.style.color = "#7a67e4";
-                            }, 400);
-                        }, 2000);
-                    });
-            };
-
-            // Handler bouton de copie
-            copyBtn.onclick = () => {
-                copyBtn.classList.add("copied");
-                copyBtn.innerHTML = '<span class="icon"><i class="fas fa-check-circle"></i></span> Copié!';
-                setTimeout(() => {
-                    copyBtn.classList.remove("copied");
-                    copyBtn.innerHTML = '<span class="icon"><i class="fas fa-copy"></i></span> Copier';
-                }, 1800);
-
-                toast.innerText = "✅ Signature copiée !";
-                toast.style.display = "block";
-                toast.classList.remove("hide");
-                setTimeout(() => {
-                    toast.classList.add("hide");
-                    setTimeout(() => {
-                        toast.style.display = "none";
-                        toast.classList.remove("hide");
-                    }, 400);
-                }, 1600);
-
-                const imageUrl =
-                    currentTab === 0 ? `${baseUrl}/EMAIL_SIGNATURE.png` :
-                        currentTab === 1 ? `${baseUrl}/TEXT_SIGNATURE.png` :
-                            currentTab === 2 ? `${baseUrl}/PDF_SIGNATURE.png` :
-                                `${baseUrl}/IMAGE_SIGNATURE.png`;
-                if (isString) {
-                    // put [CERTIDOCS] + signatureId in the clipboard
-                    const item = new ClipboardItem({
-                        "text/plain": new Blob(["[CERTIDOCS]" + signatureId], { type: "text/plain" })
-                    });
-                    navigator.clipboard.write([item])
-                        .then(() => {
-                            console.log("📋 Signature copiée dans le presse-papiers !");
-                            toast.innerText = "✅ Signature copiée !";
-                            toast.style.background = "#fff";
-                            toast.style.color = "#7a67e4";
-                            toast.style.display = "block";
-                            setTimeout(() => {
-                                toast.classList.add("hide");
-                                setTimeout(() => {
-                                    toast.style.display = "none";
-                                    toast.classList.remove("hide");
-                                    toast.innerText = "✅ Signature copiée !";
-                                    toast.style.background = "#fff";
-                                    toast.style.color = "#7a67e4";
-                                }, 400);
-                            }
-                                , 2000);
-                        })
-                        .catch((error) => {
-                            console.error("❌ Erreur lors de la copie :", error);
-                            toast.innerText = "❌ Erreur lors de la copie !";
-                            toast.style.background = "#ffeaea";
-                            toast.style.color = "#d32f2f";
-                            toast.style.display = "block";
-                            setTimeout(() => {
-                                toast.classList.add("hide");
-                                setTimeout(() => {
-                                    toast.style.display = "none";
-                                    toast.classList.remove("hide");
-                                    toast.innerText = "✅ Signature copiée !";
-                                    toast.style.background = "#fff";
-                                    toast.style.color = "#7a67e4";
-                                }, 400);
-                            }, 2000);
-                        });
-                } else {
-                    hideTextInImage(imageUrl, "[CERTIDOCS]" + signatureId)
-                        .catch((error) => {
-                            toast.innerText = "❌ Erreur lors de la copie !";
-                            toast.style.background = "#ffeaea";
-                            toast.style.color = "#d32f2f";
-                            toast.style.display = "block";
-                            setTimeout(() => {
-                                toast.classList.add("hide");
-                                setTimeout(() => {
-                                    toast.style.display = "none";
-                                    toast.classList.remove("hide");
-                                    toast.innerText = "✅ Signature copiée !";
-                                    toast.style.background = "#fff";
-                                    toast.style.color = "#7a67e4";
-                                }, 400);
-                            }, 2000);
-                        });
-                }
-            };
-
-
-            status.appendChild(container);
+            
+            // Déclencher l'événement pour React (ResultModal)
+            window.dispatchEvent(new CustomEvent('signatureGenerated', {
+                detail: { signatureId, signatureIdString }
+            }));
         } catch (error) {
-            console.error(error);
-            document.getElementById("status").innerText = "❌ Erreur lors du stockage.";
+            const statusEl = document.getElementById("status");
+            if (statusEl) {
+                statusEl.style.display = "none";
+            }
+            // L'erreur sera gérée par React si nécessaire
         }
     });
 }
@@ -586,20 +437,67 @@ window.addEventListener('pdfFileSelected', (event) => {
     // extract the PDF file from the event detail
     const pdfFile = event.detail;
     currentPDFFile = pdfFile;
-    console.log("PDF file selected:", pdfFile);
 });
 
 window.addEventListener('tabChanged', (event) => {
     const tabIDX = event.detail;
     currentTab = tabIDX;
-    console.log("Tab changed to:", tabIDX);
 });
 
 window.addEventListener('imageFileSelected', (event) => {
     const imageFile = event.detail;
     currentImageFile = imageFile;
-    console.log("Image file selected:", imageFile);
 });
 
-document.getElementById("signMessage").addEventListener("click", signMessage);
+// Fonction pour attacher l'event listener de manière robuste
+function attachSignMessageListener() {
+    const signBtn = document.getElementById("signMessage");
+    if (signBtn) {
+        // Retirer l'ancien listener s'il existe pour éviter les doublons
+        signBtn.removeEventListener("click", signMessage);
+        signBtn.addEventListener("click", signMessage);
+        return true;
+    }
+    return false;
+}
+
+// Écouter l'événement émis par React quand le bouton est prêt
+window.addEventListener('signMessageButtonReady', (event) => {
+    attachSignMessageListener();
+});
+
+// Essayer d'attacher immédiatement (au cas où le bouton existe déjà)
+if (!attachSignMessageListener()) {
+    // Si le bouton n'existe pas encore, utiliser MutationObserver
+    const observer = new MutationObserver((mutations, obs) => {
+        if (attachSignMessageListener()) {
+            obs.disconnect(); // Arrêter d'observer une fois attaché
+        }
+    });
+    
+    // Observer les changements dans le body
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+    
+    // Timeout de sécurité (au cas où)
+    setTimeout(() => {
+        observer.disconnect();
+        attachSignMessageListener();
+    }, 5000);
+}
+
+// Réattacher quand le wallet se connecte (au cas où le bouton est recréé)
+window.addEventListener('walletConnected', () => {
+    setTimeout(attachSignMessageListener, 100);
+});
+
+// Exposer la fonction signMessage globalement pour pouvoir l'appeler depuis React
+window.signMessage = signMessage;
+
+// Exposer les fonctions globalement
+window.hideTextInImageReturnBlob = hideTextInImageReturnBlob;
+window.hideTextInImage = hideTextInImage;
+
 // document.addEventListener("DOMContentLoaded", connectMetaMask);

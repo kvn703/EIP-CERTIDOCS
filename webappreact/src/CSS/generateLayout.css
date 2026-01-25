@@ -1,0 +1,703 @@
+/* ============================================
+   LAYOUT PROFESSIONNEL 2025 - PAGE GÉNÉRATION
+   ============================================ */
+
+.generate-page-wrapper {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  /* Utilise toute la largeur disponible */
+  margin: 0;
+  padding: 0;
+}
+
+.generate-container {
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.98) 0%,
+      rgba(255, 255, 255, 0.95) 100%);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-radius: 18px;
+  box-shadow:
+    0 24px 72px rgba(149, 132, 255, 0.18),
+    0 12px 36px rgba(149, 132, 255, 0.12),
+    0 4px 12px rgba(149, 132, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  padding: 0;
+  /* Padding moved to scrollable content */
+  margin: 0;
+  max-width: 100%;
+  width: 100%;
+  height: 100%;
+  /* Fill available space */
+  overflow: hidden;
+  /* Hide overflow on container */
+  box-sizing: border-box;
+  border: 1.5px solid rgba(149, 132, 255, 0.25);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.generate-scrollable-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 12px 14px 20px 14px;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Section Timeline - Espacement optimisé */
+.generate-timeline-section {
+  margin-bottom: 2px;
+  /* Réduit pour tenir dans la fenêtre */
+  padding: 0;
+}
+
+/* Section Tabs - Espacement harmonieux */
+.generate-tabs-section {
+  margin-bottom: 16px;
+  /* Même espacement que VerifyPage entre tabs et bouton */
+  padding: 0;
+}
+
+/* ============================================
+   DESIGN MODERNE 2025 - INPUTS AVANCÉS
+   ============================================ */
+
+.generate-modern-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  /* Réduit pour tenir dans la fenêtre 500x988 */
+  margin-top: 0px;
+  /* Supprimé pour rapprocher des tabs */
+  margin-bottom: 0px;
+  /* Supprimé pour réduire l'espace avant le bouton */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Card moderne pour chaque input */
+.modern-input-card {
+  position: relative;
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(255, 255, 255, 0.9) 100%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 16px;
+  border: 1.5px solid rgba(149, 132, 255, 0.15);
+  padding: 14px 18px;
+  /* Réduit pour tenir dans la fenêtre */
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow:
+    0 4px 16px rgba(149, 132, 255, 0.08),
+    0 2px 8px rgba(149, 132, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  display: flex;
+  gap: 12px;
+  /* Réduit de 14px à 12px */
+  align-items: flex-start;
+  overflow: hidden;
+  width: 100%;
+  /* Assure que la card prend toute la largeur disponible */
+  box-sizing: border-box;
+}
+
+.modern-input-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg,
+      rgba(149, 132, 255, 0.4) 0%,
+      rgba(184, 170, 255, 0.6) 50%,
+      rgba(149, 132, 255, 0.4) 100%);
+  background-size: 200% 100%;
+  animation: shimmerTop 3s ease-in-out infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modern-input-card:hover::before,
+.modern-input-card:focus-within::before {
+  opacity: 1;
+}
+
+@keyframes shimmerTop {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.modern-input-card:hover {
+  border-color: rgba(149, 132, 255, 0.3);
+  box-shadow:
+    0 8px 24px rgba(149, 132, 255, 0.12),
+    0 4px 12px rgba(149, 132, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  transform: translateY(-2px);
+}
+
+.modern-input-card:focus-within {
+  border-color: rgba(149, 132, 255, 0.5);
+  box-shadow:
+    0 12px 32px rgba(149, 132, 255, 0.18),
+    0 6px 16px rgba(149, 132, 255, 0.12),
+    0 0 0 4px rgba(149, 132, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  transform: translateY(-3px) scale(1.01);
+}
+
+.modern-input-card-primary {
+  background: linear-gradient(135deg,
+      rgba(149, 132, 255, 0.08) 0%,
+      rgba(184, 170, 255, 0.04) 100%);
+}
+
+.modern-input-card-secondary {
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(255, 255, 255, 0.9) 100%);
+}
+
+/* Icône moderne */
+.modern-input-icon {
+  flex-shrink: 0;
+  width: 48px;
+  /* Réduit de 56px à 48px */
+  height: 48px;
+  /* Réduit de 56px à 48px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg,
+      rgba(149, 132, 255, 0.15) 0%,
+      rgba(184, 170, 255, 0.1) 100%);
+  border-radius: 12px;
+  /* Réduit de 14px */
+  border: 1px solid rgba(149, 132, 255, 0.2);
+  color: var(--accent, #9584ff);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow:
+    0 2px 8px rgba(149, 132, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.modern-input-icon svg {
+  width: 24px;
+  /* Réduit de 28px à 24px */
+  height: 24px;
+  /* Réduit de 28px à 24px */
+  stroke-width: 2;
+  transition: all 0.3s ease;
+}
+
+.modern-input-card:hover .modern-input-icon,
+.modern-input-card:focus-within .modern-input-icon {
+  background: linear-gradient(135deg,
+      rgba(149, 132, 255, 0.25) 0%,
+      rgba(184, 170, 255, 0.18) 100%);
+  transform: scale(1.1) rotate(5deg);
+  box-shadow:
+    0 4px 12px rgba(149, 132, 255, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.modern-input-card:focus-within .modern-input-icon svg {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 8px rgba(149, 132, 255, 0.5));
+}
+
+/* Contenu de l'input */
+.modern-input-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  /* Réduit de 8px à 6px */
+}
+
+/* Label moderne flottant */
+.modern-input-label {
+  font-size: 12px;
+  /* Réduit de 13px à 12px */
+  font-weight: 700;
+  color: var(--accent, #9584ff);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 0;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.modern-input-label::after {
+  content: '';
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(90deg,
+      rgba(149, 132, 255, 0.3) 0%,
+      transparent 100%);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.modern-input-card:focus-within .modern-input-label::after {
+  background: linear-gradient(90deg,
+      rgba(149, 132, 255, 0.6) 0%,
+      transparent 100%);
+}
+
+/* Wrapper pour l'input */
+.modern-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.modern-input-wrapper textarea,
+.modern-input-wrapper input {
+  width: 100%;
+  padding: 12px 18px;
+  /* Réduit pour tenir dans la fenêtre */
+  margin: 0;
+  border: 2px solid rgba(149, 132, 255, 0.2);
+  border-radius: 10px;
+  /* Réduit de 12px */
+  font-size: 14px;
+  /* Réduit de 15px à 14px */
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--text-main, #2d2346);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow:
+    0 2px 8px rgba(149, 132, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  min-width: 0;
+  /* Permet au flex de fonctionner correctement */
+  box-sizing: border-box;
+  line-height: 1.5;
+  /* Amélioration de la lisibilité */
+}
+
+.modern-input-wrapper textarea::placeholder,
+.modern-input-wrapper input::placeholder {
+  color: var(--text-muted, #8d8ba7);
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.modern-input-wrapper textarea:not(:placeholder-shown)::placeholder,
+.modern-input-wrapper textarea:focus::placeholder,
+.modern-input-wrapper input:not(:placeholder-shown)::placeholder,
+.modern-input-wrapper input:focus::placeholder {
+  opacity: 0;
+}
+
+.modern-input-wrapper textarea:hover,
+.modern-input-wrapper input:hover {
+  border-color: rgba(149, 132, 255, 0.35);
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow:
+    0 4px 12px rgba(149, 132, 255, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transform: translateY(-1px);
+}
+
+.modern-input-wrapper textarea:focus,
+.modern-input-wrapper input:focus {
+  outline: none;
+  border-color: rgba(149, 132, 255, 0.6);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 0 0 4px rgba(149, 132, 255, 0.15),
+    0 8px 24px rgba(149, 132, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transform: translateY(-2px);
+}
+
+/* Hint moderne */
+.modern-input-hint {
+  font-size: 10px;
+  font-style: normal;
+  color: var(--text-muted, #8d8ba7);
+  margin-top: 4px;
+  margin-bottom: 0;
+  opacity: 0.8;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.modern-input-hint::before {
+  content: '💡';
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+/* Séparateur visuel élégant - Plus subtil */
+.modern-input-divider {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0;
+  padding: 0 24px;
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+}
+
+.generate-modern-inputs:hover .modern-input-divider {
+  opacity: 0.6;
+}
+
+.modern-input-divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(149, 132, 255, 0.2) 50%,
+      transparent 100%);
+  border-radius: 1px;
+}
+
+.modern-input-divider-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(149, 132, 255, 0.3);
+  box-shadow:
+    0 0 4px rgba(149, 132, 255, 0.2);
+  animation: dividerPulse 3s ease-in-out infinite;
+}
+
+@keyframes dividerPulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+/* Dark mode */
+[data-theme="dark"] .modern-input-card {
+  background: linear-gradient(135deg,
+      rgba(45, 37, 64, 0.95) 0%,
+      rgba(37, 32, 48, 0.9) 100%);
+  border-color: rgba(149, 132, 255, 0.25);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 2px 8px rgba(149, 132, 255, 0.1),
+    inset 0 1px 0 rgba(149, 132, 255, 0.1);
+}
+
+[data-theme="dark"] .modern-input-card-primary {
+  background: linear-gradient(135deg,
+      rgba(149, 132, 255, 0.12) 0%,
+      rgba(184, 170, 255, 0.06) 100%);
+}
+
+[data-theme="dark"] .modern-input-icon {
+  background: linear-gradient(135deg,
+      rgba(149, 132, 255, 0.2) 0%,
+      rgba(184, 170, 255, 0.15) 100%);
+  border-color: rgba(149, 132, 255, 0.3);
+}
+
+[data-theme="dark"] .modern-input-wrapper textarea,
+[data-theme="dark"] .modern-input-wrapper input {
+  background: rgba(45, 37, 64, 0.6);
+  border-color: rgba(149, 132, 255, 0.3);
+  color: var(--text-main, #f0eaff);
+}
+
+[data-theme="dark"] .modern-input-wrapper textarea:focus,
+[data-theme="dark"] .modern-input-wrapper input:focus {
+  background: rgba(45, 37, 64, 0.8);
+  border-color: rgba(149, 132, 255, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .modern-input-card {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .modern-input-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .modern-input-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Section de contenu - Card moderne */
+.generate-content-card {
+  background: linear-gradient(135deg,
+      rgba(149, 132, 255, 0.06) 0%,
+      rgba(184, 170, 255, 0.03) 100%);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  border: 1px solid rgba(149, 132, 255, 0.12);
+  padding: 8px 14px;
+  /* Padding augmenté pour éviter les bordures */
+  margin-bottom: 6px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow:
+    0 2px 8px rgba(149, 132, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.generate-content-card-flex {
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.generate-content-card:hover {
+  border-color: rgba(149, 132, 255, 0.2);
+  box-shadow:
+    0 4px 12px rgba(149, 132, 255, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transform: translateY(-1px);
+}
+
+/* Label de section - Typographie professionnelle */
+.generate-section-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-main, #2d2346);
+  letter-spacing: 0.01em;
+}
+
+.generate-section-label i,
+.generate-section-label svg {
+  font-size: 11px;
+  color: var(--accent, #9584ff);
+  opacity: 0.8;
+}
+
+/* Input group - Espacement cohérent */
+.generate-input-group {
+  margin-bottom: 0;
+}
+
+.generate-input-group+.generate-input-hint {
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+/* Hint text - Style subtil */
+.generate-input-hint {
+  font-size: 9px;
+  font-style: italic;
+  color: var(--text-muted, #8d8ba7);
+  margin-top: 4px;
+  margin-bottom: 0;
+  opacity: 0.75;
+  line-height: 1.2;
+}
+
+/* Section options - Style compact */
+.generate-options-card {
+  background: linear-gradient(135deg,
+      rgba(149, 132, 255, 0.04) 0%,
+      rgba(184, 170, 255, 0.02) 100%);
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
+  border: 1px solid rgba(149, 132, 255, 0.1);
+  padding: 2px 14px;
+  /* Réduit au minimum pour rapprocher du bouton */
+  margin-bottom: 0px;
+  /* Supprimé pour rapprocher du bouton */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.generate-options-card:hover {
+  border-color: rgba(149, 132, 255, 0.15);
+  background: linear-gradient(135deg,
+      rgba(149, 132, 255, 0.06) 0%,
+      rgba(184, 170, 255, 0.03) 100%);
+}
+
+/* Espacement final avant le bouton sticky */
+.generate-spacer-before-sticky {
+  height: 50px;
+  flex-shrink: 0;
+}
+
+/* Séparateur visuel subtil */
+.generate-section-divider {
+  height: 1px;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(149, 132, 255, 0.15) 50%,
+      transparent 100%);
+  margin: 20px 0;
+  border: none;
+  flex-shrink: 0;
+}
+
+/* Amélioration des inputs */
+.generate-container textarea,
+.generate-container input[type="text"] {
+  border-radius: 8px;
+  border: 1.5px solid rgba(149, 132, 255, 0.2);
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1.3;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+}
+
+.generate-container textarea:focus,
+.generate-container input[type="text"]:focus {
+  border-color: var(--accent, #9584ff);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow:
+    0 0 0 3px rgba(149, 132, 255, 0.1),
+    0 2px 8px rgba(149, 132, 255, 0.15);
+  outline: none;
+}
+
+/* Dark Mode amélioré avec transitions */
+[data-theme="dark"] .generate-container {
+  background: linear-gradient(135deg,
+      rgba(26, 21, 37, 0.95) 0%,
+      rgba(37, 32, 48, 0.92) 50%,
+      rgba(26, 21, 37, 0.95) 100%);
+  border-color: rgba(149, 132, 255, 0.4);
+  box-shadow:
+    0 24px 72px rgba(0, 0, 0, 0.7),
+    0 12px 36px rgba(149, 132, 255, 0.25),
+    0 4px 12px rgba(149, 132, 255, 0.2),
+    inset 0 1px 0 rgba(149, 132, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .generate-content-card {
+  background: linear-gradient(135deg,
+      rgba(149, 132, 255, 0.12) 0%,
+      rgba(184, 170, 255, 0.08) 50%,
+      rgba(149, 132, 255, 0.12) 100%);
+  border-color: rgba(149, 132, 255, 0.3);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.4),
+    0 2px 8px rgba(149, 132, 255, 0.15),
+    inset 0 1px 0 rgba(149, 132, 255, 0.1);
+}
+
+[data-theme="dark"] .generate-options-card {
+  background: linear-gradient(135deg,
+      rgba(149, 132, 255, 0.1) 0%,
+      rgba(184, 170, 255, 0.06) 50%,
+      rgba(149, 132, 255, 0.1) 100%);
+  border-color: rgba(149, 132, 255, 0.25);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(149, 132, 255, 0.08);
+}
+
+[data-theme="dark"] .generate-container textarea,
+[data-theme="dark"] .generate-container input[type="text"] {
+  background: rgba(26, 21, 37, 0.7);
+  border-color: rgba(149, 132, 255, 0.35);
+  color: var(--text-main, #f5f0ff);
+}
+
+[data-theme="dark"] .generate-container textarea:focus,
+[data-theme="dark"] .generate-container input[type="text"]:focus {
+  background: rgba(26, 21, 37, 0.85);
+  border-color: rgba(184, 170, 255, 0.6);
+  box-shadow:
+    0 0 0 4px rgba(149, 132, 255, 0.2),
+    0 8px 24px rgba(149, 132, 255, 0.25);
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .generate-container {
+    padding: 20px 16px;
+    margin: 8px auto;
+    border-radius: 16px;
+  }
+
+  .generate-content-card {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .generate-options-card {
+    padding: 14px 16px;
+    margin-bottom: 20px;
+  }
+
+  .generate-timeline-section {
+    margin-bottom: 24px;
+  }
+
+  .generate-tabs-section {
+    margin-bottom: 20px;
+  }
+}
+
+/* Animation d'entrée pour les sections */
+.generate-content-card {
+  animation: generateCardFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.generate-content-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.generate-content-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.generate-content-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes generateCardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

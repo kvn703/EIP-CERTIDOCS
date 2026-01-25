@@ -6,34 +6,43 @@ import "../CSS/copyButton.css";
 import "../CSS/status.css";
 import "../CSS/logoutButton.css";
 import "../CSS/modern2025.css";
-import CustomText from "../component/CustomText";
+import "../CSS/generateLayout.css";
 import CustomTextInput from "../component/CustomTextInput";
-import { useAppKitAccount, useDisconnect, modal } from "@reown/appkit/react";
+import DestinatairesChipsInput from "../component/DestinatairesChipsInput";
+import { useAppKitAccount } from "@reown/appkit/react";
 import MailSection from '../component/MailSection';
 import TexteSection from '../component/TexteSection';
 import Tabs from '../component/Tabs';
 import '../component/Tabs.css';
-import { FaWallet, FaSignOutAlt, FaCog, FaRegCopy, FaEye, FaInbox, FaEdit, FaFileAlt, FaCamera } from "react-icons/fa";
+import { FaInbox, FaEdit, FaFileAlt, FaCamera } from "react-icons/fa";
 import confetti from "canvas-confetti";
 import PDFSection from '../component/PdfPage/PDFSection';
 import ImageSection from '../component/PdfPage/ImageSection';
-import SignatureCard from '../component/SignatureCard';
+import Timeline from '../component/Timeline';
+import StickyButton from '../component/StickyButton';
+import ResultModal from '../component/ResultModal';
+import FormatToggle from '../component/FormatToggle';
+
+import { useTranslation } from 'react-i18next';
 
 const GeneratePage = () => {
-    const [expiration, setExpiration] = useState("3600");
-    const { isConnected, address } = useAppKitAccount();
-    const { disconnect } = useDisconnect();
+    const { t } = useTranslation();
+    const { isConnected } = useAppKitAccount();
     const [activeTab, _setActiveTab] = useState(0);
     const [mailMessage, setMailMessage] = useState("");
     const [texteValue, setTexteValue] = useState("");
-    const [showTooltip, setShowTooltip] = useState(false);
-    const [copyStatus, setCopyStatus] = useState("");
-    const [showPreview, setShowPreview] = useState(false);
     const [signed, setSigned] = useState(false);
     const [signature, setSignature] = useState("");
     const [pdfFile, _setPdfFile] = useState(null);
     const [imageFile, _setImageFile] = useState(null);
-    const [IsString, setIsString] = useState(false);
+    // Format par défaut : false = PNG (image), true = Textuel
+    // null = aucun format choisi (optionnel, utilise le défaut du système)
+    const [IsString, setIsString] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [buttonEnabledState, setButtonEnabledState] = useState(false); // État React pour forcer le re-render
+    const [recipients, setRecipients] = useState([]); // État pour les destinataires
 
     useEffect(() => {
         if (isConnected) {
@@ -49,7 +58,10 @@ const GeneratePage = () => {
     const setActiveTab = (index) => {
         _setActiveTab(index);
         if (index === 0) {
-            setIsString(false); // Reset IsString when switching to Mail tab
+            setIsString(null); // Reset IsString when switching to Mail tab (format non applicable)
+        } else {
+            // Pour les autres tabs, réinitialiser à null (optionnel) au lieu de false
+            setIsString(null);
         }
         window.dispatchEvent(new CustomEvent('tabChanged', { detail: index }));
     };
@@ -59,39 +71,46 @@ const GeneratePage = () => {
         window.dispatchEvent(new CustomEvent('imageFileSelected', { detail: file }));
     };
 
+    // Récupération des paramètres URL pour le mail
     useEffect(() => {
-        // Ici, tu dois mettre la logique qui récupère le message de confirmation
-        // Par exemple, depuis une API, un state global, etc.
-        // Pour l'exemple, on check si le message de confirmation est dans le DOM
-        const confirmationDiv = document.getElementById("confirmationMessage");
-        if (confirmationDiv && confirmationDiv.style.display !== "none") {
-            setMailMessage("Votre message a bien été récupéré.");
-            setActiveTab(0); // Onglet Mail par défaut
+        const urlParams = new URLSearchParams(window.location.search);
+        const messageHash = urlParams.get("messageHash");
+
+        if (messageHash) {
+            // Si on a un messageHash dans l'URL, on est sur l'onglet Mail
+            setMailMessage(messageHash);
+            setActiveTab(0); // Onglet Mail
+            // Afficher le message de confirmation
+            const confirmationDiv = document.getElementById("confirmationMessage");
+            if (confirmationDiv) {
+                confirmationDiv.style.display = "block";
+            }
         } else {
-            setMailMessage("");
-            setActiveTab(1); // Onglet Texte par défaut
+            // Sinon, vérifier si le message de confirmation est dans le DOM (pour compatibilité avec script.js)
+            const confirmationDiv = document.getElementById("confirmationMessage");
+            if (confirmationDiv && confirmationDiv.style.display !== "none") {
+                setMailMessage("Votre message a bien été récupéré.");
+                setActiveTab(0); // Onglet Mail par défaut
+            } else {
+                setMailMessage("");
+                setActiveTab(1); // Onglet Texte par défaut
+            }
         }
     }, []);
 
-    const handleOpenModal = () => {
-        if (!modal) {
-            console.error("modal est undefined. Appel à createAppKit manquant ?");
-            return;
+    // Synchroniser l'input caché messageInput avec mailMessage (onglet Mail) ou texteValue (onglet Texte)
+    useEffect(() => {
+        const messageInput = document.getElementById("messageInput");
+        if (messageInput) {
+            if (activeTab === 0) {
+                // Onglet Mail - synchroniser avec mailMessage
+                messageInput.value = mailMessage || '';
+            } else if (activeTab === 1) {
+                // Onglet Texte - synchroniser avec texteValue
+                messageInput.value = texteValue || '';
+            }
         }
-        modal.open();
-    };
-
-    const handleDisconnect = async () => {
-        try {
-            await disconnect();
-            localStorage.clear();
-            console.log("Déconnecté et cache vidé.");
-            // On notifie aussi script.js (pour reset UI côté vanilla)
-            window.dispatchEvent(new Event('walletDisconnected'));
-        } catch (error) {
-            console.error("Erreur pendant la déconnexion :", error);
-        }
-    };
+    }, [mailMessage, texteValue, activeTab]);
 
     const launchConfetti = () => {
         confetti({
@@ -105,41 +124,15 @@ const GeneratePage = () => {
         });
     };
 
-    const handleCopy = () => {
-        if (address) {
-            navigator.clipboard.writeText(address);
-            setCopyStatus("copied");
-            setShowTooltip(true);
-            launchConfetti();
-            setTimeout(() => {
-                setCopyStatus("");
-                setShowTooltip(false);
-            }, 1200);
-        }
-    };
 
-    function isProbablyHash(str) {
-        return (
-            (str && str.length > 32 && /^[a-f0-9]+$/i.test(str)) ||
-            (str && str.length > 32 && /^[A-Za-z0-9+/=]+$/.test(str) && !str.includes(' '))
-        );
-    }
 
-    const handleSign = async () => {
-        setSigned(false);
-        setSignature("");
-        // Génération directe de la signature sans animation
-        setSignature("0x" + Math.random().toString(16).slice(2, 66));
-        setSigned(true);
-        launchConfetti();
-    };
 
     const tabs = [
         {
             label: (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <FaInbox style={{ fontSize: '16px' }} />
-                    <span>Mail</span>
+                    <span>{t('tab_mail')}</span>
                 </div>
             ),
             content: <MailSection message={mailMessage} isConnected={isConnected} active={activeTab === 0} />,
@@ -148,7 +141,7 @@ const GeneratePage = () => {
             label: (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <FaEdit style={{ fontSize: '16px' }} />
-                    <span>Texte</span>
+                    <span>{t('tab_text')}</span>
                 </div>
             ),
             content: <TexteSection value={texteValue} onChange={e => setTexteValue(e.target.value)} />,
@@ -157,7 +150,7 @@ const GeneratePage = () => {
             label: (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <FaFileAlt style={{ fontSize: '16px' }} />
-                    <span>PDF</span>
+                    <span>{t('tab_pdf')}</span>
                 </div>
             ),
             content: <PDFSection value={pdfFile} onChange={setPdfFile} />,
@@ -166,7 +159,7 @@ const GeneratePage = () => {
             label: (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <FaCamera style={{ fontSize: '16px' }} />
-                    <span>Image</span>
+                    <span>{t('tab_image')}</span>
                 </div>
             ),
             content: <ImageSection value={imageFile} onChange={setImageFile} />,
@@ -179,113 +172,476 @@ const GeneratePage = () => {
         }
     }, [signed]);
 
+    // Scroll reveal effect
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                    }
+                });
+            },
+            { threshold: 0.1 }
+        );
+
+        const elements = document.querySelectorAll('.scroll-reveal');
+        elements.forEach((el) => observer.observe(el));
+
+        return () => {
+            elements.forEach((el) => observer.unobserve(el));
+        };
+    }, []);
+
+    // Notifier script.js que le bouton est prêt
+    useEffect(() => {
+        const signBtn = document.getElementById("signMessage");
+        if (signBtn) {
+            // Émettre un événement pour que script.js attache l'event listener
+            window.dispatchEvent(new CustomEvent('signMessageButtonReady', {
+                detail: { button: signBtn }
+            }));
+        }
+    }, []); // S'exécute une fois au montage du composant
+
+    // Le bouton sticky est toujours visible maintenant, plus besoin de détecter la hauteur
+
+    // Écouter les changements du DOM pour détecter la signature générée par script.js
+    useEffect(() => {
+        const checkForSignature = () => {
+            const statusEl = document.getElementById("status");
+            const signatureIdEl = statusEl?.querySelector(".signature-id");
+
+            if (signatureIdEl) {
+                const signatureId = signatureIdEl.getAttribute("title") || signatureIdEl.textContent;
+                if (signatureId && !signed) {
+                    setSignature(signatureId);
+                    setSigned(true);
+                    setIsGenerating(false);
+                    setIsSuccess(true);
+                    setIsModalOpen(true);
+                    // Reset success state après 3 secondes
+                    setTimeout(() => setIsSuccess(false), 3000);
+                }
+            }
+        };
+
+        // Vérifier immédiatement
+        checkForSignature();
+
+        // Observer les changements dans le DOM
+        const observer = new MutationObserver(() => {
+            checkForSignature();
+        });
+
+        const statusEl = document.getElementById("status");
+        if (statusEl) {
+            observer.observe(statusEl, {
+                childList: true,
+                subtree: true,
+                attributes: true
+            });
+        }
+
+        // Écouter les événements personnalisés
+        const handleSignatureGenerated = (event) => {
+            if (event.detail?.signatureId) {
+                setSignature(event.detail.signatureId);
+                setSigned(true);
+                setIsGenerating(false);
+                setIsSuccess(true);
+                setIsModalOpen(true);
+                setTimeout(() => setIsSuccess(false), 3000);
+            }
+        };
+
+        window.addEventListener('signatureGenerated', handleSignatureGenerated);
+
+        return () => {
+            observer.disconnect();
+            window.removeEventListener('signatureGenerated', handleSignatureGenerated);
+        };
+    }, [signed]);
+
+    // Détecter quand la génération commence (quand le bouton est cliqué)
+    useEffect(() => {
+        const handleButtonClick = () => {
+            setIsGenerating(true);
+            setIsSuccess(false);
+        };
+
+        const signBtn = document.getElementById("signMessage");
+        if (signBtn) {
+            signBtn.addEventListener('click', handleButtonClick);
+        }
+
+        return () => {
+            if (signBtn) {
+                signBtn.removeEventListener('click', handleButtonClick);
+            }
+        };
+    }, []);
+
+    // État pour forcer la mise à jour de la timeline
+    const [currentStep, setCurrentStep] = useState(1);
+    const [hasSignatureCompleted, setHasSignatureCompleted] = useState(false);
+
+    // Mettre à jour currentStep à 4 (pour marquer l'étape 3 comme complétée) quand la signature est générée
+    useEffect(() => {
+        if (signed && signature) {
+            setCurrentStep(4);
+            setHasSignatureCompleted(true);
+        }
+    }, [signed, signature]);
+
+    // Calcul et mise à jour de l'étape actuelle pour la timeline
+    useEffect(() => {
+        // Si l'empreinte est complétée, toujours rester à l'étape 4 (pour marquer l'étape 3 comme complétée)
+        if (hasSignatureCompleted) {
+            setCurrentStep(4);
+            return;
+        }
+
+        const calculateStep = () => {
+            // Vérifier aussi dans le DOM au cas où les états React ne sont pas à jour
+            const statusEl = document.getElementById("status");
+            const hasSignatureInDOM = statusEl?.querySelector(".signature-id") !== null;
+            const signatureCard = document.querySelector('[aria-label*="Empreinte"]');
+
+            // Étape 3 : Empreinte générée - mettre à 4 pour marquer comme complétée
+            if ((signed && signature) || hasSignatureInDOM || signatureCard) {
+                setCurrentStep(4);
+                setHasSignatureCompleted(true);
+                return;
+            }
+
+            // Étape 2 : Contenu saisi (vérifier tous les inputs possibles)
+            const hasTextContent = texteValue && texteValue.trim().length > 0;
+            const hasMailContent = mailMessage && mailMessage.trim().length > 0;
+            const hasPdfContent = pdfFile !== null;
+            const hasImageContent = imageFile !== null;
+            const hasRecipients = recipients && recipients.length > 0;
+
+            if (hasTextContent || hasMailContent || hasPdfContent || hasImageContent || hasRecipients) {
+                setCurrentStep(2);
+                return;
+            }
+
+            // Étape 1 : Génération (début)
+            setCurrentStep(1);
+        };
+
+        calculateStep();
+
+        // Réexécuter périodiquement pour capturer les changements du DOM
+        const interval = setInterval(calculateStep, 300);
+
+        return () => clearInterval(interval);
+    }, [hasSignatureCompleted, signed, signature, texteValue, mailMessage, pdfFile, imageFile, activeTab, recipients]);
+
+    // Fonction pour déterminer si le bouton peut être activé
+    // IMPORTANT: Cette fonction ne dépend PAS de IsString (format choisi)
+    // Le format (Image/Textuel) est optionnel et ne bloque pas l'activation du bouton
+    const isButtonEnabled = () => {
+        // Le wallet doit être connecté
+        if (!isConnected) {
+            return false;
+        }
+
+        // Vérifier les destinataires (requis pour tous les onglets)
+        const hasRecipients = recipients && recipients.length > 0;
+        if (!hasRecipients) {
+            return false;
+        }
+
+        // Vérifier selon l'onglet actif (indépendamment du format IsString)
+        if (activeTab === 0) {
+            // Onglet Mail - besoin de mailMessage
+            return !!mailMessage && mailMessage.trim().length > 0;
+        } else if (activeTab === 1) {
+            // Onglet Texte - vérifier à la fois texteValue (React) et messageInput (DOM)
+            // Le bouton fonctionne indépendamment du format (Image ou Textuel)
+            const messageInput = document.getElementById("messageInput");
+            const hasMessageInDOM = messageInput && messageInput.value && messageInput.value.trim().length > 0;
+            const hasMessageInState = !!texteValue && texteValue.trim().length > 0;
+            return hasMessageInState || hasMessageInDOM;
+        } else if (activeTab === 2) {
+            // Onglet PDF - besoin de pdfFile (indépendamment du format)
+            return pdfFile !== null;
+        } else if (activeTab === 3) {
+            // Onglet Image - besoin de imageFile (indépendamment du format)
+            // Le bouton doit être disponible dès qu'un fichier image est sélectionné
+            return imageFile !== null;
+        }
+
+        return false;
+    };
+
+    // Mettre à jour le bouton quand les conditions changent (unifié en un seul useEffect)
+    useEffect(() => {
+        const updateButtonState = () => {
+            // Utiliser la fonction isButtonEnabled() pour une logique cohérente
+            const enabled = isButtonEnabled();
+
+            // Mettre à jour le bouton caché pour script.js
+            const signBtn = document.getElementById("signMessage");
+            if (signBtn) {
+                signBtn.disabled = !enabled;
+
+                // Synchroniser la checkbox avec IsString
+                const checkbox = document.getElementById("signatureCheckbox");
+                if (checkbox) {
+                    checkbox.checked = IsString === true;
+                }
+            }
+
+            // Mettre à jour l'état React pour le bouton sticky (une seule source de vérité)
+            setButtonEnabledState(enabled);
+        };
+
+        // Mettre à jour immédiatement
+        updateButtonState();
+
+        // Écouter les changements dans les champs DOM
+        const messageInput = document.getElementById("messageInput");
+        const messageTextarea = document.getElementById("messageTextarea");
+
+        // Synchroniser l'input caché avec le textarea pour l'onglet Texte
+        let syncInput;
+        if (messageTextarea) {
+            syncInput = () => {
+                if (activeTab === 1 && messageInput) {
+                    messageInput.value = messageTextarea.value;
+                }
+                updateButtonState();
+            };
+            messageTextarea.addEventListener('input', syncInput);
+            messageTextarea.addEventListener('change', syncInput);
+
+            // Synchroniser immédiatement
+            if (activeTab === 1 && messageInput) {
+                messageInput.value = messageTextarea.value;
+            }
+        }
+
+        // Écouter les événements de sélection de fichier
+        const handleImageFileSelected = () => {
+            setTimeout(updateButtonState, 50);
+        };
+        const handlePdfFileSelected = () => {
+            setTimeout(updateButtonState, 50);
+        };
+
+        window.addEventListener('imageFileSelected', handleImageFileSelected);
+        window.addEventListener('pdfFileSelected', handlePdfFileSelected);
+
+        // Réexécuter périodiquement pour capturer les changements (intervalle augmenté pour éviter le clignotement)
+        const interval = setInterval(updateButtonState, 500);
+
+        return () => {
+            if (messageTextarea && syncInput) {
+                messageTextarea.removeEventListener('input', syncInput);
+                messageTextarea.removeEventListener('change', syncInput);
+            }
+            window.removeEventListener('imageFileSelected', handleImageFileSelected);
+            window.removeEventListener('pdfFileSelected', handlePdfFileSelected);
+            clearInterval(interval);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isConnected, texteValue, mailMessage, pdfFile, imageFile, activeTab, recipients, IsString]);
+
     return (
-        <div className="container">
-            <div className="card-3d">
-                <div className="title-shimmer">Générer une signature</div>
-                <div className="wallet-section-2025">
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5em', marginBottom: '0.2em' }}>
-                        <div style={{ position: "relative" }}>
-                            <FaWallet
-                                className="wallet-icon-2025"
-                                style={{ animation: 'none', fontSize: '1.25em', marginBottom: 0 }}
-                                onMouseEnter={() => setShowTooltip(true)}
-                                onMouseLeave={() => setShowTooltip(false)}
-                                onClick={handleCopy}
-                                title="Voir l'adresse du wallet"
-                            />
-                            {isConnected && address && showTooltip && (
-                                <div className="wallet-tooltip-2025">
-                                    {copyStatus === "copied" ? "Copié !" : address}
+        <>
+            <div className="generate-page-wrapper">
+                <div className="generate-container perspective-container">
+
+                    {/* Zone de contenu scrollable */}
+                    <div className="generate-scrollable-content">
+                        {/* Timeline - Parcours utilisateur */}
+                        <div className="generate-timeline-section">
+                            <Timeline currentStep={currentStep} />
+                        </div>
+
+                        {/* Sélection du type de contenu */}
+                        <div className="generate-tabs-section">
+                            <Tabs activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
+                        </div>
+
+                        {/* Layout horizontal pour utiliser la largeur */}
+                        <div className="generate-modern-inputs">
+                            {/* Saisie du contenu (conditionnel selon l'onglet) */}
+                            {!mailMessage && activeTab === 1 && (
+                                <div className="modern-input-card modern-input-card-primary">
+                                    <div className="modern-input-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M3 7V5C3 3.89543 3.89543 3 5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                            <path d="M7 13L10 16L17 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    </div>
+                                    <div className="modern-input-content">
+                                        <label className="modern-input-label" htmlFor="messageInput">
+                                            {t('your_message')}
+                                        </label>
+                                        <div className="modern-input-wrapper">
+                                            <CustomTextInput
+                                                id="messageTextarea"
+                                                rows="4"
+                                                placeholder={t('enter_message')}
+                                                value={texteValue}
+                                                onChange={(e) => setTexteValue(e.target.value)}
+                                                showCharCount={true}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             )}
+
+                            <div id="confirmationMessage" style={{ display: 'none' }}></div>
+
+                            {/* Input caché pour script.js - synchronisé avec mailMessage (onglet Mail) ou texteValue (onglet Texte) */}
+                            <input
+                                type="hidden"
+                                id="messageInput"
+                                readOnly
+                            />
+
+                            {/* Séparateur visuel élégant */}
+                            {!mailMessage && activeTab === 1 && (
+                                <div className="modern-input-divider">
+                                    <div className="modern-input-divider-line"></div>
+                                    <div className="modern-input-divider-dot"></div>
+                                    <div className="modern-input-divider-line"></div>
+                                </div>
+                            )}
+
+                            {/* Configuration - Destinataires */}
+                            <div className="modern-input-card modern-input-card-secondary">
+                                <div className="modern-input-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="currentColor" strokeWidth="2" />
+                                        <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" stroke="currentColor" strokeWidth="2" />
+                                    </svg>
+                                </div>
+                                <div className="modern-input-content">
+                                    <label className="modern-input-label">
+                                        {t('authorized_recipients')}
+                                    </label>
+                                    <div className="modern-input-wrapper">
+                                        <DestinatairesChipsInput
+                                            value={recipients}
+                                            onChange={setRecipients}
+                                            placeholder={t('recipients_placeholder')}
+                                        />
+                                        {/* Input caché pour script.js */}
+                                        <input
+                                            type="hidden"
+                                            id="recipientsInput"
+                                            value={recipients.join(', ')}
+                                        />
+                                    </div>
+                                    <p className="modern-input-hint">
+                                        <span>{t('recipients_hint')}</span>
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                        {isConnected && address && (
-                            <span className="wallet-badge-2025" style={{ marginBottom: 0 }}>
-                                {address.slice(0, 6)}...{address.slice(-4)}
-                                <button
-                                    className="wallet-copy-btn-2025"
-                                    onClick={handleCopy}
-                                    title="Copier mon adresse"
-                                    tabIndex={0}
-                                >
-                                    <FaRegCopy />
-                                </button>
-                            </span>
-                        )}
-                    </div>
-                    <div className="wallet-status-row-2025">
-                        {isConnected && <span className="wallet-dot-2025" title="Connecté"></span>}
-                        <span className="wallet-status-text-2025">
-                            {isConnected ? "Connecté" : "Non connecté"}
-                        </span>
-                    </div>
-                    <div className="wallet-btns-row-2025">
-                        {isConnected ? (
-                            <>
-                                <button className="wallet-btn-2025" onClick={handleDisconnect}>
-                                    <FaSignOutAlt /> Déconnecter
-                                </button>
-                                <button className="wallet-btn-2025" onClick={() => modal.open()}>
-                                    <FaCog /> Mon wallet
-                                </button>
-                            </>
+
+                        {/* Options - Format d'empreinte (optionnel, pour tous les onglets sauf Mail) */}
+                        {activeTab !== 0 ? (
+                            <div className="generate-options-card">
+                                <div className="format-toggle-optional-label">
+                                    <span>{t('fingerprint_format')}</span>
+                                </div>
+                                <FormatToggle
+                                    value={IsString === null ? false : IsString}
+                                    onChange={(value) => {
+                                        setIsString(value);
+                                    }}
+                                />
+                            </div>
                         ) : (
-                            <button className="wallet-btn-2025" onClick={handleOpenModal}>
-                                <FaWallet /> Connecter le Wallet
-                            </button>
+                            /* Spacer ajusté manuellement pour l'onglet Mail (30px est un bon compromis) */
+                            <div style={{ height: '30px' }}></div>
                         )}
                     </div>
-                </div>
-            </div>
-            <div style={{ marginBottom: 14 }}>
-                <Tabs activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
-            </div>
-            <div style={{ display: mailMessage || activeTab != 1 ? 'none' : 'block', marginBottom: 14, fontSize: 14, padding: '8px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px' }}>
-                <CustomText className="fas fa-pen custom-text" Text="Votre message :" />
-                <CustomTextInput
-                    id="messageInput"
-                    rows="5"
-                    placeholder="Saisissez votre message..."
-                    value={texteValue}
-                    onChange={(e) => setTexteValue(e.target.value)}
-                />
-            </div>
-            <div id="confirmationMessage" style={{ display: 'none' }}></div>
-            <div style={{fontSize: 14, padding: '8px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px' }}>
-                <CustomText className="fas fa-user custom-text" Text="Destinataires autorisés :" />
-                <CustomTextInput id="recipientsInput" placeholder="Adresse1, Adresse2, ..." />
-                <p style={{ fontSize: "11px", fontStyle: "italic", color: 'var(--text-muted)', marginTop: 2 }}>Séparées par des virgules</p>
-            </div>
-            {/* add a checkbox true/false with text "Signature textuelle" */}
-            <div style={{ marginBottom: 15, fontSize: 14, backgroundColor: 'var(--bg-secondary)', borderRadius: '8px' }}>
-                <label style={{ display: activeTab === 0 ? 'none' : 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+
+                    {/* Checkbox cachée pour script.js - toujours présente dans le DOM */}
                     <input
                         type="checkbox"
                         id="signatureCheckbox"
-                        style={{ width: '16px', height: '16px' }}
-                        onChange={(e) => setIsString(e.target.checked)}
-                        checked={IsString}
+                        checked={IsString === true}
+                        onChange={() => { }}
+                        style={{ display: 'none' }}
                     />
-                    <span>Signature textuelle</span>
-                </label>
+
+                    {/* Bouton Sticky - Visible pour tous les onglets */}
+                    <StickyButton
+                        onClick={() => {
+                            // Utiliser l'état React au lieu d'appeler la fonction
+                            if (!buttonEnabledState) {
+                                return;
+                            }
+
+                            // S'assurer que la checkbox est correctement synchronisée (même si IsString est null)
+                            const checkbox = document.getElementById("signatureCheckbox");
+                            if (checkbox) {
+                                // Si IsString est null, utiliser false (Image) par défaut
+                                checkbox.checked = IsString === true;
+                            }
+
+                            // Cliquer sur le bouton caché qui déclenchera signMessage via script.js
+                            const signBtn = document.getElementById("signMessage");
+                            if (signBtn) {
+                                // Forcer l'activation du bouton (le format est optionnel)
+                                signBtn.disabled = false;
+
+                                // Marquer comme en cours de génération AVANT le clic
+                                setIsGenerating(true);
+
+                                // Cliquer sur le bouton caché (comme avant)
+                                signBtn.click();
+                            } else {
+                                setIsGenerating(false);
+                            }
+                        }}
+                        disabled={!buttonEnabledState}
+                        isLoading={isGenerating}
+                        isSuccess={isSuccess}
+                        loadingText={t('generating')}
+                        successText={t('fingerprint_generated')}
+                    >
+                        {t('generate_button')}
+                    </StickyButton>
+
+                    {/* Bouton de génération (caché, utilisé par script.js) */}
+                    <button
+                        id="signMessage"
+                        className="button-3d gpu-accelerated interaction-debounce scroll-reveal transform-3d-hover micro-interaction"
+                        disabled={!buttonEnabledState}
+                        style={{
+                            display: 'none', // Caché mais toujours dans le DOM pour script.js
+                        }}
+                    >
+                        {t('generate_button')}
+                    </button>
+
+
+                    {/* Ancienne modale supprimée - maintenant dans ResultModal */}
+                    <p id="status" className="gpu-accelerated" style={{ display: 'none' }}></p>
+                    <div id="copyMessage" className="gpu-accelerated" style={{ display: 'none' }}></div>
+                </div>
             </div>
-            <button
-                id="signMessage"
-                className="button-3d"
-                disabled={!texteValue || !isConnected}
-                style={{ width: '50%', marginTop: 8, marginBottom: 4, fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: 'auto', marginRight: 'auto', fontWeight: 1000, padding: '10px 20px', backgroundColor: 'var(--accent)', color: '#fff', borderRadius: '8px', cursor: 'pointer' }}
-                onClick={handleSign}
-            >
-                GÉNERER SIGNATURE
-            </button>
-            {/* Résultat signature */}
-            {signed && signature && (
-                <SignatureCard signature={signature} onCopy={launchConfetti} />
-            )}
-            <p id="status" style={{ minHeight: 18, color: 'var(--accent)', fontWeight: 500, fontSize: 13 }}></p>
-            <div id="copyMessage"></div>
-        </div>
+
+            {/* Modal pour afficher le résultat */}
+            <ResultModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                signature={signature}
+                onCopy={launchConfetti}
+                isString={IsString}
+                activeTab={activeTab}
+            />
+        </>
     );
 };
 

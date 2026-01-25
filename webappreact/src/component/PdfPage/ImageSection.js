@@ -1,8 +1,10 @@
 import React, { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaImage, FaTrashAlt, FaUpload } from 'react-icons/fa';
 import './ImageSection.css';
 
 export default function ImageSection({ value, onChange }) {
+  const { t } = useTranslation();
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef();
   const [file, setFile] = useState(null);
@@ -55,15 +57,15 @@ export default function ImageSection({ value, onChange }) {
       {!file ? (
         <div className="pdf-drop-content-2025">
           <FaUpload style={{ fontSize: 32, color: 'var(--accent)', marginBottom: 8 }} />
-          <div style={{ color: 'var(--accent)', fontWeight: 600, fontSize: '1.08em' }}>Déposez une image ici</div>
-          <div style={{ color: 'var(--text-muted)', fontSize: '0.98em', marginTop: 2 }}>ou cliquez pour sélectionner un fichier PNG/JPG</div>
+          <div style={{ color: 'var(--accent)', fontWeight: 600, fontSize: '1.08em' }}>{t('drop_image')}</div>
+          <div style={{ color: 'var(--text-muted)', fontSize: '0.98em', marginTop: 2 }}>{t('select_image')}</div>
         </div>
       ) : (
         <div className="pdf-file-info-2025">
           <FaImage style={{ fontSize: 28, color: '#9584ff', marginRight: 8 }} />
           <span className="pdf-file-name-2025">{file.name}</span>
           <img src={preview} alt="aperçu" style={{ maxHeight: 48, maxWidth: 48, borderRadius: 8, marginLeft: 8, boxShadow: '0 2px 8px #9584ff22' }} />
-          <button className="pdf-remove-btn-2025" onClick={e => { e.stopPropagation(); handleRemove(); }} title="Supprimer l'image">
+          <button className="pdf-remove-btn-2025" onClick={e => { e.stopPropagation(); handleRemove(); }} title={t('delete_image')}>
             <FaTrashAlt />
           </button>
         </div>

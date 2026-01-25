@@ -1,0 +1,774 @@
+/* ============================================
+   LAYOUT PROFESSIONNEL 2025 - PAGE VÉRIFICATION
+   ============================================ */
+
+.verify-page-wrapper {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  /* Utilise toute la largeur disponible */
+  margin: 0;
+  padding: 0;
+}
+
+.verify-container {
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.98) 0%,
+      rgba(255, 255, 255, 0.95) 100%);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-radius: 18px;
+  box-shadow:
+    0 24px 72px rgba(149, 132, 255, 0.18),
+    0 12px 36px rgba(149, 132, 255, 0.12),
+    0 4px 12px rgba(149, 132, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  padding: 0;
+  /* Padding moved to scrollable content */
+  margin: 0;
+  max-width: 100%;
+  width: 100%;
+  height: 100%;
+  /* Fill available space */
+  overflow: hidden;
+  /* Hide overflow on container */
+  box-sizing: border-box;
+  border: 1.5px solid rgba(149, 132, 255, 0.25);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.verify-scrollable-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 12px 14px 20px 14px;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Section Timeline - Espacement optimisé */
+.verify-timeline-section {
+  margin-bottom: 2px;
+  /* Petit espacement visuel */
+  padding: 0;
+}
+
+/* Section Tabs - Espacement harmonieux */
+.verify-tabs-section {
+  margin-bottom: 16px;
+  padding: 0;
+}
+
+/* ============================================
+   DESIGN MODERNE 2025 - INPUTS AVANCÉS
+   ============================================ */
+
+.verify-modern-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 16px;
+  margin-top: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Card moderne pour chaque input */
+.verify-modern-input-card {
+  position: relative;
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(255, 255, 255, 0.9) 100%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 14px;
+  border: 1.5px solid rgba(149, 132, 255, 0.15);
+  padding: 18px 20px;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow:
+    0 4px 16px rgba(149, 132, 255, 0.08),
+    0 2px 8px rgba(149, 132, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.verify-modern-input-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg,
+      rgba(149, 132, 255, 0.4) 0%,
+      rgba(184, 170, 255, 0.6) 50%,
+      rgba(149, 132, 255, 0.4) 100%);
+  background-size: 200% 100%;
+  animation: shimmerTop 3s ease-in-out infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.verify-modern-input-card:hover::before,
+.verify-modern-input-card:focus-within::before {
+  opacity: 1;
+}
+
+@keyframes shimmerTop {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.verify-modern-input-card:hover {
+  border-color: rgba(149, 132, 255, 0.3);
+  box-shadow:
+    0 8px 24px rgba(149, 132, 255, 0.12),
+    0 4px 12px rgba(149, 132, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  transform: translateY(-2px);
+}
+
+.verify-modern-input-card:focus-within {
+  border-color: rgba(149, 132, 255, 0.5);
+  box-shadow:
+    0 12px 32px rgba(149, 132, 255, 0.18),
+    0 6px 16px rgba(149, 132, 255, 0.12),
+    0 0 0 4px rgba(149, 132, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  transform: translateY(-3px) scale(1.01);
+}
+
+/* Section de contenu - Card moderne */
+.verify-content-card {
+  background: linear-gradient(135deg,
+      rgba(149, 132, 255, 0.06) 0%,
+      rgba(184, 170, 255, 0.03) 100%);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  border: 1px solid rgba(149, 132, 255, 0.12);
+  padding: 6px 12px;
+  /* Réduit */
+  margin-bottom: 4px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow:
+    0 2px 8px rgba(149, 132, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.verify-content-card:hover {
+  border-color: rgba(149, 132, 255, 0.2);
+  box-shadow:
+    0 4px 12px rgba(149, 132, 255, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transform: translateY(-1px);
+}
+
+/* Section options - Style compact */
+.verify-options-card {
+  background: linear-gradient(135deg,
+      rgba(149, 132, 255, 0.04) 0%,
+      rgba(184, 170, 255, 0.02) 100%);
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
+  border: 1px solid rgba(149, 132, 255, 0.1);
+  padding: 4px 12px;
+  /* Réduit verticalement */
+  margin-bottom: 0px;
+  /* Pas d'espacement avec les inputs */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.verify-options-card:hover {
+  border-color: rgba(149, 132, 255, 0.15);
+  background: linear-gradient(135deg,
+      rgba(149, 132, 255, 0.06) 0%,
+      rgba(184, 170, 255, 0.03) 100%);
+}
+
+/* Espacement final avant le bouton sticky */
+.verify-spacer-before-sticky {
+  height: 50px;
+  flex-shrink: 0;
+}
+
+/* Séparateur visuel subtil */
+.verify-section-divider {
+  height: 1px;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(149, 132, 255, 0.15) 50%,
+      transparent 100%);
+  margin: 20px 0;
+  border: none;
+  flex-shrink: 0;
+}
+
+/* Dark Mode amélioré avec transitions */
+[data-theme="dark"] .verify-container {
+  background: linear-gradient(135deg,
+      rgba(26, 21, 37, 0.95) 0%,
+      rgba(37, 32, 48, 0.92) 50%,
+      rgba(26, 21, 37, 0.95) 100%);
+  border-color: rgba(149, 132, 255, 0.4);
+  box-shadow:
+    0 24px 72px rgba(0, 0, 0, 0.7),
+    0 12px 36px rgba(149, 132, 255, 0.25),
+    0 4px 12px rgba(149, 132, 255, 0.2),
+    inset 0 1px 0 rgba(149, 132, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .verify-content-card {
+  background: linear-gradient(135deg,
+      rgba(149, 132, 255, 0.12) 0%,
+      rgba(184, 170, 255, 0.08) 50%,
+      rgba(149, 132, 255, 0.12) 100%);
+  border-color: rgba(149, 132, 255, 0.3);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.4),
+    0 2px 8px rgba(149, 132, 255, 0.15),
+    inset 0 1px 0 rgba(149, 132, 255, 0.1);
+}
+
+[data-theme="dark"] .verify-options-card {
+  background: linear-gradient(135deg,
+      rgba(149, 132, 255, 0.1) 0%,
+      rgba(184, 170, 255, 0.06) 50%,
+      rgba(149, 132, 255, 0.1) 100%);
+  border-color: rgba(149, 132, 255, 0.25);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(149, 132, 255, 0.08);
+}
+
+[data-theme="dark"] .verify-modern-input-card {
+  background: linear-gradient(135deg,
+      rgba(26, 21, 37, 0.9) 0%,
+      rgba(37, 32, 48, 0.85) 50%,
+      rgba(26, 21, 37, 0.9) 100%);
+  border-color: rgba(149, 132, 255, 0.35);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.4),
+    0 2px 8px rgba(149, 132, 255, 0.15),
+    inset 0 1px 0 rgba(149, 132, 255, 0.12);
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .verify-container {
+    padding: 20px 16px;
+    margin: 8px auto;
+    border-radius: 16px;
+  }
+
+  .verify-content-card {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .verify-options-card {
+    padding: 14px 16px;
+    margin-bottom: 20px;
+  }
+
+  .verify-timeline-section {
+    margin-bottom: 24px;
+  }
+
+  .verify-tabs-section {
+    margin-bottom: 20px;
+  }
+}
+
+/* Animation d'entrée pour les sections */
+.verify-content-card {
+  animation: verifyCardFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.verify-content-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.verify-content-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.verify-content-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes verifyCardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Styles pour FormatToggle dans verify page */
+.format-toggle-optional-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+  /* Réduit encore plus */
+  margin-top: 0px;
+  /* Pas d'espace au-dessus */
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-main, #2d2346);
+  letter-spacing: 0.01em;
+}
+
+.format-toggle-optional-hint {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-muted, #8d8ba7);
+  font-style: italic;
+}
+
+[data-theme="dark"] .format-toggle-optional-label {
+  color: var(--text-main, #e0d9ff);
+}
+
+[data-theme="dark"] .format-toggle-optional-hint {
+  color: var(--text-muted, #a8a0c7);
+}
+
+/* ============================================
+   OVERRIDE TEXTAREA POUR VERIFY PAGE - Plus compact avec effets
+   ============================================ */
+
+.verify-container textarea {
+  padding: 12px 20px;
+  /* Légèrement augmenté pour meilleur confort */
+  min-height: 70px;
+  /* Augmenté pour meilleure visibilité des effets */
+  font-size: 14px;
+  line-height: 1.5;
+  /* Les effets de CustomTextInput s'appliquent automatiquement */
+  border-radius: 14px;
+  /* Légèrement plus arrondi */
+}
+
+.verify-container .modern-input-label {
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+/* ============================================
+   PHASE 6 : STYLES MODERNES POUR INPUTS
+   ============================================ */
+
+/* Icône moderne - Version compacte pour Verify */
+.verify-container .modern-input-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg,
+      rgba(149, 132, 255, 0.15) 0%,
+      rgba(184, 170, 255, 0.1) 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(149, 132, 255, 0.2);
+  color: var(--accent, #9584ff);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow:
+    0 2px 8px rgba(149, 132, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.verify-container .modern-input-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2;
+  transition: all 0.3s ease;
+}
+
+.verify-modern-input-card:hover .modern-input-icon,
+.verify-modern-input-card:focus-within .modern-input-icon {
+  background: linear-gradient(135deg,
+      rgba(149, 132, 255, 0.25) 0%,
+      rgba(184, 170, 255, 0.18) 100%);
+  transform: scale(1.1) rotate(5deg);
+  box-shadow:
+    0 4px 12px rgba(149, 132, 255, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.verify-modern-input-card:focus-within .modern-input-icon svg {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 8px rgba(149, 132, 255, 0.5));
+}
+
+/* Contenu de l'input */
+.verify-container .modern-input-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Label moderne */
+.verify-container .modern-input-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent, #9584ff);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 0;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.verify-container .modern-input-label::after {
+  content: '';
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(90deg,
+      rgba(149, 132, 255, 0.3) 0%,
+      transparent 100%);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.verify-modern-input-card:focus-within .modern-input-label::after {
+  background: linear-gradient(90deg,
+      rgba(149, 132, 255, 0.6) 0%,
+      transparent 100%);
+}
+
+/* Wrapper pour l'input */
+.verify-container .modern-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.verify-container .modern-input-wrapper textarea,
+.verify-container .modern-input-wrapper input {
+  width: 100%;
+  padding: 12px 18px;
+  margin: 0;
+  border: 2px solid rgba(149, 132, 255, 0.2);
+  border-radius: 10px;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--text-main, #2d2346);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow:
+    0 2px 8px rgba(149, 132, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  min-width: 0;
+  box-sizing: border-box;
+  line-height: 1.4;
+}
+
+.verify-container .modern-input-wrapper textarea::placeholder,
+.verify-container .modern-input-wrapper input::placeholder {
+  color: var(--text-muted, #8d8ba7);
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.verify-container .modern-input-wrapper textarea:hover,
+.verify-container .modern-input-wrapper input:hover {
+  border-color: rgba(149, 132, 255, 0.35);
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow:
+    0 4px 12px rgba(149, 132, 255, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transform: translateY(-1px);
+}
+
+.verify-container .modern-input-wrapper textarea:focus,
+.verify-container .modern-input-wrapper input:focus {
+  outline: none;
+  border-color: rgba(149, 132, 255, 0.6);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 0 0 4px rgba(149, 132, 255, 0.15),
+    0 8px 24px rgba(149, 132, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transform: translateY(-2px);
+}
+
+/* Variantes de cards */
+.verify-modern-input-card-primary {
+  background: linear-gradient(135deg,
+      rgba(149, 132, 255, 0.08) 0%,
+      rgba(184, 170, 255, 0.04) 100%);
+}
+
+.verify-modern-input-card-secondary {
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(255, 255, 255, 0.9) 100%);
+}
+
+/* Dark Mode pour les inputs modernes */
+[data-theme="dark"] .verify-container .modern-input-icon {
+  background: linear-gradient(135deg,
+      rgba(149, 132, 255, 0.2) 0%,
+      rgba(184, 170, 255, 0.15) 100%);
+  border-color: rgba(149, 132, 255, 0.3);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(149, 132, 255, 0.1);
+}
+
+[data-theme="dark"] .verify-container .modern-input-wrapper textarea,
+[data-theme="dark"] .verify-container .modern-input-wrapper input {
+  /* Les styles de CustomTextInput avec gradients animés s'appliquent */
+  /* On garde juste les overrides de couleur si nécessaire */
+  color: var(--text-main, #f5f0ff);
+}
+
+[data-theme="dark"] .verify-container .modern-input-wrapper textarea:focus,
+[data-theme="dark"] .verify-container .modern-input-wrapper input:focus {
+  /* Les effets de focus impressionnants de CustomTextInput sont déjà actifs */
+  /* Pas besoin d'override, les animations sont déjà là ! */
+}
+
+/* Timeline plus compacte pour Verify */
+.verify-container .timeline-container {
+  padding: 2px 0;
+}
+
+.verify-container .timeline-icon-wrapper {
+  width: 30px;
+  height: 30px;
+}
+
+.verify-container .timeline-label {
+  font-size: 10px;
+}
+
+/* Tabs plus compacts pour Verify */
+.verify-container .tabs-header {
+  padding: 2px;
+}
+
+.verify-container .tab-btn {
+  padding: 6px 8px;
+  font-size: 11px;
+}
+
+/* StickyButton plus compact */
+.verify-container .sticky-button-container {
+  margin: 6px auto 0;
+}
+
+.verify-container .sticky-button {
+  padding: 12px 20px;
+  font-size: 14px;
+}
+
+/* ============================================
+   NOTIFICATION CONTENU RÉCUPÉRÉ - DESIGN PREMIUM 2026
+   Style minimaliste et élégant
+   ============================================ */
+
+.content-recovered-notification {
+  margin-bottom: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(127, 255, 167, 0.2);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 1px 3px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  animation: contentRecoveredFadeIn 0.4s ease-out;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.content-recovered-notification:hover {
+  border-color: rgba(127, 255, 167, 0.3);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.06),
+    0 2px 4px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.content-recovered-notification-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  position: relative;
+}
+
+.content-recovered-status-indicator {
+  flex-shrink: 0;
+  width: 3px;
+  height: 32px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #7fffa7 0%, #9584ff 100%);
+  animation: contentRecoveredIndicatorGlow 2s ease-in-out infinite;
+}
+
+.content-recovered-notification-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.content-recovered-notification-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2d2a3e;
+  letter-spacing: -0.1px;
+  line-height: 1.3;
+}
+
+.content-recovered-notification-message {
+  font-size: 11px;
+  color: #6b6880;
+  line-height: 1.4;
+  font-weight: 400;
+}
+
+.content-recovered-notification-close {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  color: #8d8ba7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 10px;
+  border-radius: 4px;
+  opacity: 0.5;
+}
+
+.content-recovered-notification-close:hover {
+  background: rgba(149, 132, 255, 0.1);
+  color: #2d2a3e;
+  opacity: 1;
+}
+
+.content-recovered-notification-close:active {
+  transform: scale(0.9);
+}
+
+/* Animations */
+@keyframes contentRecoveredFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes contentRecoveredIndicatorGlow {
+
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 8px rgba(127, 255, 167, 0.4);
+  }
+
+  50% {
+    opacity: 0.8;
+    box-shadow: 0 0 12px rgba(127, 255, 167, 0.6);
+  }
+}
+
+/* Dark mode */
+[data-theme="dark"] .content-recovered-notification {
+  background: rgba(45, 42, 62, 0.6);
+  border-color: rgba(127, 255, 167, 0.25);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .content-recovered-notification:hover {
+  border-color: rgba(127, 255, 167, 0.35);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .content-recovered-notification-title {
+  color: #edeafd;
+}
+
+[data-theme="dark"] .content-recovered-notification-message {
+  color: #b8aaff;
+}
+
+[data-theme="dark"] .content-recovered-notification-close {
+  color: #b8aaff;
+}
+
+[data-theme="dark"] .content-recovered-notification-close:hover {
+  background: rgba(184, 170, 255, 0.15);
+  color: #edeafd;
+}
+
+[data-theme="dark"] .content-recovered-status-indicator {
+  box-shadow: 0 0 8px rgba(127, 255, 167, 0.5);
+}
+
+[data-theme="dark"] .content-recovered-status-indicator {
+  animation: contentRecoveredIndicatorGlowDark 2s ease-in-out infinite;
+}
+
+@keyframes contentRecoveredIndicatorGlowDark {
+
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 8px rgba(127, 255, 167, 0.5);
+  }
+
+  50% {
+    opacity: 0.9;
+    box-shadow: 0 0 12px rgba(127, 255, 167, 0.7);
+  }
+}
