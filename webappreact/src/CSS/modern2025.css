@@ -14,16 +14,19 @@
   --text-muted: #8d8ba7;
   --text-light: #b8b5c7;
 
-  /* Couleurs sémantiques */
-  --color-success: #7fffa7;
+  /* Couleurs sémantiques - UNIVERSAL DESIGN (Accessibles par défaut) */
+  --color-success: #00875A;
+  /* Darker Green for better contrast & distinction */
   --color-success-light: #a8ffc4;
-  --color-success-dark: #5fcc8a;
-  --color-warning: #ffd93d;
+  --color-success-dark: #006644;
+  --color-warning: #FF991F;
+  /* Distinct Orange */
   --color-warning-light: #ffe66d;
-  --color-warning-dark: #ffc107;
-  --color-error: #ff6b6b;
+  --color-warning-dark: #FF8B00;
+  --color-error: #DE350B;
+  /* Distinct Red/Orange */
   --color-error-light: #ff8e8e;
-  --color-error-dark: #e55555;
+  --color-error-dark: #BF2600;
   --color-info: #4dabf7;
   --color-info-light: #74c0fc;
   --color-info-dark: #339af0;
@@ -32,9 +35,9 @@
   --accent-gradient: linear-gradient(135deg, #9584ff 0%, #b8aaff 50%, #c9bfff 100%);
   --accent-gradient-hover: linear-gradient(135deg, #b8aaff 0%, #9584ff 50%, #7e6ef2 100%);
   --accent-gradient-active: linear-gradient(135deg, #7e6ef2 0%, #9584ff 50%, #b8aaff 100%);
-  --success-gradient: linear-gradient(135deg, #7fffa7 0%, #a8ffc4 50%, #c4ffd9 100%);
-  --warning-gradient: linear-gradient(135deg, #ffd93d 0%, #ffe66d 50%, #fff3a3 100%);
-  --error-gradient: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 50%, #ffb3b3 100%);
+  --success-gradient: linear-gradient(135deg, #00875A 0%, #36B37E 50%, #57D9A3 100%);
+  --warning-gradient: linear-gradient(135deg, #FF991F 0%, #FFAB00 50%, #FFC400 100%);
+  --error-gradient: linear-gradient(135deg, #DE350B 0%, #FF5630 50%, #FF8F73 100%);
   --info-gradient: linear-gradient(135deg, #4dabf7 0%, #74c0fc 50%, #a5d8ff 100%);
 
   /* Couleurs avec opacité pour overlays */
@@ -1630,7 +1633,7 @@ small,
   box-shadow: 0 2px 8px #9584ff33;
   border-radius: 12px;
   padding: 0.5em 1.2em;
-  font-family: 'Fira Mono', monospace;
+  font-family: var(--font-primary);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1676,8 +1679,8 @@ small,
    PHASE 2.4 : BOUTON "GÉNÉRER SIGNATURE" - AMÉLIORATIONS
    ============================================ */
 .button-3d {
-  background: linear-gradient(135deg, #9584ff 0%, #b8aaff 25%, #7fffa7 50%, #b8aaff 75%, #9584ff 100%);
-  background-size: 300% 300%;
+  background: linear-gradient(135deg, var(--accent-dark) 0%, var(--accent) 50%, var(--accent-dark) 100%);
+  background-size: 200% 200%;
   color: var(--button-text);
   border-radius: var(--radius-lg);
   box-shadow:
@@ -5814,40 +5817,4 @@ body {
   color: var(--text-muted);
   font-size: var(--font-size-sm);
   line-height: var(--line-height-relaxed);
-}
-
-/* ============================================
-   ACCESSIBILITY: COLORBLIND MODE
-   ============================================ */
-body.colorblind-mode {
-  /* High contrast & Distinct colors override */
-  --color-success: #00875A;
-  /* Darker, distinct green */
-  --color-error: #DE350B;
-  /* Distinct red-orange */
-  --color-warning: #FF991F;
-  /* Distinct orange */
-
-  --input-border-error: #DE350B;
-  --accent: #5E4DB2;
-  /* Darker accent for text visibility */
-}
-
-body.colorblind-mode .badge-error,
-body.colorblind-mode .badge-success,
-body.colorblind-mode .badge-warning {
-  border: 2px solid currentColor;
-  font-weight: 700;
-}
-
-body.colorblind-mode button,
-body.colorblind-mode .button {
-  background: var(--accent-dark);
-  border: 2px solid transparent;
-}
-
-body.colorblind-mode button:focus,
-body.colorblind-mode .button:focus {
-  border-color: #fff;
-  outline: 3px solid #000;
 }
