@@ -56,7 +56,11 @@ chrome.runtime.onMessage.addListener((request) => {
                         });
                         return;
                     } else {
-                        const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(response.content));
+                        let contentToHash = response.content;
+                        if (response.sender) {
+                            contentToHash = "From: " + response.sender + "\n\n" + response.content;
+                        }
+                        const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(contentToHash));
                         chrome.windows.create({
                             url: getGenerateUrl(hash),
                             type: "popup",
@@ -117,7 +121,11 @@ chrome.runtime.onMessage.addListener((request) => {
                         });
                         return;
                     } else {
-                        const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(response.content));
+                        let contentToHash = response.content;
+                        if (response.sender) {
+                            contentToHash = "From: " + response.sender + "\n\n" + response.content;
+                        }
+                        const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(contentToHash));
                         chrome.windows.create({
                             url: getVerifyUrl(hash, response.signatureId),
                             type: "popup",
@@ -134,12 +142,12 @@ chrome.runtime.onMessage.addListener((request) => {
 });
 
 // Nouveau handler : Récupération du mail pour la page React lors de la navigation
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>  {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "getMailContentForVerify") {
         // Chercher l'onglet Gmail (mail.google.com ou outlook.com)
         chrome.tabs.query({}, (tabs) => {
             let gmailTab = null;
-            
+
             // Chercher d'abord dans l'onglet actif
             for (const tab of tabs) {
                 if (tab.active && (tab.url && (tab.url.includes('mail.google.com') || tab.url.includes('outlook.com')))) {
@@ -147,7 +155,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>  {
                     break;
                 }
             }
-            
+
             // Si pas trouvé, chercher dans tous les onglets
             if (!gmailTab) {
                 for (const tab of tabs) {
@@ -157,31 +165,35 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>  {
                     }
                 }
             }
-            
+
             // Si toujours pas trouvé, utiliser l'onglet actif par défaut
             if (!gmailTab) {
                 chrome.tabs.query({ active: true, currentWindow: true }, (activeTabs) => {
                     if (activeTabs.length > 0) {
                         gmailTab = activeTabs[0];
                     }
-                    
+
                     if (gmailTab) {
                         chrome.tabs.sendMessage(gmailTab.id, { action: "getDivContentVerify" }, (response) => {
                             if (chrome.runtime.lastError) {
                                 sendResponse({ content: null, signatureId: null, error: chrome.runtime.lastError.message });
                                 return;
                             }
-                            
+
                             if (!response || !response.content || response.content === "Aucune div trouvée") {
                                 sendResponse({ content: null, signatureId: null });
                                 return;
                             }
-                            
+
                             // Calculer le hash comme dans openVerificationWindow
-                            const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(response.content));
-                            sendResponse({ 
-                                content: hash, 
-                                signatureId: response.signatureId || null 
+                            let contentToHash = response.content;
+                            if (response.sender) {
+                                contentToHash = "From: " + response.sender + "\n\n" + response.content;
+                            }
+                            const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(contentToHash));
+                            sendResponse({
+                                content: hash,
+                                signatureId: response.signatureId || null
                             });
                         });
                     } else {
@@ -194,22 +206,26 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>  {
                         sendResponse({ content: null, signatureId: null, error: chrome.runtime.lastError.message });
                         return;
                     }
-                    
+
                     if (!response || !response.content || response.content === "Aucune div trouvée") {
                         sendResponse({ content: null, signatureId: null });
                         return;
                     }
-                    
+
                     // Calculer le hash comme dans openVerificationWindow
-                    const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(response.content));
-                    sendResponse({ 
-                        content: hash, 
-                        signatureId: response.signatureId || null 
+                    let contentToHash = response.content;
+                    if (response.sender) {
+                        contentToHash = "From: " + response.sender + "\n\n" + response.content;
+                    }
+                    const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(contentToHash));
+                    sendResponse({
+                        content: hash,
+                        signatureId: response.signatureId || null
                     });
                 });
             }
         });
-        
+
         // Retourner true pour indiquer qu'on va répondre de manière asynchrone
         return true;
     }

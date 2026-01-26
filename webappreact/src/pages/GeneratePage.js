@@ -78,6 +78,7 @@ const GeneratePage = () => {
 
         if (messageHash) {
             // Si on a un messageHash dans l'URL, on est sur l'onglet Mail
+
             setMailMessage(messageHash);
             setActiveTab(0); // Onglet Mail
             // Afficher le message de confirmation

@@ -7,8 +7,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             const divs = document.querySelectorAll("div.Am.aiL.Al.editable.LW-avf.tS-tW");
             if (divs.length) {
                 const content = normalizeMessage(divs[divs.length - 1].innerText);
+
+                // Tentative de récupération de l'expéditeur (l'utilisateur courant sur Gmail)
+                let sender = "";
+                // Méthode 1: Via le titre de la page (ex: "Boîte de réception - user@gmail.com - Gmail")
+                const titleMatch = document.title.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/);
+                if (titleMatch) {
+                    sender = titleMatch[1];
+                }
+
                 console.log("✅ Gmail trouvé !");
-                sendResponse({ content: content });
+                sendResponse({ content: content, sender: sender });
                 resolved = true;
                 return true;
             }
@@ -141,15 +150,31 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 sendResponse({ content: "Aucune div trouvée", signatureId: "" });
                 return;
             }
+
+            // Tentative de récupération de l'expéditeur (mode vérification, email reçu)
+            let sender = "";
+            // Méthode pour Gmail (reçu): Le sender est souvent dans <span class="gD">
+            const senderSpan = document.querySelector("span.gD");
+            if (senderSpan) {
+                sender = senderSpan.getAttribute("email");
+            } else {
+                // Fallback: chercher dans le titre (moins fiable pour verification mais possible)
+                const titleMatch = document.title.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/);
+                if (titleMatch) {
+                    // Attention: dans le titre, c'est souvent NOTRE email, pas celui de l'expéditeur
+                    // Donc pour la vérification, il vaut mieux se fier au UI
+                }
+            }
+
+            console.log("✉️ Expéditeur (détecté pour vérif) :", sender);
+
             // check if content includes "Vous n'obtenez pas souvent d'e-mail à partir de chamajegogame@gmail.com. Pourquoi c'est important" with chamajecogame@gmail.com a variable
             if (content.includes("Vous n'obtenez pas souvent d'e-mail à partir de") && content.includes("@")) {
                 const index = content.indexOf("\n");
                 if (index !== -1) {
                     content = content.substring(index + 1).trim();
                 }
-                console.log(content);
             }
-            console.log("[getDivContentVerify] Contenu récupéré :", content);
 
             content = content.replace(/Télécharger\nAjouter à Drive\nEnregistrer dans Photos\n?/g, "")
                 .replace(/Analyse antivirus en cours...\nAjouter à Drive\nEnregistrer dans Photos\n?/g, "");
@@ -158,10 +183,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 extractTextFromImage(src).then(text => {
                     console.log("✅ Signature extraite :", text);
                     content = normalizeMessage(content);
-                    sendResponse({ content: content, signatureId: text });
+                    sendResponse({ content: content, signatureId: text, sender: sender });
                 }).catch(() => {
                     console.error("[getDivContentVerify] Erreur extraction image");
-                    sendResponse({ content: content, signatureId: "" });
+                    console.error("[getDivContentVerify] Erreur extraction image");
+                    sendResponse({ content: content, signatureId: "", sender: sender });
                 });
             } else {
                 console.warn("[getDivContentVerify] Pas d'image trouvée.");
@@ -181,7 +207,7 @@ window.addEventListener('message', (event) => {
     // Vérifier que le message vient de la page React
     if (event.data && event.data.type === 'requestMailContentForVerify' && event.data.source === 'verify-page') {
         const requestId = event.data.requestId;
-        
+
         // Vérifier que chrome.runtime est disponible
         if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.sendMessage) {
             window.postMessage({
@@ -191,11 +217,11 @@ window.addEventListener('message', (event) => {
             }, '*');
             return;
         }
-        
+
         try {
             // Transmettre la demande au background script qui peut chercher les onglets
             chrome.runtime.sendMessage(
-                { 
+                {
                     action: 'getMailContentForVerify',
                     requestId: requestId
                 },
@@ -210,7 +236,7 @@ window.addEventListener('message', (event) => {
                         }, '*');
                         return;
                     }
-                    
+
                     // Transmettre la réponse du background script à la page React
                     if (response) {
                         window.postMessage({
