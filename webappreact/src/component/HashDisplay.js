@@ -12,7 +12,7 @@ const HashDisplay = ({ value, label, onCopy }) => {
         if (!hash) return '';
         let clean_hash = hash.replace('[CERTIDOCS]', '').trim();
         if (clean_hash.length <= 24) return clean_hash;
-        
+
         if (showFull) {
             return clean_hash.match(/.{1,4}/g)?.join(' ') || clean_hash;
         } else {
@@ -38,16 +38,7 @@ const HashDisplay = ({ value, label, onCopy }) => {
             <div className="hash-display-header">
                 <span className="hash-display-label">{label}</span>
                 <div className="hash-display-actions">
-                    {is_long && (
-                        <button
-                            className="hash-display-toggle"
-                            onClick={() => setShowFull(!showFull)}
-                            aria-label={showFull ? 'Réduire' : 'Voir complet'}
-                            title={showFull ? 'Réduire' : 'Voir complet'}
-                        >
-                            {showFull ? <FaEyeSlash /> : <FaEye />}
-                        </button>
-                    )}
+
                     <button
                         className={`hash-display-copy ${copied ? 'copied' : ''}`}
                         onClick={handle_copy}

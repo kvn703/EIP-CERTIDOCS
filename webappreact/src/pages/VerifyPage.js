@@ -553,7 +553,7 @@ function VerifyPage() {
         }
 
         resultProcessedRef.current = false;
-        setShowContentRecovered(false);
+        // setShowContentRecovered(false); // Garder la notif affichée comme demandé
         setIsVerifying(true);
         setVerificationResult(null);
         setHasVerificationCompleted(false);
@@ -781,28 +781,7 @@ function VerifyPage() {
 
                     {!isVerifying && !verificationResult && (
                         <>
-                            {signatureId && message && showContentRecovered && (
-                                <div className="content-recovered-notification">
-                                    <div className="content-recovered-notification-inner">
-                                        <div className="content-recovered-status-indicator"></div>
-                                        <div className="content-recovered-notification-content">
-                                            <div className="content-recovered-notification-title">
-                                                {t('content_recovered')}
-                                            </div>
-                                            <div className="content-recovered-notification-message">
-                                                {t('content_recovered_message')}
-                                            </div>
-                                        </div>
-                                        <button
-                                            className="content-recovered-notification-close"
-                                            onClick={() => setShowContentRecovered(false)}
-                                            aria-label="Fermer"
-                                        >
-                                            <FaTimes />
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
+
 
                             {mailContentLost && (
                                 <div className="verify-modern-inputs" style={{ marginBottom: '4px' }}>
@@ -843,7 +822,7 @@ function VerifyPage() {
                             {(signatureId || message) && (
                                 <div className="verify-modern-inputs">
                                     {signatureId && (
-                                        <div className="verify-modern-input-card verify-modern-input-card-primary">
+                                        <div className="verify-modern-input-card verify-modern-input-card-primary" style={{ opacity: 0.7 }}>
                                             <div className="modern-input-icon">
                                                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -856,12 +835,14 @@ function VerifyPage() {
                                                     onCopy={async (value) => {
                                                         await navigator.clipboard.writeText(value);
                                                     }}
+                                                    isReadOnly={true}
                                                 />
                                             </div>
                                         </div>
                                     )}
 
-                                    {message && (
+                                    {/* Message signé masqué comme demandé */}
+                                    {/* {message && (
                                         <div className="verify-modern-input-card verify-modern-input-card-secondary">
                                             <div className="modern-input-icon">
                                                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -879,7 +860,59 @@ function VerifyPage() {
                                                 />
                                             </div>
                                         </div>
-                                    )}
+                                    )} */}
+                                </div>
+                            )}
+
+                            {signatureId && message && showContentRecovered && (
+                                <div style={{
+                                    flex: 1,
+                                    margin: '16px 0',
+                                    background: 'linear-gradient(135deg, rgba(149, 132, 255, 0.08) 0%, rgba(184, 170, 255, 0.04) 100%)',
+                                    border: '1px solid rgba(149, 132, 255, 0.2)',
+                                    borderRadius: '16px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    textAlign: 'center',
+                                    padding: '24px',
+                                    backdropFilter: 'blur(10px)',
+                                    boxShadow: '0 4px 20px rgba(149, 132, 255, 0.1)',
+                                    animation: 'fadeIn 0.5s ease-out'
+                                }}>
+                                    <div style={{
+                                        width: '64px',
+                                        height: '64px',
+                                        background: 'linear-gradient(135deg, #7fffa7 0%, #9584ff 100%)',
+                                        borderRadius: '50%',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        marginBottom: '16px',
+                                        boxShadow: '0 8px 16px rgba(149, 132, 255, 0.2)'
+                                    }}>
+                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    </div>
+                                    <h3 style={{
+                                        margin: '0 0 8px 0',
+                                        fontSize: '18px',
+                                        fontWeight: '700',
+                                        color: '#2d2a3e'
+                                    }}>
+                                        Contenu récupéré
+                                    </h3>
+                                    <p style={{
+                                        margin: '0',
+                                        fontSize: '14px',
+                                        color: '#6b6880',
+                                        lineHeight: '1.5',
+                                        maxWidth: '280px'
+                                    }}>
+                                        Contenu du mail et empreinte ID dans l'image récupérés avec succès. Vous pouvez maintenant lancer la vérification.
+                                    </p>
                                 </div>
                             )}
                         </>

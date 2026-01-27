@@ -7,8 +7,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             const divs = document.querySelectorAll("div.Am.aiL.Al.editable.LW-avf.tS-tW");
             if (divs.length) {
                 const content = normalizeMessage(divs[divs.length - 1].innerText);
+
+                // Tentative de récupération de l'expéditeur (l'utilisateur courant sur Gmail)
+                let sender = "";
+                // Méthode 1: Via le titre de la page (ex: "Boîte de réception - user@gmail.com - Gmail")
+                const titleMatch = document.title.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/);
+                if (titleMatch) {
+                    sender = titleMatch[1];
+                }
+
                 console.log("✅ Gmail trouvé !");
-                sendResponse({ content: content });
+                console.log("📝 [GÉNÉRATION] Contenu à signer :\n" + "From: " + sender + "\n\n" + content);
+                sendResponse({ content: content, sender: sender });
                 resolved = true;
                 return true;
             }
@@ -29,8 +39,50 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 ) {
                     let content = normalizeMessage(el.innerText || "");
 
+                    // Tentative de récupération de l'expéditeur pour Outlook (Utilisateur connecté)
+                    let sender = "";
+
+                    // 1. CIBLAGE PRÉCIS OUTLOOK (Génération)
+                    const profileBtn = document.getElementById("O365_MainLink_Me");
+
+                    if (profileBtn) {
+                        const attrs = profileBtn.getAttributeNames().reduce((acc, name) => {
+                            acc[name] = profileBtn.getAttribute(name);
+                            return acc;
+                        }, {});
+
+                        // Tentative d'extraction standard
+                        const txt = (attrs['aria-label'] || "") + " " + (attrs['title'] || "");
+                        const emailMatch = txt.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/);
+                        if (emailMatch) sender = emailMatch[1];
+                    }
+
+                    // 2. SCANNER D'ATTRIBUTS PAGE_WIDE (Images & Liens)
+                    if (!sender) {
+                        console.log("🔍 [DEBUG] Recherche d'email dans les ressources de la page (Images/Liens)...");
+                        const resources = document.querySelectorAll('img, a, div[style*="background"]');
+                        for (const el of resources) {
+                            let val = el.getAttribute("src") || el.getAttribute("href") || el.getAttribute("style") || "";
+                            try { val = decodeURIComponent(val); } catch (e) { }
+
+                            if (val.includes("@")) {
+                                const match = val.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/);
+                                if (match) {
+                                    const candidate = match[1].toLowerCase();
+                                    // Filtrer les URLs techniques
+                                    if (!candidate.includes("noreply") && !candidate.includes("officedocument") && !candidate.includes("microsoft")) {
+                                        console.log("🎯 Email potentiel trouvé dans ressource :", candidate, "Source:", val.substring(0, 50) + "...");
+                                        sender = candidate;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    /* FIN DU SCANNING */
                     console.log("✅ Outlook trouvé !");
-                    sendResponse({ content: content });
+                    console.log("📝 [GÉNÉRATION] Contenu à signer :\n" + "From: " + sender + "\n\n" + content);
+                    sendResponse({ content: content, sender: sender });
                     resolved = true;
                     return true;
                 }
@@ -141,15 +193,75 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 sendResponse({ content: "Aucune div trouvée", signatureId: "" });
                 return;
             }
+
+            // Tentative de récupération de l'expéditeur (mode vérification, email reçu)
+            let sender = "";
+
+            // --- STRATÉGIE GMAIL ---
+            const senderSpan = document.querySelector("span.gD");
+            if (senderSpan) {
+                sender = senderSpan.getAttribute("email");
+            }
+
+            // --- STRATÉGIE OUTLOOK (Vérification) ---
+            if (!sender) {
+                console.log("🔍 [DEBUG] Recherche approfondie Outlook...");
+
+                // Scan large des aria-labels et titles contenant des emails
+                const candidates = [];
+                const allNodes = document.querySelectorAll('*');
+
+                for (const node of allNodes) {
+                    const label = node.getAttribute("aria-label");
+                    if (label && label.includes("@")) {
+                        const match = label.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/);
+                        if (match) candidates.push({ src: "aria-label", val: match[1], el: node });
+                    }
+                    const title = node.getAttribute("title");
+                    if (title && title.includes("@")) {
+                        const match = title.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/);
+                        if (match) candidates.push({ src: "title", val: match[1], el: node });
+                    }
+                }
+
+                if (candidates.length > 0) {
+                    console.log("🔍 Candidats trouvés :", candidates);
+                    // On prend le premier candidat comme heuristique pour l'instant
+                    sender = candidates[0].val;
+                } else {
+                    console.log("⚠️ Aucun email trouvé dans le DOM.");
+                }
+            }
+
+            if (!sender) {
+                // Fallback: chercher un élément contenant un email dans le header du message
+                // C'est un peu "bourrin" mais ça peut marcher si la structure change
+                const headerDivs = document.querySelectorAll('div[class*="g_"]'); // Classes Outlook changent souvent, mais on peut essayer de scanner le haut
+                // Scan global limité aux éléments visibles contenant '@'
+                const emailRef = document.body.innerText.match(/<([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)>/);
+                if (emailRef) {
+                    // sender = emailRef[1]; // Trop risqué, peut prendre n'importe quoi
+                }
+            }
+
+            // Fallback Title (déjà présent mais insuffisant)
+            if (!sender) {
+                const titleMatch = document.title.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/);
+                if (titleMatch) {
+                    sender = titleMatch[1];
+                }
+            }
+
+            console.log("✉️ Expéditeur (détecté pour vérif) :", sender);
+            console.log("📝 [VÉRIFICATION] Contenu à vérifier :\n" + "From: " + sender + "\n\n" + content);
+
             // check if content includes "Vous n'obtenez pas souvent d'e-mail à partir de chamajegogame@gmail.com. Pourquoi c'est important" with chamajecogame@gmail.com a variable
             if (content.includes("Vous n'obtenez pas souvent d'e-mail à partir de") && content.includes("@")) {
                 const index = content.indexOf("\n");
                 if (index !== -1) {
                     content = content.substring(index + 1).trim();
                 }
-                console.log(content);
             }
-            console.log("[getDivContentVerify] Contenu récupéré :", content);
 
             content = content.replace(/Télécharger\nAjouter à Drive\nEnregistrer dans Photos\n?/g, "")
                 .replace(/Analyse antivirus en cours...\nAjouter à Drive\nEnregistrer dans Photos\n?/g, "");
@@ -158,10 +270,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 extractTextFromImage(src).then(text => {
                     console.log("✅ Signature extraite :", text);
                     content = normalizeMessage(content);
-                    sendResponse({ content: content, signatureId: text });
+                    sendResponse({ content: content, signatureId: text, sender: sender });
                 }).catch(() => {
                     console.error("[getDivContentVerify] Erreur extraction image");
-                    sendResponse({ content: content, signatureId: "" });
+                    sendResponse({ content: content, signatureId: "", sender: sender });
                 });
             } else {
                 console.warn("[getDivContentVerify] Pas d'image trouvée.");
@@ -181,7 +293,7 @@ window.addEventListener('message', (event) => {
     // Vérifier que le message vient de la page React
     if (event.data && event.data.type === 'requestMailContentForVerify' && event.data.source === 'verify-page') {
         const requestId = event.data.requestId;
-        
+
         // Vérifier que chrome.runtime est disponible
         if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.sendMessage) {
             window.postMessage({
@@ -191,11 +303,11 @@ window.addEventListener('message', (event) => {
             }, '*');
             return;
         }
-        
+
         try {
             // Transmettre la demande au background script qui peut chercher les onglets
             chrome.runtime.sendMessage(
-                { 
+                {
                     action: 'getMailContentForVerify',
                     requestId: requestId
                 },
@@ -210,9 +322,11 @@ window.addEventListener('message', (event) => {
                         }, '*');
                         return;
                     }
-                    
+
                     // Transmettre la réponse du background script à la page React
                     if (response) {
+                        console.log("📝 [VÉRIFICATION VIA REACT] Réponse reçue du background:\nHashtag:", response.content, "\nSignatureID:", response.signatureId);
+
                         window.postMessage({
                             type: 'mailContentResponse',
                             requestId: requestId,

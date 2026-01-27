@@ -6,12 +6,73 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CERTIDOCS</title>
   <link rel="stylesheet" href="CSS/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
-  <h2>CERTIDOCS</h2>
-  <button id="generate">Generate Proof of Authencity</button>
-  <button id="verify">Verify Proof of Authencity</button>
+  <div class="header">
+    <div class="header-top">
+      <button class="lang-toggle" id="langToggle" title="Switch language / Changer la langue">
+        <span class="lang-code">EN</span>
+        <i class="fas fa-globe"></i>
+      </button>
+    </div>
+    <div class="logo-icon">
+      <i class="fas fa-shield-alt"></i>
+    </div>
+    <h1>CERTIDOCS</h1>
+  </div>
+
+  <div class="container">
+    <!-- Tabs navigation -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="generate">
+        <i class="fas fa-fingerprint"></i>
+        <span data-i18n="create_fingerprint">Créer une empreinte</span>
+      </button>
+      <button class="tab-btn" data-tab="verify">
+        <i class="fas fa-search"></i>
+        <span data-i18n="verify_fingerprint">Vérifier une empreinte</span>
+      </button>
+    </div>
+
+    <!-- Tab content -->
+    <div class="tab-content active" id="generate-tab">
+      <div class="tab-icon">
+        <i class="fas fa-plus-circle"></i>
+      </div>
+      <h3 data-i18n="create_blockchain_fingerprint">Créer une empreinte blockchain</h3>
+      <p class="tab-description" data-i18n="create_description">
+        Générez une preuve immuable pour vos emails, documents PDF, images ou texte.
+        L'empreinte est stockée sur la blockchain pour garantir l'authenticité.
+      </p>
+      <button id="generate" class="action-btn">
+        <span data-i18n="generate_fingerprint">Générer l'empreinte</span>
+      </button>
+    </div>
+
+    <div class="tab-content" id="verify-tab">
+      <div class="tab-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h3 data-i18n="verify_fingerprint_title">Vérifier une empreinte</h3>
+      <p class="tab-description" data-i18n="verify_description">
+        Vérifiez l'intégrité et l'authenticité d'un contenu signé.
+        Le système confirme que l'empreinte correspond au contenu original.
+      </p>
+      <button id="verify" class="action-btn">
+        <span data-i18n="verify_fingerprint_button">Vérifier l'empreinte</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p class="hint">
+      <i class="fas fa-bolt"></i>
+      <span data-i18n="compatible_with">Compatible avec Gmail, Outlook, PDF & Images</span>
+    </p>
+  </div>
+
   <script src="popup.js"></script>
 </body>
 

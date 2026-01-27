@@ -39,5 +39,3 @@ function getVerifyUrl(messageHash, signatureId) {
     if (params.length > 0) url += `?${params.join("&")}`;
     return url;
 }
-
-

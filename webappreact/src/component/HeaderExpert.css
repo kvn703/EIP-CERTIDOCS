@@ -38,7 +38,8 @@
   gap: 8px;
   position: relative;
   z-index: 1;
-  margin-left: 170px;
+  margin-left: 24px;
+  flex-shrink: 0;
 }
 
 .header-nav-btn {
@@ -703,7 +704,7 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   outline: none;
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-primary);
   overflow: hidden;
   z-index: 1;
 }

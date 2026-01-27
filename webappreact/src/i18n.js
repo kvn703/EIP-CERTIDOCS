@@ -7,7 +7,7 @@ const resources = {
         translation: {
             "generate": "Generate",
             "verify": "Verify",
-            "connect": "Connect",
+            "connect": "Wallet",
             "disconnect": "Disconnect",
             "settings": "Settings",
             "copy_address": "Copy my address",
@@ -90,7 +90,7 @@ const resources = {
         translation: {
             "generate": "Générer",
             "verify": "Vérifier",
-            "connect": "Connecter",
+            "connect": "Portefeuille",
             "disconnect": "Déconnecter",
             "settings": "Paramètres",
             "copy_address": "Copier mon adresse",
