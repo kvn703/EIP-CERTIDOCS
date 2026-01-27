@@ -1161,6 +1161,7 @@ button {
   .container {
     padding: var(--padding-xs);
     margin: var(--margin-xs) auto;
+    max-width: 96vw;
   }
 
   h1 {
@@ -1179,6 +1180,43 @@ button {
   .button-3d {
     padding: var(--padding-sm);
     font-size: var(--font-size-sm);
+  }
+
+  .generate-container,
+  .verify-container {
+    margin: 2px 2px;
+    max-width: calc(100% - 4px);
+    width: calc(100% - 4px);
+    height: calc(100% - 4px);
+    border-radius: 12px;
+  }
+
+  .generate-scrollable-content,
+  .verify-scrollable-content {
+    padding: 8px 10px 14px 10px;
+    max-height: calc(100vh - 120px);
+  }
+
+  .header-expert {
+    padding: 6px 8px;
+    margin: 2px 2px 2px 2px;
+    max-width: calc(100% - 4px);
+    width: calc(100% - 4px);
+    min-height: 52px;
+  }
+
+  .header-nav-btn {
+    padding: 2px 4px;
+    font-size: 0.55rem;
+  }
+
+  .title-modern {
+    font-size: 0.75rem;
+  }
+
+  .logo-modern svg {
+    width: 22px;
+    height: 22px;
   }
 }
 
