@@ -63,6 +63,8 @@
   position: relative;
   overflow: hidden;
   z-index: 1;
+  opacity: 1;
+  visibility: visible;
 }
 
 .format-toggle-option::before {
