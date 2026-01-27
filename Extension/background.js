@@ -60,6 +60,9 @@ chrome.runtime.onMessage.addListener((request) => {
                         if (response.sender) {
                             contentToHash = "From: " + response.sender + "\n\n" + response.content;
                         }
+
+                        console.log("📝 [GÉNÉRATION] Contenu complet AVANT hashage :", JSON.stringify(contentToHash));
+
                         const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(contentToHash));
                         chrome.windows.create({
                             url: getGenerateUrl(hash),
@@ -125,6 +128,9 @@ chrome.runtime.onMessage.addListener((request) => {
                         if (response.sender) {
                             contentToHash = "From: " + response.sender + "\n\n" + response.content;
                         }
+
+                        console.log("📝 [VÉRIFICATION] Contenu complet AVANT hashage :", JSON.stringify(contentToHash));
+
                         const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(contentToHash));
                         chrome.windows.create({
                             url: getVerifyUrl(hash, response.signatureId),
@@ -190,6 +196,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             if (response.sender) {
                                 contentToHash = "From: " + response.sender + "\n\n" + response.content;
                             }
+
+                            console.log("📝 [REQ REACT] Contenu complet AVANT hashage :", JSON.stringify(contentToHash));
+
                             const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(contentToHash));
                             sendResponse({
                                 content: hash,
@@ -217,6 +226,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     if (response.sender) {
                         contentToHash = "From: " + response.sender + "\n\n" + response.content;
                     }
+
+                    console.log("📝 [REQ REACT FALLBACK] Contenu complet AVANT hashage :", JSON.stringify(contentToHash));
+
                     const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(contentToHash));
                     sendResponse({
                         content: hash,
