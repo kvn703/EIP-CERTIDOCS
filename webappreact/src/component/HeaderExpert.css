@@ -84,11 +84,19 @@ header.header-expert h1,
   width: fit-content;
 }
 
-/* Icône tutoriel - positionnée en bas à gauche, discrète */
-.header-tutorial-btn {
+/* Conteneur pour les boutons en bas à gauche */
+.header-bottom-buttons {
   position: absolute;
   bottom: 12px;
   left: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 10;
+}
+
+/* Icône tutoriel - positionnée en bas à gauche, discrète */
+.header-tutorial-btn {
   background: none;
   border: none;
   width: auto;
@@ -100,7 +108,6 @@ header.header-expert h1,
   cursor: pointer;
   font-size: 20px;
   transition: all 0.2s ease;
-  z-index: 10;
   padding: 4px;
 }
 
@@ -114,6 +121,35 @@ header.header-expert h1,
 }
 
 .header-tutorial-btn i {
+  font-size: 20px;
+}
+
+/* Bouton Annuaire - même style que tutoriel */
+.header-directory-btn {
+  background: none;
+  border: none;
+  width: auto;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.2s ease;
+  padding: 4px;
+}
+
+.header-directory-btn:hover {
+  color: white;
+  transform: scale(1.1);
+}
+
+.header-directory-btn:active {
+  transform: scale(0.95);
+}
+
+.header-directory-btn i {
   font-size: 20px;
 }
 
@@ -457,13 +493,18 @@ header.header-expert h1,
     padding: 3px;
   }
 
-  .header-tutorial-btn {
+  .header-bottom-buttons {
     bottom: 10px;
     left: 14px;
+  }
+
+  .header-tutorial-btn,
+  .header-directory-btn {
     font-size: 18px;
   }
 
-  .header-tutorial-btn i {
+  .header-tutorial-btn i,
+  .header-directory-btn i {
     font-size: 18px;
   }
 
@@ -544,17 +585,19 @@ header.header-expert h1,
     padding: 2px;
   }
 
-  .header-tutorial-btn {
+  .header-bottom-buttons {
     bottom: 8px;
     left: 12px;
+    gap: 10px;
+  }
+
+  .header-tutorial-btn,
+  .header-directory-btn {
     font-size: 16px;
   }
 
-  .header-tutorial-btn i {
-    font-size: 16px;
-  }
-
-  .header-tutorial-btn i {
+  .header-tutorial-btn i,
+  .header-directory-btn i {
     font-size: 14px;
   }
 
@@ -644,12 +687,18 @@ header.header-expert h1,
     right: 18px;
   }
 
-  .header-tutorial-btn {
+  .header-bottom-buttons {
     bottom: 14px;
     left: 18px;
   }
 
-  .header-tutorial-btn i {
+  .header-tutorial-btn,
+  .header-directory-btn {
+    font-size: 20px;
+  }
+
+  .header-tutorial-btn i,
+  .header-directory-btn i {
     font-size: 20px;
   }
 

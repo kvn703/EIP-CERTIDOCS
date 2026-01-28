@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaCheckCircle, FaTimesCircle, FaCopy, FaWallet, FaClock, FaShieldAlt } from 'react-icons/fa';
+import { FaCheckCircle, FaTimesCircle, FaCopy, FaWallet, FaClock, FaAddressBook, FaPlus, FaShieldAlt, FaCheck } from 'react-icons/fa';
 import { useAppKitAccount } from "@reown/appkit/react";
+import { normalizeAddress, isAddressInDirectory } from '../utils/addressDirectory';
+import AddressDirectory from './AddressDirectory';
 import './VerifyResultModal.css';
 
 const VerifyResultModal = ({
@@ -17,6 +19,10 @@ const VerifyResultModal = ({
   const [copiedStates, setCopiedStates] = useState({
     address: false
   });
+  const [addressInput, setAddressInput] = useState('');
+  const [addressesMatch, setAddressesMatch] = useState(false);
+  const [isDirectoryOpen, setIsDirectoryOpen] = useState(false);
+  const [shouldAddAddress, setShouldAddAddress] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -35,12 +41,43 @@ const VerifyResultModal = ({
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === 'Escape' && isOpen) {
-        onClose();
+        if (isDirectoryOpen) {
+          setIsDirectoryOpen(false);
+        } else {
+          onClose();
+        }
       }
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, isDirectoryOpen]);
+
+  // Réinitialiser l'input quand la modal s'ouvre
+  useEffect(() => {
+    if (isOpen) {
+      setAddressInput('');
+      setAddressesMatch(false);
+      setIsDirectoryOpen(false);
+    }
+  }, [isOpen]);
+
+  // Vérifier si les adresses correspondent
+  useEffect(() => {
+    if (!address || !addressInput) {
+      setAddressesMatch(false);
+      return;
+    }
+
+    const normalizedInput = normalizeAddress(addressInput);
+    const normalizedAddress = normalizeAddress(address);
+    const isValidFormat = normalizedInput.length >= 42;
+    const match = isValidFormat && normalizedInput === normalizedAddress;
+    setAddressesMatch(match);
+  }, [address, addressInput]);
+
+  // Vérifier si l'adresse est valide mais ne correspond pas
+  const isValidAddressFormat = addressInput && normalizeAddress(addressInput).length >= 42;
+  const addressesDoNotMatch = isValidAddressFormat && address && normalizeAddress(addressInput) !== normalizeAddress(address);
 
   const handleCopy = async (text, label, key) => {
     if (!text) return;
@@ -102,40 +139,129 @@ const VerifyResultModal = ({
 
         <div className="verify-result-modal-body">
           <div className="verify-result-details-card">
-            <div className="verify-result-detail-item">
-              <span className="verify-detail-label">
-                <FaShieldAlt className="verify-detail-label-icon" />
-                {t('status')}
-              </span>
-              <span className={`verify-detail-value ${isSuccess ? 'success' : 'error'}`}>
-                {isSuccess ? t('authentic') : t('not_authentic')}
-              </span>
-            </div>
-
             {address && (
-              <div className="verify-result-detail-item">
-                <span className="verify-detail-label">
-                  <FaWallet className="verify-detail-label-icon" />
-                  {t('wallet_used')}
-                </span>
-                <div className="verify-detail-value-with-copy">
-                  <span className="verify-detail-value">{short_address(address)}</span>
-                  <div style={{ position: 'relative' }}>
-                    <button
-                      className={`verify-copy-button ${copiedStates.address ? 'copied' : ''}`}
-                      onClick={() => handleCopy(address, 'Adresse wallet', 'address')}
-                      aria-label="Copier l'adresse wallet"
-                    >
-                      <FaCopy />
-                    </button>
-                    {copiedStates.address && (
-                      <div className="verify-copy-feedback">
-                        ✓ {t('copied')}
-                      </div>
-                    )}
+              <>
+                <div className="verify-result-detail-item">
+                  <span className="verify-detail-label">
+                    <FaWallet className="verify-detail-label-icon" />
+                    {t('wallet_used')}
+                  </span>
+                  <div className="verify-detail-value-with-copy">
+                    <span className="verify-detail-value">{short_address(address)}</span>
+                    <div style={{ position: 'relative' }}>
+                      <i
+                        className={`fas fa-copy verify-copy-icon ${copiedStates.address ? 'copied' : ''}`}
+                        onClick={() => handleCopy(address, 'Adresse wallet', 'address')}
+                        aria-label="Copier l'adresse wallet"
+                        role="button"
+                        tabIndex={0}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            handleCopy(address, 'Adresse wallet', 'address');
+                          }
+                        }}
+                      ></i>
+                      {copiedStates.address && (
+                        <div className="verify-copy-feedback">
+                          ✓ {t('copied')}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
+
+                {/* Section Annuaire */}
+                <div className="verify-result-detail-item verify-address-directory-section">
+                  <span className="verify-detail-label">
+                    <FaShieldAlt className="verify-detail-label-icon" />
+                    CHECK USED WALLET
+                  </span>
+                  
+                  {/* Affichage minimaliste de correspondance */}
+                  {addressesMatch && (
+                    <div className="verify-address-status verify-address-status-match">
+                      <FaCheckCircle />
+                      <span>{t('address_directory_addresses_match')}</span>
+                    </div>
+                  )}
+                  
+                  {addressesDoNotMatch && (
+                    <div className="verify-address-status verify-address-status-mismatch">
+                      <FaTimesCircle />
+                      <span>{t('address_directory_addresses_do_not_match')}</span>
+                    </div>
+                  )}
+                  
+                  <div className="verify-address-input-wrapper">
+                    <input
+                      type="text"
+                      className={`verify-address-input ${
+                        addressesMatch 
+                          ? 'address-match' 
+                          : addressesDoNotMatch 
+                          ? 'address-mismatch' 
+                          : !addressInput || addressInput.trim() === ''
+                          ? 'address-empty'
+                          : ''
+                      }`}
+                      placeholder={t('address_directory_input_placeholder')}
+                      value={addressInput}
+                      onChange={(e) => setAddressInput(e.target.value)}
+                      onPaste={(e) => {
+                        const pastedText = e.clipboardData.getData('text');
+                        setTimeout(() => {
+                          setAddressInput(pastedText);
+                        }, 0);
+                      }}
+                    />
+                    <div className="verify-directory-buttons-wrapper">
+                      <button
+                        className="verify-directory-button"
+                        onClick={() => {
+                          setShouldAddAddress(false);
+                          setIsDirectoryOpen(true);
+                        }}
+                        title={t('address_directory_open')}
+                      >
+                        <FaAddressBook />
+                        {t('address_directory_open')}
+                      </button>
+                      <button
+                        className={`verify-directory-button verify-add-button ${
+                          addressesMatch && !isAddressInDirectory(address) ? '' : 'disabled'
+                        }`}
+                        onClick={() => {
+                          if (addressesMatch && !isAddressInDirectory(address)) {
+                            setShouldAddAddress(true);
+                            setIsDirectoryOpen(true);
+                          }
+                        }}
+                        disabled={!addressesMatch || isAddressInDirectory(address)}
+                        title={
+                          addressesMatch && isAddressInDirectory(address)
+                            ? t('address_directory_already_exists')
+                            : addressesMatch
+                            ? t('address_directory_add_to_directory')
+                            : t('address_directory_add_to_directory')
+                        }
+                      >
+                        {addressesMatch && isAddressInDirectory(address) ? (
+                          <>
+                            <FaCheck />
+                            Address in directory
+                          </>
+                        ) : (
+                          <>
+                            <FaPlus />
+                            Add address
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </>
             )}
 
             <div className="verify-result-detail-item">
@@ -157,6 +283,20 @@ const VerifyResultModal = ({
           </button>
         </div>
       </div>
+
+      {/* Modal Annuaire */}
+      <AddressDirectory
+        isOpen={isDirectoryOpen}
+        onClose={() => {
+          setIsDirectoryOpen(false);
+          setShouldAddAddress(false);
+        }}
+        addressToAdd={shouldAddAddress && addressesMatch ? address : null}
+        onAddressAdded={() => {
+          setIsDirectoryOpen(false);
+          setShouldAddAddress(false);
+        }}
+      />
     </div>
   );
 };

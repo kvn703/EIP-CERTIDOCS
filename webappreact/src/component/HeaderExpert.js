@@ -7,6 +7,7 @@ import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
 import { useTranslation } from 'react-i18next';
 import { useOnboarding } from '../context/OnboardingContext';
+import AddressDirectory from './AddressDirectory';
 
 const HeaderExpert = ({ showProgress = false, currentStep = 0, steps = [] }) => {
   const { t } = useTranslation();
@@ -14,6 +15,7 @@ const HeaderExpert = ({ showProgress = false, currentStep = 0, steps = [] }) => 
   const { disconnect } = useDisconnect();
   const { openOnboarding } = useOnboarding();
   const [copied, setCopied] = useState(false);
+  const [isDirectoryOpen, setIsDirectoryOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -115,15 +117,31 @@ const HeaderExpert = ({ showProgress = false, currentStep = 0, steps = [] }) => 
         </button>
       </div>
 
-      {/* Icône tutoriel en bas à droite */}
-      <button
-        className="header-tutorial-btn"
-        onClick={openOnboarding}
-        title={t('tutorial_welcome_title') || 'Voir le tutoriel'}
-        aria-label={t('tutorial_welcome_title') || 'Voir le tutoriel'}
-      >
-        <i className="fas fa-question-circle"></i>
-      </button>
+      {/* Boutons en bas à gauche : Tutoriel + Annuaire */}
+      <div className="header-bottom-buttons">
+        <button
+          className="header-tutorial-btn"
+          onClick={openOnboarding}
+          title={t('tutorial_welcome_title') || 'Voir le tutoriel'}
+          aria-label={t('tutorial_welcome_title') || 'Voir le tutoriel'}
+        >
+          <i className="fas fa-question-circle"></i>
+        </button>
+        <button
+          className="header-directory-btn"
+          onClick={() => setIsDirectoryOpen(true)}
+          title={t('address_directory_title') || 'Ouvrir l\'annuaire'}
+          aria-label={t('address_directory_title') || 'Ouvrir l\'annuaire'}
+        >
+          <i className="fas fa-address-book"></i>
+        </button>
+      </div>
+
+      {/* Modal Annuaire */}
+      <AddressDirectory
+        isOpen={isDirectoryOpen}
+        onClose={() => setIsDirectoryOpen(false)}
+      />
 
       {/* Indicateur de progression optionnel */}
       {showProgress && steps.length > 0 && (
