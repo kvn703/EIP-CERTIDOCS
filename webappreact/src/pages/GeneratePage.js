@@ -287,7 +287,7 @@ const GeneratePage = () => {
     const [currentStep, setCurrentStep] = useState(1);
     const [hasSignatureCompleted, setHasSignatureCompleted] = useState(false);
 
-    // Mettre à jour currentStep à 4 (pour marquer l'étape 3 comme complétée) quand la signature est générée
+    // Mettre à jour currentStep à 4 (pour marquer l'étape 3 "Empreinte" comme complétée) quand la signature est générée
     useEffect(() => {
         if (signed && signature) {
             setCurrentStep(4);
@@ -296,8 +296,9 @@ const GeneratePage = () => {
     }, [signed, signature]);
 
     // Calcul et mise à jour de l'étape actuelle pour la timeline
+    // Étapes : 1=Contenu, 2=Destinataire, 3=Empreinte
     useEffect(() => {
-        // Si l'empreinte est complétée, toujours rester à l'étape 4 (pour marquer l'étape 3 comme complétée)
+        // Si l'empreinte est complétée, toujours rester à l'étape 4 (pour marquer l'étape 3 "Empreinte" comme complétée)
         if (hasSignatureCompleted) {
             setCurrentStep(4);
             return;
@@ -316,19 +317,29 @@ const GeneratePage = () => {
                 return;
             }
 
-            // Étape 2 : Contenu saisi (vérifier tous les inputs possibles)
+            // Vérifier le contenu (mail/texte/PDF/image)
             const hasTextContent = texteValue && texteValue.trim().length > 0;
             const hasMailContent = mailMessage && mailMessage.trim().length > 0;
             const hasPdfContent = pdfFile !== null;
             const hasImageContent = imageFile !== null;
+            const hasContent = hasTextContent || hasMailContent || hasPdfContent || hasImageContent;
+
+            // Vérifier les destinataires
             const hasRecipients = recipients && recipients.length > 0;
 
-            if (hasTextContent || hasMailContent || hasPdfContent || hasImageContent || hasRecipients) {
+            // Étape 2 : Destinataire saisi - mettre à 3 pour marquer étape 2 comme complétée
+            if (hasContent && hasRecipients) {
+                setCurrentStep(3);
+                return;
+            }
+
+            // Étape 1 : Contenu récupéré/uploadé - mettre à 2 pour marquer étape 1 comme complétée
+            if (hasContent) {
                 setCurrentStep(2);
                 return;
             }
 
-            // Étape 1 : Génération (début)
+            // Étape 0 : Début (aucun contenu)
             setCurrentStep(1);
         };
 

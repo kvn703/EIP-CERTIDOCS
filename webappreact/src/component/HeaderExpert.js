@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import './HeaderExpert.css';
 import '../CSS/modern2025.css';
-import { FaWallet, FaRegCopy, FaCog, FaSignOutAlt, FaFingerprint, FaCheckCircle } from 'react-icons/fa';
+import './HeaderExpert.css';
 import { useAppKitAccount, useDisconnect, modal } from '@reown/appkit/react';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
@@ -47,129 +46,71 @@ const HeaderExpert = ({ showProgress = false, currentStep = 0, steps = [] }) => 
 
   return (
     <header className="header-expert">
+      {/* Boutons en haut à gauche : Thème + Portefeuille */}
       <div className="header-left">
-        <div className="logo-modern">
-          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="shieldGradientModern" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#9584ff" />
-                <stop offset="100%" stopColor="#7fffa7" />
-              </linearGradient>
-            </defs>
-            <path d="M24 8L40 14V24C40 34 24 40 24 40C24 40 8 34 8 24V14L24 8Z"
-              fill="url(#shieldGradientModern)"
-              stroke="rgba(255, 255, 255, 0.2)"
-              strokeWidth="1.5" />
-          </svg>
-        </div>
-        <div className="header-title-modern">
-          <h1 className="title-modern">CERTIDOCS</h1>
-        </div>
-
-        {/* Navigation entre Générer et Vérifier - À côté du titre */}
-        <div className="header-navigation">
-          <button
-            className={`header-nav-btn ${isGeneratePage ? 'active' : ''}`}
-            onClick={() => navigate('/')}
-            aria-label={t('page_generate')}
-            title={t('generate_fingerprint')}
-          >
-            <FaFingerprint className="header-nav-icon" />
-            <span className="header-nav-text">{t('generate')}</span>
-          </button>
-          <button
-            className={`header-nav-btn ${isVerifyPage ? 'active' : ''}`}
-            onClick={() => navigate('/verify')}
-            aria-label={t('page_verify')}
-            title={t('verify_fingerprint')}
-          >
-            <FaCheckCircle className="header-nav-icon" />
-            <span className="header-nav-text">{t('verify')}</span>
-          </button>
-        </div>
-      </div>
-
-      <div className="header-actions">
+        <ThemeToggle />
         {isConnected && address ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ position: 'relative' }}>
-              <button
-                className={`wallet-copy-btn-header ${copied ? 'copied' : ''}`}
-                onClick={handleCopy}
-                title={t('copy_address')}
-                tabIndex={0}
-              >
-                <span className="wallet-address-text">
-                  {address.slice(0, 4)}...{address.slice(-3)}
-                </span>
-                <span className="wallet-copy-icon">
-                  {copied ? (
-                    <svg viewBox="0 0 24 24" className="check-icon">
-                      <path
-                        d="M5 13l4 4L19 7"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        fill="none"
-                      />
-                    </svg>
-                  ) : (
-                    <FaRegCopy />
-                  )}
-                </span>
-              </button>
-              {copied && (
-                <div className="wallet-copy-feedback">
-                  ✓ {t('copied')}
-                </div>
-              )}
-            </div>
-            <div className="header-right-actions">
-              <LanguageToggle />
-              <button
-                className="header-action-btn-compact"
-                onClick={() => modal.open()}
-                title={t('settings')}
-                aria-label={t('settings')}
-              >
-                <FaCog style={{
-                  width: '14px',
-                  height: '14px',
-                  color: 'white',
-                  fill: 'white',
-                  display: 'block',
-                  flexShrink: 0
-                }} />
-              </button>
-              <ThemeToggle />
-
-              <button
-                className="header-action-btn-compact header-action-btn-danger"
-                onClick={handleDisconnect}
-                title={t('disconnect')}
-                aria-label={t('disconnect')}
-              >
-                <FaSignOutAlt style={{
-                  width: '14px',
-                  height: '14px',
-                  color: '#ff6b6b',
-                  fill: '#ff6b6b',
-                  display: 'block',
-                  flexShrink: 0
-                }} />
-              </button>
-            </div>
+          <div className="wallet-actions-group">
+            <button
+              className="wallet-btn-header"
+              onClick={handleOpenModal}
+              title={t('wallet_management') || 'Gérer le portefeuille'}
+            >
+              <i className="fas fa-wallet"></i>
+              <span className="wallet-address">
+                {address.slice(0, 4)}...{address.slice(-3)}
+              </span>
+            </button>
+            <i
+              className={`fas ${copied ? 'fa-check' : 'fa-copy'} wallet-copy-icon`}
+              onClick={handleCopy}
+              title={t('copy_address')}
+              style={{ cursor: 'pointer' }}
+            ></i>
           </div>
         ) : (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <button className="connect-btn-compact" onClick={handleOpenModal}>
-              <FaWallet /> <span>{t('connect')}</span>
-            </button>
-            <ThemeToggle />
-            <LanguageToggle />
-          </div>
+          <button 
+            className="wallet-btn-header connect-btn-header" 
+            onClick={handleOpenModal}
+            title={t('connect_wallet') || t('connect') || 'Connecter un portefeuille'}
+          >
+            <i className="fas fa-plug"></i>
+            <span className="connect-text">{t('connect_wallet') || t('connect')}</span>
+          </button>
         )}
+      </div>
+
+      {/* Bouton en haut à droite : Langue */}
+      <div className="header-right">
+        <LanguageToggle />
+      </div>
+
+      {/* Logo et titre */}
+      <div className="logo-icon">
+        <i className="fas fa-shield-alt"></i>
+      </div>
+      <h1>CERTIDOCS</h1>
+
+      {/* Navigation entre Générer et Vérifier */}
+      <div className="header-navigation">
+        <button
+          className={`header-nav-btn ${isGeneratePage ? 'active' : ''}`}
+          onClick={() => navigate('/')}
+          aria-label={t('page_generate')}
+          title={t('generate_fingerprint')}
+        >
+          <i className="fas fa-fingerprint"></i>
+          <span>{t('generate')}</span>
+        </button>
+        <button
+          className={`header-nav-btn ${isVerifyPage ? 'active' : ''}`}
+          onClick={() => navigate('/verify')}
+          aria-label={t('page_verify')}
+          title={t('verify_fingerprint')}
+        >
+          <i className="fas fa-search"></i>
+          <span>{t('verify')}</span>
+        </button>
       </div>
 
       {/* Indicateur de progression optionnel */}

@@ -6,7 +6,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: fadeIn 0.7s;
+  /* animation: fadeIn 0.7s; */
 }
 
 @keyframes fadeIn {

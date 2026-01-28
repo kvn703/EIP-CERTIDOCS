@@ -32,14 +32,14 @@
 
   100% {
     transform: translateX(100%) rotateY(-15deg);
-    opacity: 0;
+    opacity: 1;
   }
 }
 
 @keyframes slideInLeft {
   0% {
     transform: translateX(-100%) rotateY(15deg);
-    opacity: 0;
+    opacity: 1;
   }
 
   100% {

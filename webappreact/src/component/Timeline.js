@@ -4,8 +4,8 @@ import './Timeline.css';
 
 const Timeline = ({ currentStep = 1, steps: customSteps }) => {
   const defaultSteps = [
-    { id: 1, label: 'Génération', icon: FaCircle },
-    { id: 2, label: 'Contenu', icon: FaCircle },
+    { id: 1, label: 'Contenu', icon: FaCircle },
+    { id: 2, label: 'Destinataire', icon: FaCircle },
     { id: 3, label: 'Empreinte', icon: FaCircle },
   ];
   const steps = customSteps || defaultSteps;

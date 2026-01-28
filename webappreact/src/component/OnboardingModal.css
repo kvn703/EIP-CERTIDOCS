@@ -10,7 +10,7 @@
     align-items: center;
     justify-content: center;
     z-index: 9999;
-    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    /* animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); */
 }
 
 .onboarding-content {
@@ -24,7 +24,7 @@
         0 20px 25px -5px rgba(0, 0, 0, 0.1),
         0 10px 10px -5px rgba(0, 0, 0, 0.04),
         0 0 0 1px rgba(0, 0, 0, 0.05);
-    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    /* animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); */
     overflow: hidden;
     text-align: center;
 }

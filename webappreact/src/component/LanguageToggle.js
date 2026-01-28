@@ -11,13 +11,14 @@ const LanguageToggle = () => {
 
     return (
         <button
-            className="header-action-btn-compact"
+            className="lang-toggle"
             onClick={toggleLanguage}
             title={i18n.language === 'fr' ? "Switch to English" : "Passer en Français"}
         >
-            <span style={{ fontSize: '0.8rem', fontWeight: 'bold', color: 'white' }}>
+            <span className="lang-code">
                 {i18n.language === 'fr' ? 'FR' : 'EN'}
             </span>
+            <i className="fas fa-globe"></i>
         </button>
     );
 };
