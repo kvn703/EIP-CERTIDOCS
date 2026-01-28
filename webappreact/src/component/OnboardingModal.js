@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaWallet, FaFingerprint, FaShieldAlt, FaRocket, FaFileAlt, FaImage, FaEnvelope, FaCheckCircle } from 'react-icons/fa';
+import { FaWallet, FaFingerprint, FaShieldAlt, FaRocket, FaAddressBook } from 'react-icons/fa';
 import { useOnboarding } from '../context/OnboardingContext';
 import './OnboardingModal.css';
 
@@ -54,6 +54,11 @@ const OnboardingModal = () => {
             icon: <FaShieldAlt />,
             title: t('tutorial_verify_title'),
             desc: t('tutorial_verify_desc')
+        },
+        {
+            icon: <FaAddressBook />,
+            title: t('tutorial_directory_title'),
+            desc: t('tutorial_directory_desc')
         }
     ];
 
