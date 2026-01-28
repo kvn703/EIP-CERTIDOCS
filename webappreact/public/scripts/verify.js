@@ -265,7 +265,7 @@ function readFileAsArrayBuffer(file) {
 }
 
 
-// Vérification de la signature (exemple)
+// Vérification de la preuve (exemple)
 async function verifySignature() {
     // IMPORTANT: Récupérer les valeurs actuelles depuis window.__verifyVars
     // pour éviter les problèmes après navigation entre pages
@@ -288,9 +288,13 @@ async function verifySignature() {
 
     // Vérifier si l'utilisateur est connecté
     isString = document.getElementById("signatureCheckbox").checked;
-    window.dispatchEvent(new CustomEvent('Error', { detail: 'Vérification de la signature' }));
+    window.dispatchEvent(new CustomEvent('Error', { detail: 'Vérification de la preuve' }));
     if (!signer) {
-        showBeautifulAlert('Veuillez d\'abord connecter votre wallet pour vérifier une signature', 'error');
+        const verify_element = document.getElementById("verify");
+        if (verify_element) {
+            verify_element.innerText = "❌ Erreur : Veuillez d'abord connecter votre wallet pour vérifier une preuve";
+        }
+        showBeautifulAlert('Veuillez d\'abord connecter votre wallet pour vérifier une preuve', 'error');
         return;
     }
 
@@ -304,13 +308,21 @@ async function verifySignature() {
         signatureId = signatureId.trim();
         
         if (!/^0x[a-fA-F0-9]{64}$/.test(signatureId)) {
-            alert("L'ID de signature est invalide !");
+            const verify_element = document.getElementById("verify");
+            if (verify_element) {
+                verify_element.innerText = "❌ Erreur : L'ID de preuve est invalide !";
+            }
+            // showBeautifulAlert("L'ID de preuve est invalide !", 'error'); // Commenté : message déjà affiché ailleurs
             return;
         }
 
         let message = document.getElementById("messageInput").value.trim();
         if (message === "") {
-            alert("Le message ne peut pas être vide !");
+            const verify_element = document.getElementById("verify");
+            if (verify_element) {
+                verify_element.innerText = "❌ Erreur : Le message ne peut pas être vide !";
+            }
+            // showBeautifulAlert("Le message ne peut pas être vide !", 'error'); // Commenté : message déjà affiché ailleurs
             return;
         }
 
@@ -364,25 +376,37 @@ async function verifySignature() {
         }
     } else if (currentTab === 1) {
         if (!currentSignatureFile && !isString) {
-            showBeautifulAlert('Veuillez d\'abord sélectionner un fichier de signature', 'error');
+            const verify_element = document.getElementById("verify");
+            if (verify_element) {
+                verify_element.innerText = "❌ Erreur : Veuillez d'abord sélectionner un fichier de preuve";
+            }
+            showBeautifulAlert('Veuillez d\'abord sélectionner un fichier de preuve', 'error');
             return;
         }
         let signatureId;
         if (isString) {
             const signature_id_element = document.getElementById("signatureIdString");
             if (!signature_id_element) {
+                const verify_element = document.getElementById("verify");
+                if (verify_element) {
+                    verify_element.innerText = "❌ Erreur : L'élément signatureIdString est introuvable";
+                }
                 showBeautifulAlert('L\'élément signatureIdString est introuvable', 'error');
                 return;
             }
             signatureId = signature_id_element.value.trim();
         } else {
             signatureId = await extractTextFromFileImage(currentSignatureFile).catch((error) => {
-                showBeautifulAlert('Erreur lors de l\'extraction de la signature depuis l\'image', 'error');
+                showBeautifulAlert('Erreur lors de l\'extraction de la preuve depuis l\'image', 'error');
             });
         }
         if (!signatureId) {
-            showBeautifulAlert('Erreur lors de l\'extraction de la signature depuis l\'image', 'error');
-            window.dispatchEvent(new CustomEvent('Error', { detail: 'Erreur lors de l\'extraction de la signature depuis l\'image' }));
+            const verify_element = document.getElementById("verify");
+            if (verify_element) {
+                verify_element.innerText = "❌ Erreur lors de l'extraction de la preuve depuis l'image";
+            }
+            showBeautifulAlert('Erreur lors de l\'extraction de la preuve depuis l\'image', 'error');
+            window.dispatchEvent(new CustomEvent('Error', { detail: 'Erreur lors de l\'extraction de la preuve depuis l\'image' }));
             return;
         }
         // remove the [CERTIDOCS] prefix if it exists and trim
@@ -391,19 +415,31 @@ async function verifySignature() {
         }
         signatureId = signatureId.trim();
         if (!/^0x[a-fA-F0-9]{64}$/.test(signatureId)) {
-            showBeautifulAlert("L'ID de signature est invalide !", 'error');
-            window.dispatchEvent(new CustomEvent('Error', { detail: 'Erreur lors de l\'extraction de la signature depuis l\'image' }));
+            const verify_element = document.getElementById("verify");
+            if (verify_element) {
+                verify_element.innerText = "❌ Erreur : L'ID de preuve est invalide !";
+            }
+            // showBeautifulAlert("L'ID de preuve est invalide !", 'error'); // Commenté : message déjà affiché ailleurs
+            window.dispatchEvent(new CustomEvent('Error', { detail: 'Erreur lors de l\'extraction de la preuve depuis l\'image' }));
             return;
         }
         const message_element = document.getElementById("texte2");
         if (!message_element) {
+            const verify_element = document.getElementById("verify");
+            if (verify_element) {
+                verify_element.innerText = "❌ Erreur : L'élément texte2 est introuvable";
+            }
             showBeautifulAlert('L\'élément texte2 est introuvable', 'error');
             return;
         }
         const message = message_element.value.trim();
         if (message === "") {
-            showBeautifulAlert("Le message ne peut pas être vide !", 'error');
-            window.dispatchEvent(new CustomEvent('Error', { detail: 'Erreur lors de l\'extraction de la signature depuis l\'image' }));
+            const verify_element = document.getElementById("verify");
+            if (verify_element) {
+                verify_element.innerText = "❌ Erreur : Le message ne peut pas être vide !";
+            }
+            // showBeautifulAlert("Le message ne peut pas être vide !", 'error'); // Commenté : message déjà affiché ailleurs
+            window.dispatchEvent(new CustomEvent('Error', { detail: 'Erreur lors de l\'extraction de la preuve depuis l\'image' }));
             return;
         }
         messageHash = ethers.keccak256(ethers.toUtf8Bytes(message));
@@ -429,31 +465,47 @@ async function verifySignature() {
         }
     } else if (currentTab === 2) {
         if (!currentPDFFile) {
+            const verify_element = document.getElementById("verify");
+            if (verify_element) {
+                verify_element.innerText = "❌ Erreur : Veuillez d'abord sélectionner un fichier PDF";
+            }
             showBeautifulAlert('Veuillez d\'abord sélectionner un fichier PDF', 'error');
-            window.dispatchEvent(new CustomEvent('Error', { detail: 'Erreur lors de l\'extraction de la signature depuis l\'image' }));
+            window.dispatchEvent(new CustomEvent('Error', { detail: 'Erreur lors de l\'extraction de la preuve depuis l\'image' }));
             return;
         }
         if (!currentSignatureFile && !isString) {
-            showBeautifulAlert('Veuillez d\'abord sélectionner un fichier de signature', 'error');
-            window.dispatchEvent(new CustomEvent('Error', { detail: 'Erreur lors de l\'extraction de la signature depuis l\'image' }));
+            const verify_element = document.getElementById("verify");
+            if (verify_element) {
+                verify_element.innerText = "❌ Erreur : Veuillez d'abord sélectionner un fichier de preuve";
+            }
+            showBeautifulAlert('Veuillez d\'abord sélectionner un fichier de preuve', 'error');
+            window.dispatchEvent(new CustomEvent('Error', { detail: 'Erreur lors de l\'extraction de la preuve depuis l\'image' }));
             return;
         }
         let signatureId;
         if (isString) {
             const signature_id_element = document.getElementById("signatureIdString");
             if (!signature_id_element) {
+                const verify_element = document.getElementById("verify");
+                if (verify_element) {
+                    verify_element.innerText = "❌ Erreur : L'élément signatureIdString est introuvable";
+                }
                 showBeautifulAlert('L\'élément signatureIdString est introuvable', 'error');
                 return;
             }
             signatureId = signature_id_element.value.trim();
         } else {
             signatureId = await extractTextFromFileImage(currentSignatureFile).catch((error) => {
-                showBeautifulAlert('Erreur lors de l\'extraction de la signature depuis l\'image', 'error');
+                showBeautifulAlert('Erreur lors de l\'extraction de la preuve depuis l\'image', 'error');
             });
         }
         if (!signatureId) {
-            showBeautifulAlert('Erreur lors de l\'extraction de la signature depuis l\'image', 'error');
-            window.dispatchEvent(new CustomEvent('Error', { detail: 'Erreur lors de l\'extraction de la signature depuis l\'image' }));
+            const verify_element = document.getElementById("verify");
+            if (verify_element) {
+                verify_element.innerText = "❌ Erreur lors de l'extraction de la preuve depuis l'image";
+            }
+            showBeautifulAlert('Erreur lors de l\'extraction de la preuve depuis l\'image', 'error');
+            window.dispatchEvent(new CustomEvent('Error', { detail: 'Erreur lors de l\'extraction de la preuve depuis l\'image' }));
             return;
         }
         // remove the [CERTIDOCS] prefix if it exists and trim
@@ -462,8 +514,12 @@ async function verifySignature() {
         }
         signatureId = signatureId.trim();
         if (!/^0x[a-fA-F0-9]{64}$/.test(signatureId)) {
-            showBeautifulAlert("L'ID de signature est invalide !", 'error');
-            window.dispatchEvent(new CustomEvent('Error', { detail: 'Erreur lors de l\'extraction de la signature depuis l\'image' }));
+            const verify_element = document.getElementById("verify");
+            if (verify_element) {
+                verify_element.innerText = "❌ Erreur : L'ID de preuve est invalide !";
+            }
+            // showBeautifulAlert("L'ID de preuve est invalide !", 'error'); // Commenté : message déjà affiché ailleurs
+            window.dispatchEvent(new CustomEvent('Error', { detail: 'Erreur lors de l\'extraction de la preuve depuis l\'image' }));
             return;
         }
         const fileBuffer = await readFileAsArrayBuffer(currentPDFFile);
@@ -490,31 +546,47 @@ async function verifySignature() {
         }
     } else if (currentTab === 3) {
         if (!currentImageFile) {
+            const verify_element = document.getElementById("verify");
+            if (verify_element) {
+                verify_element.innerText = "❌ Erreur : Veuillez d'abord sélectionner un fichier image";
+            }
             showBeautifulAlert('Veuillez d\'abord sélectionner un fichier image', 'error');
-            window.dispatchEvent(new CustomEvent('Error', { detail: 'Erreur lors de l\'extraction de la signature depuis l\'image' }));
+            window.dispatchEvent(new CustomEvent('Error', { detail: 'Erreur lors de l\'extraction de la preuve depuis l\'image' }));
             return;
         }
         if (!currentSignatureFile && !isString) {
-            showBeautifulAlert('Veuillez d\'abord sélectionner un fichier de signature', 'error');
-            window.dispatchEvent(new CustomEvent('Error', { detail: 'Erreur lors de l\'extraction de la signature depuis l\'image' }));
+            const verify_element = document.getElementById("verify");
+            if (verify_element) {
+                verify_element.innerText = "❌ Erreur : Veuillez d'abord sélectionner un fichier de preuve";
+            }
+            showBeautifulAlert('Veuillez d\'abord sélectionner un fichier de preuve', 'error');
+            window.dispatchEvent(new CustomEvent('Error', { detail: 'Erreur lors de l\'extraction de la preuve depuis l\'image' }));
             return;
         }
         let signatureId;
         if (isString) {
             const signature_id_element = document.getElementById("signatureIdString");
             if (!signature_id_element) {
+                const verify_element = document.getElementById("verify");
+                if (verify_element) {
+                    verify_element.innerText = "❌ Erreur : L'élément signatureIdString est introuvable";
+                }
                 showBeautifulAlert('L\'élément signatureIdString est introuvable', 'error');
                 return;
             }
             signatureId = signature_id_element.value.trim();
         } else {
             signatureId = await extractTextFromFileImage(currentSignatureFile).catch((error) => {
-                showBeautifulAlert('Erreur lors de l\'extraction de la signature depuis l\'image', 'error');
+                showBeautifulAlert('Erreur lors de l\'extraction de la preuve depuis l\'image', 'error');
             });
         }
         if (!signatureId) {
-            showBeautifulAlert('Erreur lors de l\'extraction de la signature depuis l\'image', 'error');
-            window.dispatchEvent(new CustomEvent('Error', { detail: 'Erreur lors de l\'extraction de la signature depuis l\'image' }));
+            const verify_element = document.getElementById("verify");
+            if (verify_element) {
+                verify_element.innerText = "❌ Erreur lors de l'extraction de la preuve depuis l'image";
+            }
+            showBeautifulAlert('Erreur lors de l\'extraction de la preuve depuis l\'image', 'error');
+            window.dispatchEvent(new CustomEvent('Error', { detail: 'Erreur lors de l\'extraction de la preuve depuis l\'image' }));
             return;
         }
         // remove the [CERTIDOCS] prefix if it exists and trim
@@ -523,8 +595,12 @@ async function verifySignature() {
         }
         signatureId = signatureId.trim();
         if (!/^0x[a-fA-F0-9]{64}$/.test(signatureId)) {
-            showBeautifulAlert("L'ID de signature est invalide !", 'error');
-            window.dispatchEvent(new CustomEvent('Error', { detail: 'Erreur lors de l\'extraction de la signature depuis l\'image' }));
+            const verify_element = document.getElementById("verify");
+            if (verify_element) {
+                verify_element.innerText = "❌ Erreur : L'ID de preuve est invalide !";
+            }
+            // showBeautifulAlert("L'ID de preuve est invalide !", 'error'); // Commenté : message déjà affiché ailleurs
+            window.dispatchEvent(new CustomEvent('Error', { detail: 'Erreur lors de l\'extraction de la preuve depuis l\'image' }));
             return;
         }
 
@@ -551,6 +627,10 @@ async function verifySignature() {
                 "❌ Erreur lors de la vérification.";
         }
     } else {
+        const verify_element = document.getElementById("verify");
+        if (verify_element) {
+            verify_element.innerText = "❌ Erreur : Veuillez sélectionner un onglet valide pour vérifier la signature";
+        }
         showBeautifulAlert('Veuillez sélectionner un onglet valide pour vérifier la signature', 'error');
     }
 }

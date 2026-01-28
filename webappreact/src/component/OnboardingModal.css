@@ -14,17 +14,15 @@
 }
 
 .onboarding-content {
-    background: #ffffff;
-    border-radius: 32px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border-radius: 24px;
     width: 90%;
-    max-width: 480px;
-    padding: 40px;
+    max-width: 500px;
+    padding: 48px 40px;
     position: relative;
     box-shadow:
-        0 20px 25px -5px rgba(0, 0, 0, 0.1),
-        0 10px 10px -5px rgba(0, 0, 0, 0.04),
-        0 0 0 1px rgba(0, 0, 0, 0.05);
-    /* animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); */
+        0 25px 50px -12px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(149, 132, 255, 0.1);
     overflow: hidden;
     text-align: center;
 }
@@ -44,26 +42,20 @@
 
 .onboarding-close {
     position: absolute;
-    top: 20px;
-    right: 20px;
-    background: rgba(0, 0, 0, 0.05);
-    border: none;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #666;
+    top: 16px;
+    right: 16px;
+    color: #64748b;
     cursor: pointer;
+    font-size: 20px;
     transition: all 0.2s ease;
     z-index: 2;
+    padding: 4px;
+    line-height: 1;
 }
 
 .onboarding-close:hover {
-    background: rgba(0, 0, 0, 0.1);
-    color: #333;
-    transform: rotate(90deg);
+    color: #475569;
+    transform: scale(1.1);
 }
 
 .onboarding-step {
@@ -73,54 +65,45 @@
 }
 
 .onboarding-icon-container {
-    width: 96px;
-    height: 96px;
-    background: linear-gradient(135deg, rgba(149, 132, 255, 0.15) 0%, rgba(184, 170, 255, 0.05) 100%);
-    border-radius: 30px;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #9584ff 0%, #8673ff 100%);
+    border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 32px;
-    transform: rotate(-5deg);
-    transition: transform 0.3s ease;
-    box-shadow: 0 10px 30px -10px rgba(149, 132, 255, 0.3);
-}
-
-.onboarding-step:hover .onboarding-icon-container {
-    transform: rotate(0deg) scale(1.05);
+    margin: 0 auto 28px;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 24px rgba(149, 132, 255, 0.25);
 }
 
 .onboarding-icon {
-    font-size: 42px;
-    color: #9584ff;
-    transform: rotate(5deg);
+    font-size: 36px;
+    color: white;
 }
 
 .onboarding-title {
-    font-size: 28px;
-    font-weight: 800;
-    color: #1a1a1a;
+    font-size: 26px;
+    font-weight: 700;
+    color: #1e293b;
     margin-bottom: 16px;
-    letter-spacing: -0.5px;
-    background: linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.3px;
 }
 
 .onboarding-desc {
-    font-size: 16px;
+    font-size: 15px;
     color: #64748b;
-    line-height: 1.6;
-    margin-bottom: 40px;
-    padding: 0 10px;
+    line-height: 1.7;
+    margin-bottom: 32px;
+    padding: 0 8px;
 }
+
 
 .onboarding-dots {
     display: flex;
     justify-content: center;
-    gap: 10px;
-    margin-bottom: 40px;
+    gap: 8px;
+    margin-bottom: 32px;
 }
 
 .onboarding-dot {
@@ -140,48 +123,33 @@
 
 .onboarding-footer {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.onboarding-skip {
-    background: none;
-    border: none;
-    color: #94a3b8;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 12px 24px;
-    border-radius: 12px;
-    transition: all 0.2s ease;
-}
-
-.onboarding-skip:hover {
-    color: #64748b;
-    background: #f8fafc;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(148, 163, 184, 0.2);
 }
 
 .onboarding-nav {
     display: flex;
     gap: 12px;
     align-items: center;
+    width: 100%;
+    justify-content: center;
 }
 
 .onboarding-btn {
-    padding: 12px 24px;
-    border-radius: 14px;
-    font-size: 14px;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 15px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    letter-spacing: 0.3px;
+    transition: all 0.2s ease;
+    letter-spacing: 0.2px;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 100px;
+    min-width: 120px;
 }
 
 .onboarding-btn-secondary {
@@ -195,6 +163,24 @@
     border-color: #cbd5e1;
     color: #475569;
     transform: translateY(-1px);
+}
+
+.onboarding-btn-close {
+    background: transparent;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+}
+
+.onboarding-btn-close:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #475569;
+    transform: translateY(-1px);
+}
+
+.onboarding-nav-first {
+    flex-direction: column;
+    gap: 10px;
 }
 
 .onboarding-btn-primary {
@@ -248,26 +234,23 @@
     }
 
     .onboarding-desc {
-        font-size: 15px;
-        margin-bottom: 32px;
+        font-size: 14px;
+        margin-bottom: 28px;
     }
 
     .onboarding-footer {
-        flex-direction: column-reverse;
-        gap: 16px;
+        margin-top: 28px;
+        padding-top: 20px;
     }
 
     .onboarding-nav {
         width: 100%;
+        flex-direction: column;
+        gap: 10px;
     }
 
     .onboarding-btn {
-        flex: 1;
-        padding: 16px;
-    }
-
-    .onboarding-skip {
         width: 100%;
-        padding: 12px;
+        padding: 14px;
     }
 }

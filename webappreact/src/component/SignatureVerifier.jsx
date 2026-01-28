@@ -54,10 +54,10 @@ const SignatureVerifier = () => {
     // Simule la vérification (à remplacer par la vraie logique)
     if (signatureId.startsWith("0x") && message.length > 0) {
       setStatus("success");
-      setToast({ type: "success", msg: "Signature valide !" });
+      setToast({ type: "success", msg: "Preuve valide !" });
     } else {
       setStatus("error");
-      setToast({ type: "error", msg: "Signature invalide ou champs manquants." });
+      setToast({ type: "error", msg: "Preuve invalide ou champs manquants." });
       setShake(true);
     }
   };
@@ -150,14 +150,14 @@ const SignatureVerifier = () => {
           visible: { transition: { staggerChildren: 0.12 } },
         }}
         onSubmit={e => { e.preventDefault(); handleVerify(); }}
-        aria-label="Vérification de signature"
+        aria-label="Vérification de preuve"
       >
-        {/* Champ ID signature */}
+        {/* Champ ID preuve */}
         <motion.div
           variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
         >
           <label htmlFor="signatureId" className="block text-sm font-semibold text-violet-700 dark:text-violet-200 mb-1">
-            ID de la signature
+            ID de la preuve
           </label>
           <motion.input
             ref={idInputRef}
@@ -168,18 +168,18 @@ const SignatureVerifier = () => {
             placeholder="0x..."
             value={signatureId}
             onChange={e => setSignatureId(e.target.value)}
-            aria-label="ID de la signature"
+            aria-label="ID de la preuve"
             aria-invalid={status === "error" && !signatureId.startsWith("0x")}
             aria-live="polite"
             disabled={status === "loading"}
           />
         </motion.div>
-        {/* Champ message signé */}
+        {/* Champ message certifié */}
         <motion.div
           variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
         >
           <label htmlFor="messageInput" className="block text-sm font-semibold text-violet-700 dark:text-violet-200 mb-1">
-            Message signé
+            Message certifié
           </label>
           <motion.textarea
             ref={msgInputRef}
@@ -189,7 +189,7 @@ const SignatureVerifier = () => {
             placeholder="Écris le message ici..."
             value={message}
             onChange={e => setMessage(e.target.value)}
-            aria-label="Message signé"
+            aria-label="Message certifié"
             aria-invalid={status === "error" && message.length === 0}
             aria-live="polite"
             disabled={status === "loading"}
@@ -205,7 +205,7 @@ const SignatureVerifier = () => {
             whileHover={{ y: -2, boxShadow: "0 8px 32px #9584ff33" }}
             whileTap={{ scale: 0.97 }}
             disabled={status === "loading"}
-            aria-label="Vérifier la signature"
+            aria-label="Vérifier la preuve"
             aria-busy={status === "loading"}
           >
             <AnimatePresence mode="wait" initial={false}>
@@ -251,7 +251,7 @@ const SignatureVerifier = () => {
                   exit={{ opacity: 0, scale: 0.8 }}
                   transition={{ duration: 0.25 }}
                 >
-                  Vérifier la signature
+                  Vérifier la preuve
                 </motion.span>
               )}
             </AnimatePresence>

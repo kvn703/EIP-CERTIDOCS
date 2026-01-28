@@ -6,11 +6,13 @@ import { useAppKitAccount, useDisconnect, modal } from '@reown/appkit/react';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
 import { useTranslation } from 'react-i18next';
+import { useOnboarding } from '../context/OnboardingContext';
 
 const HeaderExpert = ({ showProgress = false, currentStep = 0, steps = [] }) => {
   const { t } = useTranslation();
   const { isConnected, address } = useAppKitAccount();
   const { disconnect } = useDisconnect();
+  const { openOnboarding } = useOnboarding();
   const [copied, setCopied] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -112,6 +114,16 @@ const HeaderExpert = ({ showProgress = false, currentStep = 0, steps = [] }) => 
           <span>{t('verify')}</span>
         </button>
       </div>
+
+      {/* Icône tutoriel en bas à droite */}
+      <button
+        className="header-tutorial-btn"
+        onClick={openOnboarding}
+        title={t('tutorial_welcome_title') || 'Voir le tutoriel'}
+        aria-label={t('tutorial_welcome_title') || 'Voir le tutoriel'}
+      >
+        <i className="fas fa-question-circle"></i>
+      </button>
 
       {/* Indicateur de progression optionnel */}
       {showProgress && steps.length > 0 && (

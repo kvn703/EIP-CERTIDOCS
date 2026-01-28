@@ -207,7 +207,7 @@ const GeneratePage = () => {
 
     // Le bouton sticky est toujours visible maintenant, plus besoin de détecter la hauteur
 
-    // Écouter les changements du DOM pour détecter la signature générée par script.js
+        // Écouter les changements du DOM pour détecter la preuve générée par script.js
     useEffect(() => {
         const checkForSignature = () => {
             const statusEl = document.getElementById("status");

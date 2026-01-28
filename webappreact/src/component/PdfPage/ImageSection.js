@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaImage, FaTrashAlt, FaUpload } from 'react-icons/fa';
 import './ImageSection.css';
@@ -9,6 +9,20 @@ export default function ImageSection({ value, onChange }) {
   const inputRef = useRef();
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState("");
+
+  // Synchroniser avec la prop value pour permettre la réinitialisation depuis le parent
+  useEffect(() => {
+    if (!value) {
+      setFile(null);
+      setPreview("");
+      if (inputRef.current) {
+        inputRef.current.value = "";
+      }
+    } else if (value instanceof File) {
+      setFile(value);
+      setPreview(URL.createObjectURL(value));
+    }
+  }, [value]);
 
   const handleDrop = (e) => {
     e.preventDefault();

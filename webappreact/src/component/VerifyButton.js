@@ -7,7 +7,7 @@ const VerifyButton = ({
   disabled = false, 
   isVerifying = false, 
   verificationResult = null,
-  children = "Vérifier la signature"
+  children = "Vérifier la preuve"
 }) => {
   const [isPressed, setIsPressed] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -56,7 +56,7 @@ const VerifyButton = ({
       return (
         <>
           <FaCheckCircle className="button-icon success" />
-          <span>Signature Validée</span>
+          <span>Preuve Validée</span>
         </>
       );
     }
@@ -65,7 +65,7 @@ const VerifyButton = ({
       return (
         <>
           <FaTimesCircle className="button-icon error" />
-          <span>Signature Invalide</span>
+          <span>Preuve Invalide</span>
         </>
       );
     }

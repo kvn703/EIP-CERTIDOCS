@@ -201,10 +201,8 @@ function VerifyPage() {
                 window.dispatchEvent(new Event('walletConnected'));
             };
             syncAndConnect();
-            setCurrentStep(1);
-        } else {
-            setCurrentStep(1);
         }
+        // Ne pas réinitialiser currentStep ici, laisser la logique basée sur les champs le gérer
     }, [isConnected]);
 
     useEffect(() => {
@@ -220,29 +218,43 @@ function VerifyPage() {
         }
     }, [verificationResult, hasVerificationCompleted, isResultModalOpen]);
 
+    // Calcul de l'étape actuelle basé sur les champs remplis
     useEffect(() => {
         if (verificationResult || hasVerificationCompleted) {
             return;
         }
 
         if (isVerifying) {
+            setCurrentStep(3);
+            return;
+        }
+
+        // Vérifier si l'empreinte est remplie (signatureId ou texte1)
+        const hasFingerprint = (signatureId && signatureId.trim() !== '') || (texte1 && texte1.trim() !== '') || signatureFile;
+        
+        // Vérifier si le contenu est rempli (message, texte2, pdfFile, ou imageFile)
+        const hasContent = (message && message.trim() !== '') || (texte2 && texte2.trim() !== '') || pdfFile || imageFile;
+
+        // Étape 3 : Résultat (en cours de vérification)
+        if (isVerifying) {
+            setCurrentStep(3);
+            return;
+        }
+
+        // Étape 2 : Contenu rempli - cocher étape 1 (Empreinte) et étape 2 (Contenu)
+        if (hasFingerprint && hasContent) {
+            setCurrentStep(3);
+            return;
+        }
+
+        // Étape 1 : Empreinte remplie - cocher étape 1 (Empreinte)
+        if (hasFingerprint) {
             setCurrentStep(2);
             return;
         }
 
-        if (!isConnected) {
-            setCurrentStep(1);
-            return;
-        }
-
-        if (isConnected && (signatureId || signatureFile || texte1) && (message || texte2 || pdfFile || imageFile)) {
-            setCurrentStep(2);
-            return;
-        }
-
-        if (isConnected) {
-            setCurrentStep(1);
-        }
+        // Étape 0 : Aucun champ rempli
+        setCurrentStep(1);
     }, [isConnected, isVerifying, verificationResult, hasVerificationCompleted, signatureId, signatureFile, texte1, message, texte2, pdfFile, imageFile]);
     // Détection des paramètres URL (logique existante préservée)
     useEffect(() => {
@@ -427,7 +439,7 @@ function VerifyPage() {
                 const text = verify_element.innerText || verify_element.textContent || '';
 
                 // Vérifier si on a un résultat valide
-                if (text.includes("✅ Empreinte VALIDE") || text.includes("✅ Signature VALIDE")) {
+                if (text.includes("✅ Empreinte VALIDE") || text.includes("✅ Preuve VALIDE")) {
                     setIsVerifying(false);
                     setVerificationResult('success');
                     setHasVerificationCompleted(true);
@@ -437,7 +449,7 @@ function VerifyPage() {
                     verify_element.style.display = 'none';
                     verify_element.innerText = '';
                     if (interval) clearInterval(interval);
-                } else if (text.includes("❌ Empreinte NON VALIDE") || text.includes("❌ Signature NON VALIDE") || text.includes("❌ Erreur")) {
+                } else if (text.includes("❌ Empreinte NON VALIDE") || text.includes("❌ Preuve NON VALIDE") || text.includes("❌ Erreur")) {
                     setIsVerifying(false);
                     setVerificationResult('error');
                     setHasVerificationCompleted(true);
@@ -694,9 +706,46 @@ function VerifyPage() {
 
     const handleCloseModal = () => {
         setIsResultModalOpen(false);
+        const wasError = verificationResult === 'error';
         setVerificationResult(null);
         setIsVerifying(false);
+        setHasVerificationCompleted(false);
         resultProcessedRef.current = false;
+        // Si la preuve était invalide, réinitialiser la barre de progression et les champs
+        if (wasError) {
+            setCurrentStep(1);
+            // Réinitialiser les champs de l'empreinte
+            setSignatureId("");
+            setTexte1("");
+            setSignatureFile(null);
+            // Réinitialiser les champs du contenu
+            setMessage("");
+            setTexte2("");
+            setPdfFile(null);
+            setImageFile(null);
+            // Réinitialiser aussi les inputs DOM pour verify.js
+            setTimeout(() => {
+                const signatureIdInput = document.getElementById("signatureId");
+                const messageInput = document.getElementById("messageInput");
+                const texte2Input = document.getElementById("texte2");
+                const signatureIdStringInput = document.getElementById("signatureIdString");
+                if (signatureIdInput) signatureIdInput.value = "";
+                if (messageInput) messageInput.value = "";
+                if (texte2Input) texte2Input.value = "";
+                if (signatureIdStringInput) signatureIdStringInput.value = "";
+                
+                // Réinitialiser les inputs file pour PDF et Image
+                const pdfInputs = document.querySelectorAll('input[type="file"][accept="application/pdf"]');
+                pdfInputs.forEach(input => {
+                    if (input) input.value = "";
+                });
+                
+                const imageInputs = document.querySelectorAll('input[type="file"][accept*="image"]');
+                imageInputs.forEach(input => {
+                    if (input) input.value = "";
+                });
+            }, 0);
+        }
     };
     if (isReloading) {
         return (
@@ -841,7 +890,7 @@ function VerifyPage() {
                                         </div>
                                     )}
 
-                                    {/* Message signé masqué comme demandé */}
+                                    {/* Message certifié masqué comme demandé */}
                                     {/* {message && (
                                         <div className="verify-modern-input-card verify-modern-input-card-secondary">
                                             <div className="modern-input-icon">
@@ -965,7 +1014,7 @@ function VerifyPage() {
 
                             {/* PHASE 2.1 : Cards d'input modernes */}
                             <div className="verify-modern-inputs">
-                                {/* PHASE 2.2 : Input Signature ID */}
+                                {/* PHASE 2.2 : Input Proof ID */}
                                 <div className="verify-modern-input-card verify-modern-input-card-primary">
                                     <div className="modern-input-icon">
                                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1044,7 +1093,7 @@ function VerifyPage() {
                                                 placeholder={t('paste_signed_message')}
                                                 value={texte2}
                                                 onChange={e => setTexte2(e.target.value)}
-                                                aria-label="Message signé à vérifier"
+                                                aria-label="Message certifié à vérifier"
                                                 aria-required="true"
                                             />
                                         </div>
@@ -1104,7 +1153,7 @@ function VerifyPage() {
 
                             {/* PHASE 2.1 : Cards d'input modernes */}
                             <div className="verify-modern-inputs">
-                                {/* PHASE 2.2 : Input Signature ID */}
+                                {/* PHASE 2.2 : Input Proof ID */}
                                 <div className="verify-modern-input-card verify-modern-input-card-primary">
                                     <div className="modern-input-icon">
                                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1227,7 +1276,7 @@ function VerifyPage() {
 
                             {/* PHASE 2.1 : Cards d'input modernes */}
                             <div className="verify-modern-inputs">
-                                {/* PHASE 2.2 : Input Signature ID */}
+                                {/* PHASE 2.2 : Input Proof ID */}
                                 <div className="verify-modern-input-card verify-modern-input-card-primary">
                                     <div className="modern-input-icon">
                                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1319,7 +1368,7 @@ function VerifyPage() {
                             <Timeline
                                 currentStep={verificationResult ? 4 : currentStep}
                                 steps={[
-                                    { id: 1, label: t('step_connection'), icon: FaCircle },
+                                    { id: 1, label: t('step_fingerprint'), icon: FaCircle },
                                     { id: 2, label: t('step_content'), icon: FaEdit },
                                     { id: 3, label: t('step_result'), icon: FaCircle },
                                 ]}

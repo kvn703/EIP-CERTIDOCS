@@ -13,8 +13,8 @@ export default function SignatureVerificationPage({
   message = "",
   onVerify,
   checklistSteps = [
-    { icon: "🔍", label: "Recherche de l'ID de signature" },
-    { icon: "✉️", label: "Extraction du message signé" },
+    { icon: "🔍", label: "Recherche de l'ID de preuve" },
+    { icon: "✉️", label: "Extraction du message certifié" },
     { icon: "✅", label: "Validation des métadonnées" },
     { icon: "🧠", label: "Préparation à la vérification" },
   ],
@@ -24,7 +24,7 @@ export default function SignatureVerificationPage({
     "Analyse des métadonnées…",
     "Prêt à vérifier !"
   ],
-  ctaDefault = "Vérifier la signature",
+  ctaDefault = "Vérifier la preuve",
   ctaLoading = "En cours...",
   ctaSuccess = "Succès ✅",
   ctaError = "Erreur ❌",
@@ -107,7 +107,7 @@ export default function SignatureVerificationPage({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, type: "spring" }}
       tabIndex={0}
-      aria-label="Vérification de signature premium"
+      aria-label="Vérification de preuve premium"
     >
       {/* Loader + texte contextuel */}
       {showChecklist && (

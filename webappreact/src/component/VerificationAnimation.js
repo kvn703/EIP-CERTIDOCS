@@ -34,7 +34,7 @@ const VerificationAnimation = ({ isVerifying, result, onComplete }) => {
                             <div className="verification-pulse-ring"></div>
                         </div>
                         <h3 className="verification-title">Vérification en cours</h3>
-                        <p className="verification-subtitle">Analyse de votre signature électronique</p>
+                        <p className="verification-subtitle">Analyse de votre preuve</p>
                     </div>
                 </div>
             )} */}
@@ -51,13 +51,13 @@ const VerificationAnimation = ({ isVerifying, result, onComplete }) => {
                     </div>
 
                     <h3 className="result-title">
-                        {result === 'success' ? 'Signature Validée !' : 'Signature Invalide'}
+                        {result === 'success' ? 'Preuve Validée !' : 'Preuve Invalide'}
                     </h3>
 
                     <p className="result-message">
                         {result === 'success'
-                            ? 'Votre signature électronique est authentique et valide.'
-                            : 'La signature ne correspond pas ou l\'ID est incorrect.'
+                            ? 'Votre preuve est authentique et valide.'
+                            : 'La preuve ne correspond pas ou l\'ID est incorrect.'
                         }
                     </p>
 

@@ -238,7 +238,7 @@ export default function SignatureCard({ signature, onCopy, isString, activeTab }
                 className={`${styles.downloadBtn} ${downloading ? styles.downloading : ''}`}
                 onClick={handleDownload}
                 disabled={downloading}
-                aria-label="Télécharger la signature PNG"
+                aria-label="Télécharger la preuve PNG"
                 type="button"
                 tabIndex={0}
               >
