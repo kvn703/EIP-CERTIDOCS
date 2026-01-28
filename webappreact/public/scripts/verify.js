@@ -374,7 +374,7 @@ async function verifySignature() {
                 verify_element.innerText = "❌ Erreur lors de la vérification.";
             }
         }
-    } else if (currentTab === 1) {
+    } else if (currentTab === 3) {
         if (!currentSignatureFile && !isString) {
             const verify_element = document.getElementById("verify");
             if (verify_element) {
@@ -463,7 +463,7 @@ async function verifySignature() {
             document.getElementById("verify").innerText =
                 "❌ Erreur lors de la vérification.";
         }
-    } else if (currentTab === 2) {
+    } else if (currentTab === 1) {
         if (!currentPDFFile) {
             const verify_element = document.getElementById("verify");
             if (verify_element) {
@@ -544,7 +544,7 @@ async function verifySignature() {
             document.getElementById("verify").innerText =
                 "❌ Erreur lors de la vérification.";
         }
-    } else if (currentTab === 3) {
+    } else if (currentTab === 2) {
         if (!currentImageFile) {
             const verify_element = document.getElementById("verify");
             if (verify_element) {

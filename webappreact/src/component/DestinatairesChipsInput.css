@@ -1,6 +1,6 @@
 .chips-input-root {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -39,7 +39,6 @@
   color: #9584ff;
   font-size: 1.2em;
   margin-right: 10px;
-  margin-top: 4px;
   flex-shrink: 0;
   transition: all 0.3s ease;
 }

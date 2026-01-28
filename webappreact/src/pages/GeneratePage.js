@@ -94,7 +94,7 @@ const GeneratePage = () => {
                 setActiveTab(0); // Onglet Mail par défaut
             } else {
                 setMailMessage("");
-                setActiveTab(1); // Onglet Texte par défaut
+                setActiveTab(1); // Onglet PDF par défaut si le mail ne peut pas être récupéré
             }
         }
     }, []);
@@ -106,8 +106,8 @@ const GeneratePage = () => {
             if (activeTab === 0) {
                 // Onglet Mail - synchroniser avec mailMessage
                 messageInput.value = mailMessage || '';
-            } else if (activeTab === 1) {
-                // Onglet Texte - synchroniser avec texteValue
+            } else if (activeTab === 3) {
+                // Onglet Texte - synchroniser avec texteValue (dernier onglet)
                 messageInput.value = texteValue || '';
             }
         }
@@ -141,15 +141,6 @@ const GeneratePage = () => {
         {
             label: (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <FaEdit style={{ fontSize: '16px' }} />
-                    <span>{t('tab_text')}</span>
-                </div>
-            ),
-            content: <TexteSection value={texteValue} onChange={e => setTexteValue(e.target.value)} />,
-        },
-        {
-            label: (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <FaFileAlt style={{ fontSize: '16px' }} />
                     <span>{t('tab_pdf')}</span>
                 </div>
@@ -164,6 +155,15 @@ const GeneratePage = () => {
                 </div>
             ),
             content: <ImageSection value={imageFile} onChange={setImageFile} />,
+        },
+        {
+            label: (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <FaEdit style={{ fontSize: '16px' }} />
+                    <span>{t('tab_text')}</span>
+                </div>
+            ),
+            content: <TexteSection value={texteValue} onChange={e => setTexteValue(e.target.value)} />,
         },
     ];
 
@@ -371,19 +371,17 @@ const GeneratePage = () => {
             // Onglet Mail - besoin de mailMessage
             return !!mailMessage && mailMessage.trim().length > 0;
         } else if (activeTab === 1) {
+            // Onglet PDF - besoin de pdfFile (indépendamment du format)
+            return pdfFile !== null;
+        } else if (activeTab === 2) {
+            // Onglet Image - besoin de imageFile (indépendamment du format)
+            return imageFile !== null;
+        } else if (activeTab === 3) {
             // Onglet Texte - vérifier à la fois texteValue (React) et messageInput (DOM)
-            // Le bouton fonctionne indépendamment du format (Image ou Textuel)
             const messageInput = document.getElementById("messageInput");
             const hasMessageInDOM = messageInput && messageInput.value && messageInput.value.trim().length > 0;
             const hasMessageInState = !!texteValue && texteValue.trim().length > 0;
             return hasMessageInState || hasMessageInDOM;
-        } else if (activeTab === 2) {
-            // Onglet PDF - besoin de pdfFile (indépendamment du format)
-            return pdfFile !== null;
-        } else if (activeTab === 3) {
-            // Onglet Image - besoin de imageFile (indépendamment du format)
-            // Le bouton doit être disponible dès qu'un fichier image est sélectionné
-            return imageFile !== null;
         }
 
         return false;
@@ -422,7 +420,7 @@ const GeneratePage = () => {
         let syncInput;
         if (messageTextarea) {
             syncInput = () => {
-                if (activeTab === 1 && messageInput) {
+                if (activeTab === 3 && messageInput) {
                     messageInput.value = messageTextarea.value;
                 }
                 updateButtonState();
@@ -431,7 +429,7 @@ const GeneratePage = () => {
             messageTextarea.addEventListener('change', syncInput);
 
             // Synchroniser immédiatement
-            if (activeTab === 1 && messageInput) {
+            if (activeTab === 3 && messageInput) {
                 messageInput.value = messageTextarea.value;
             }
         }
@@ -482,7 +480,7 @@ const GeneratePage = () => {
                         {/* Layout horizontal pour utiliser la largeur */}
                         <div className="generate-modern-inputs">
                             {/* Saisie du contenu (conditionnel selon l'onglet) */}
-                            {!mailMessage && activeTab === 1 && (
+                            {!mailMessage && activeTab === 3 && (
                                 <div className="modern-input-card modern-input-card-primary">
                                     <div className="modern-input-icon">
                                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -518,7 +516,7 @@ const GeneratePage = () => {
                             />
 
                             {/* Séparateur visuel élégant */}
-                            {!mailMessage && activeTab === 1 && (
+                            {!mailMessage && activeTab === 3 && (
                                 <div className="modern-input-divider">
                                     <div className="modern-input-divider-line"></div>
                                     <div className="modern-input-divider-dot"></div>

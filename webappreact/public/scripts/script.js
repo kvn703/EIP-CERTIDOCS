@@ -30,7 +30,7 @@ const baseUrl = (() => {
     }
 })();
 
-let currentTab = 0; // 0 = mail, 1 = Texte, 2 = PDF, 3 = Image
+let currentTab = 0; // 0 = mail, 1 = PDF, 2 = Image, 3 = Texte
 let currentPDFFile = null;
 let currentImageFile = null;
 
@@ -282,7 +282,7 @@ async function signMessage() {
     let authorizedRecipients = [];
     let isString = false;
     isString = document.getElementById("signatureCheckbox").checked;
-    if (currentTab === 0 || currentTab === 1) {
+    if (currentTab === 0 || currentTab === 3) {
         message = document.getElementById("messageInput").value.trim();
         if (message === "") {
             alert("❌ Le message ne peut pas être vide !");
@@ -315,7 +315,7 @@ async function signMessage() {
         }
 
         signature = await signer.signMessage(ethers.getBytes(messageHash));
-    } else if (currentTab === 2) {
+    } else if (currentTab === 1) {
         if (!currentPDFFile) {
             alert("❌ Veuillez sélectionner un fichier PDF avant de signer !");
             return;
@@ -338,7 +338,7 @@ async function signMessage() {
         const fileBuffer = await readFileAsArrayBuffer(currentPDFFile);
         messageHash = ethers.keccak256(new Uint8Array(fileBuffer));
         signature = await signer.signMessage(ethers.getBytes(messageHash));
-    } else if (currentTab === 3) {
+    } else if (currentTab === 2) {
         if (!currentImageFile) {
             alert("❌ Veuillez sélectionner un fichier image avant de signer !");
             return;
