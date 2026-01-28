@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaCheckCircle, FaTimesCircle, FaCopy, FaWallet, FaClock, FaAddressBook, FaPlus, FaShieldAlt, FaCheck } from 'react-icons/fa';
+import { FaCheckCircle, FaTimesCircle, FaCopy, FaWallet, FaClock, FaAddressBook, FaPlus, FaShieldAlt, FaCheck, FaExclamationTriangle } from 'react-icons/fa';
 import { useAppKitAccount } from "@reown/appkit/react";
-import { normalizeAddress, isAddressInDirectory } from '../utils/addressDirectory';
+import { normalizeAddress, isAddressInDirectory, getAddressLabel } from '../utils/addressDirectory';
 import AddressDirectory from './AddressDirectory';
 import './VerifyResultModal.css';
 
@@ -20,7 +20,6 @@ const VerifyResultModal = ({
     address: false
   });
   const [addressInput, setAddressInput] = useState('');
-  const [addressesMatch, setAddressesMatch] = useState(false);
   const [isDirectoryOpen, setIsDirectoryOpen] = useState(false);
   const [shouldAddAddress, setShouldAddAddress] = useState(false);
 
@@ -52,32 +51,24 @@ const VerifyResultModal = ({
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, onClose, isDirectoryOpen]);
 
-  // Réinitialiser l'input quand la modal s'ouvre
+  // Réinitialiser l'input quand la modal s'ouvre ; préremplir si le wallet utilisé est dans l'annuaire
   useEffect(() => {
     if (isOpen) {
-      setAddressInput('');
-      setAddressesMatch(false);
       setIsDirectoryOpen(false);
+      if (address && isAddressInDirectory(address)) {
+        setAddressInput(address);
+      } else {
+        setAddressInput('');
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, address]);
 
-  // Vérifier si les adresses correspondent
-  useEffect(() => {
-    if (!address || !addressInput) {
-      setAddressesMatch(false);
-      return;
-    }
-
-    const normalizedInput = normalizeAddress(addressInput);
-    const normalizedAddress = normalizeAddress(address);
-    const isValidFormat = normalizedInput.length >= 42;
-    const match = isValidFormat && normalizedInput === normalizedAddress;
-    setAddressesMatch(match);
-  }, [address, addressInput]);
-
-  // Vérifier si l'adresse est valide mais ne correspond pas
-  const isValidAddressFormat = addressInput && normalizeAddress(addressInput).length >= 42;
-  const addressesDoNotMatch = isValidAddressFormat && address && normalizeAddress(addressInput) !== normalizeAddress(address);
+  // Valeurs dérivées (calcul au rendu) pour éviter décalage avec prefill
+  const normalizedInput = addressInput ? normalizeAddress(addressInput) : '';
+  const normalizedAddress = address ? normalizeAddress(address) : '';
+  const isValidAddressFormat = normalizedInput.length >= 42;
+  const addressesMatch = !!address && !!addressInput && isValidAddressFormat && normalizedInput === normalizedAddress;
+  const addressesDoNotMatch = isValidAddressFormat && !!address && normalizedInput !== normalizedAddress;
 
   const handleCopy = async (text, label, key) => {
     if (!text) return;
@@ -107,6 +98,7 @@ const VerifyResultModal = ({
   if (!isOpen) return null;
 
   const isSuccess = result === 'success';
+  const usedWalletLabel = address ? getAddressLabel(address) : null;
 
   return (
     <div className="verify-result-modal-overlay" onClick={onClose}>
@@ -138,6 +130,15 @@ const VerifyResultModal = ({
         </div>
 
         <div className="verify-result-modal-body">
+          {activeTab === 0 && (
+            <div className="verify-mail-warning" role="alert">
+              <FaExclamationTriangle className="verify-mail-warning-icon" aria-hidden />
+              <div className="verify-mail-warning-content">
+                <span className="verify-mail-warning-title">{t('verify_mail_warning_title')}</span>
+                <span className="verify-mail-warning-desc">{t('verify_mail_warning_desc')}</span>
+              </div>
+            </div>
+          )}
           <div className="verify-result-details-card">
             {address && (
               <>
@@ -147,7 +148,13 @@ const VerifyResultModal = ({
                     {t('wallet_used')}
                   </span>
                   <div className="verify-detail-value-with-copy">
-                    <span className="verify-detail-value">{short_address(address)}</span>
+                    <span
+                      className={`verify-detail-value ${!isAddressInDirectory(address) ? 'verify-detail-value-not-in-directory' : ''}`}
+                    >
+                      {usedWalletLabel
+                        ? `${usedWalletLabel} (${short_address(address)})`
+                        : short_address(address)}
+                    </span>
                     <div style={{ position: 'relative' }}>
                       <i
                         className={`fas fa-copy verify-copy-icon ${copiedStates.address ? 'copied' : ''}`}
@@ -169,6 +176,11 @@ const VerifyResultModal = ({
                       )}
                     </div>
                   </div>
+                  {!isAddressInDirectory(address) && (
+                    <span className="verify-wallet-not-in-directory-note">
+                      {t('verify_wallet_not_in_directory')}
+                    </span>
+                  )}
                 </div>
 
                 {/* Section Annuaire */}

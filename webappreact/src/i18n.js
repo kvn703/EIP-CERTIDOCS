@@ -117,7 +117,10 @@ const resources = {
             "address_directory_add_error": "Error adding address",
             "address_directory_confirm_delete": "Are you sure you want to delete this address?",
             "address_directory_address_already_exists": "This address is already in the directory",
-            "address_directory_label_already_exists": "This label is already in the directory"
+            "address_directory_label_already_exists": "This label is already in the directory",
+            "verify_mail_warning_title": "Email verification",
+            "verify_mail_warning_desc": "Only the email body is authenticated, not the attachments. Attachments require their own proof.",
+            "verify_wallet_not_in_directory": "Address not in directory"
         }
     },
     fr: {
@@ -234,7 +237,10 @@ const resources = {
             "address_directory_add_error": "Erreur lors de l'ajout de l'adresse",
             "address_directory_confirm_delete": "Êtes-vous sûr de vouloir supprimer cette adresse ?",
             "address_directory_address_already_exists": "Cette adresse est déjà dans l'annuaire",
-            "address_directory_label_already_exists": "Ce label est déjà dans l'annuaire"
+            "address_directory_label_already_exists": "Ce label est déjà dans l'annuaire",
+            "verify_mail_warning_title": "Vérification d'email",
+            "verify_mail_warning_desc": "Seul le corps du mail est authentifié, pas les pièces jointes. Chaque pièce jointe nécessite sa propre preuve.",
+            "verify_wallet_not_in_directory": "Adresse absente de l'annuaire"
         }
     }
 };

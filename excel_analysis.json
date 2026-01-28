@@ -1,0 +1,219 @@
+{
+  "Info & Access": {
+    "headers": [
+      "Project name",
+      "Class year",
+      "Colonne_3",
+      "Colonne_4",
+      "Colonne_5"
+    ],
+    "sample_data": [
+      [
+        "CERTIDOCS",
+        "2026",
+        "",
+        "",
+        ""
+      ],
+      [
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [
+        "Group members",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [
+        "First name LAST NAME",
+        "Login",
+        "",
+        "",
+        ""
+      ],
+      [
+        "Josué Nanthakumar",
+        "josue.nanthakumar@epitech.eu",
+        "",
+        "",
+        ""
+      ],
+      [
+        "Kévin NADARAJAH",
+        "kevin.nadarajah@epitech.eu",
+        "",
+        "",
+        ""
+      ],
+      [
+        "Luc REBELO",
+        "luc.rebelo@epitech.eu",
+        "",
+        "",
+        ""
+      ],
+      [
+        "Charles BAUX",
+        "charles.baux@epitech.eu",
+        "",
+        "",
+        ""
+      ],
+      [
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
+    ]
+  },
+  "Deliverable type": {
+    "headers": [
+      "Colonne_1",
+      "To be completed by the group",
+      "Colonne_3",
+      "Colonne_4",
+      "Colonne_5",
+      "Colonne_6",
+      "Colonne_7",
+      "Colonne_8",
+      "EIP Advisor",
+      "Colonne_10"
+    ],
+    "sample_data": [
+      [
+        "Feature ID",
+        "Functionnality",
+        "Category",
+        "Objective",
+        "Prerequisites",
+        "Steps",
+        "Expected results",
+        "Developpement status",
+        "EIP Advisor  compliance",
+        "Feedback"
+      ],
+      [
+        "F1",
+        "Authentication via WalletConnect",
+        "Critical feature",
+        "Verify that the user can log in with their wallet",
+        "User has a compatible wallet installed (e.g., MetaMask, Rainbow, Trust Wallet,\nCoinbase Wallet)",
+        "1. Open the application\n2. Click \"Connect Wallet\"\n3. Select the desired wallet from the list\n4. Approve the connection request in the wallet popup",
+        "User is successfully logged in and wallet address is displayed",
+        "Done",
+        "",
+        ""
+      ],
+      [
+        "F2",
+        "Disconnect via WalletConnect",
+        "Secondary function",
+        "Verify that the user can log out with their wallet",
+        "Connected with a wallet already",
+        "1. Open the application\n2. Click on Icon disconnect\n",
+        "The wallet is  disconnected and \nyou can button to connect again.",
+        "Done",
+        "",
+        ""
+      ],
+      [
+        "F3",
+        "Email Proof Generation",
+        "Critical feature",
+        "Verify that a user can certify an email",
+        "Wallet connected, email client open (Gmail/Outlook)",
+        "1. Open the extension on an email page\n2. Click \"Generate Proof\"\n3. Select \"Email\" as content type\n4. Add recipient address(es)\n5. Confirm the transaction via the wallet",
+        "Proof of authenticity is generated and can be put inside the email",
+        "Done",
+        "",
+        ""
+      ],
+      [
+        "F4",
+        "PDF Proof Generation",
+        "Critical feature",
+        "Verify that a user can certify a PDF",
+        "Wallet connected, test PDF ",
+        "1. Open the extension\n2. Click \"Generate Proof of authenticity\"\n3. Select \"PDF\" as content type\n4. Upload the PDF \n5. Add recipient address(es) if needed\n6. Confirm the transaction via the wallet",
+        "Proof is generated and returned as string/image to send alongside the document",
+        "Done",
+        "",
+        ""
+      ],
+      [
+        "F5",
+        "Image Proof Generation (Steganography)",
+        "Secondary function",
+        "Verify that a user can certify an image with hidden proof",
+        "Wallet connected, test image ",
+        "1. Open the extension\n2. Click \"Generate Proof of authenticity\"\n3. Select \"Image\" as content type\n4. Upload the image \n5. Confirm the transaction via the wallet",
+        "Proof is generated and returned as string/image to send alongside the document",
+        "Done",
+        "",
+        ""
+      ],
+      [
+        "F6",
+        "Plain Text Proof Generation",
+        "Secondary function",
+        "Verify that a user can certify arbitrary text",
+        "Wallet connected",
+        "1. Open the extension\n2. Click \"Generate Proof of authenticity\"\n3. Select \"Plain text\" as content type\n4. Enter or paste the text content\n5. Confirm the transaction via the wallet",
+        "Proof is generated and returned as string/image to send alongside the document",
+        "Done",
+        "",
+        ""
+      ],
+      [
+        "F7",
+        "Email Proof Verification",
+        "Critical feature",
+        "Confirm that email proofs are correclty validated",
+        "Certified email available in inbox",
+        "1. Open the email in Gmail/Outlook\n2. Open the extension\n3. Click \"Verify Authenticity\"\n4. Let the extension auto-detect the email content\n",
+        "Authenticity is confirmed with issuer address displayed",
+        "Done",
+        "",
+        ""
+      ],
+      [
+        "F8",
+        "PDF Proof Verication",
+        "Critical feature",
+        "Confirm that PDF proofs are correctly validated",
+        "Certified PDF le available",
+        "1. Open the email in Gmail/Outlook\n2. Open the extension\n3. Click \"Verify Authenticity\"\n4. Upload the PDF and the proof\n5. Start verification\n",
+        "Authenticity is confirmed with issuer address and timestamp",
+        "Done",
+        "",
+        ""
+      ],
+      [
+        "F9",
+        "Image Proof Verication",
+        "Secondary function",
+        "Confirm that image proofs are correctly validated",
+        "Certified image le available",
+        "1. Open the email in Gmail/Outlook\n2. Open the extension\n3. Click \"Verify Authenticity\"\n4. Upload the image and the proof\n5. Start verification",
+        "Authenticity is confirmed with issuer address and timestamp",
+        "Done",
+        "",
+        ""
+      ]
+    ]
+  }
+}
