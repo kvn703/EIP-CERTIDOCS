@@ -8,6 +8,7 @@ import GeneratePage from "./pages/GeneratePage";
 import NotificationSystem from "./component/NotificationSystem";
 import HeaderExpert from "./component/HeaderExpert";
 import OnboardingModal from "./component/OnboardingModal";
+import { OnboardingProvider } from "./context/OnboardingContext";
 import "./App.css";
 
 // 🧹 Import propre
@@ -19,9 +20,23 @@ function AppContent() {
   const location = useLocation();
   const [displayLocation, setDisplayLocation] = useState(location);
   const [transitionStage, setTransitionStage] = useState('enter');
+  const [direction, setDirection] = useState('right'); // 'right' ou 'left'
 
   useEffect(() => {
     if (location !== displayLocation) {
+      // Déterminer la direction : Générer (/) → Vérifier (/verify) = gauche
+      // Vérifier (/verify) → Générer (/) = droite
+      const goingToVerify = location.pathname === '/verify';
+      const comingFromVerify = displayLocation.pathname === '/verify';
+      
+      if (goingToVerify && !comingFromVerify) {
+        // Générer → Vérifier : slide vers la gauche
+        setDirection('left');
+      } else if (!goingToVerify && comingFromVerify) {
+        // Vérifier → Générer : slide vers la droite
+        setDirection('right');
+      }
+      
       setTransitionStage('exit');
     }
   }, [location, displayLocation]);
@@ -41,7 +56,7 @@ function AppContent() {
       <NotificationSystem />
       <HeaderExpert />
       <OnboardingModal />
-      <div className={`page-transition-container ${transitionStage}`}>
+      <div className={`page-transition-container ${transitionStage} ${transitionStage}-${direction}`}>
         <Routes location={displayLocation}>
           <Route path="/verify" element={<VerifyPage />} />
           <Route path="/" element={<GeneratePage />} />
@@ -55,9 +70,11 @@ function App() {
   return (
     <WagmiProvider config={wagmiAdapter.wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <Router>
-          <AppContent />
-        </Router>
+        <OnboardingProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </OnboardingProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

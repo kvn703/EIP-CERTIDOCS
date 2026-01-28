@@ -3,6 +3,7 @@
   position: relative;
   overflow: hidden;
   height: 100vh;
+  max-height: 100vh;
   display: flex;
   flex-direction: column;
 }
@@ -12,16 +13,54 @@
   width: 100%;
   flex: 1;
   overflow: hidden;
+  max-height: calc(100vh - 90px);
 }
 
-.page-transition-container.exit {
+/* Générer → Vérifier : Générer sort vers la gauche, Vérifier entre depuis la droite */
+.page-transition-container.exit-left {
+  animation: slideOutLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.page-transition-container.enter-left {
+  animation: slideInFromRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Vérifier → Générer : Vérifier sort vers la droite, Générer entre depuis la gauche */
+.page-transition-container.exit-right {
   animation: slideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-.page-transition-container.enter {
-  animation: slideInLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+.page-transition-container.enter-right {
+  animation: slideInFromLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
+/* Générer → Vérifier : sortie vers la gauche */
+@keyframes slideOutLeft {
+  0% {
+    transform: translateX(0) rotateY(0deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(-100%) rotateY(15deg);
+    opacity: 1;
+  }
+}
+
+/* Générer → Vérifier : entrée depuis la gauche */
+@keyframes slideInFromLeft {
+  0% {
+    transform: translateX(-100%) rotateY(-15deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(0) rotateY(0deg);
+    opacity: 1;
+  }
+}
+
+/* Vérifier → Générer : sortie vers la droite */
 @keyframes slideOutRight {
   0% {
     transform: translateX(0) rotateY(0deg);
@@ -30,14 +69,15 @@
 
   100% {
     transform: translateX(100%) rotateY(-15deg);
-    opacity: 0;
+    opacity: 1;
   }
 }
 
-@keyframes slideInLeft {
+/* Vérifier → Générer : entrée depuis la droite */
+@keyframes slideInFromRight {
   0% {
-    transform: translateX(-100%) rotateY(15deg);
-    opacity: 0;
+    transform: translateX(100%) rotateY(15deg);
+    opacity: 1;
   }
 
   100% {

@@ -182,7 +182,7 @@ option i {
 }
 
 select {
-  animation: fadeIn 0.5s ease-in-out;
+  /* animation: fadeIn 0.5s ease-in-out; */
 }
 
 /* Classe utilitaire pour cacher un élément sans le retirer du DOM */
@@ -196,4 +196,34 @@ select {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* Style pour scrollbar personnalisée */
+.generate-scrollable-content::-webkit-scrollbar,
+.verify-scrollable-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.generate-scrollable-content::-webkit-scrollbar-track,
+.verify-scrollable-content::-webkit-scrollbar-track {
+  background: rgba(149, 132, 255, 0.05);
+  border-radius: 3px;
+}
+
+.generate-scrollable-content::-webkit-scrollbar-thumb,
+.verify-scrollable-content::-webkit-scrollbar-thumb {
+  background: rgba(149, 132, 255, 0.2);
+  border-radius: 3px;
+}
+
+.generate-scrollable-content::-webkit-scrollbar-thumb:hover,
+.verify-scrollable-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(149, 132, 255, 0.3);
+}
+
+/* Pour Firefox */
+.generate-scrollable-content,
+.verify-scrollable-content {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(149, 132, 255, 0.2) rgba(149, 132, 255, 0.05);
 }

@@ -25,11 +25,11 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.95);
   padding: 0;
   /* Padding moved to scrollable content */
-  margin: 0;
-  max-width: 100%;
-  width: 100%;
-  height: 100%;
-  /* Fill available space */
+  margin: 0 8px;
+  max-width: calc(100% - 16px);
+  width: calc(100% - 16px);
+  height: calc(100% - 16px);
+  /* Fill available space with margins */
   overflow: hidden;
   /* Hide overflow on container */
   box-sizing: border-box;
@@ -43,12 +43,13 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 12px 14px 20px 14px;
+  padding: 12px 16px 20px 16px;
   width: 100%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 0;
+  max-height: calc(100vh - 160px);
 }
 
 /* Section Timeline - Espacement optimisé */
@@ -536,6 +537,8 @@
   border-radius: 8px;
   border: 1px solid rgba(149, 132, 255, 0.1);
   padding: 2px 14px;
+  /* Espacement entre authorized recipients et authenticity format */
+  margin-top: 24px;
   /* Réduit au minimum pour rapprocher du bouton */
   margin-bottom: 0px;
   /* Supprimé pour rapprocher du bouton */
@@ -649,48 +652,77 @@
 /* Responsive */
 @media (max-width: 500px) {
   .generate-container {
-    padding: 20px 16px;
-    margin: 8px auto;
-    border-radius: 16px;
+    margin: 4px 4px;
+    max-width: calc(100% - 8px);
+    width: calc(100% - 8px);
+    height: calc(100% - 8px);
+    border-radius: 14px;
+  }
+
+  .generate-scrollable-content {
+    padding: 10px 12px 16px 12px;
+    max-height: calc(100vh - 140px);
   }
 
   .generate-content-card {
-    padding: 16px;
-    margin-bottom: 16px;
+    padding: 12px;
+    margin-bottom: 12px;
   }
 
   .generate-options-card {
-    padding: 14px 16px;
-    margin-bottom: 20px;
+    padding: 10px 12px;
+    margin-top: 20px;
+    margin-bottom: 16px;
   }
 
   .generate-timeline-section {
-    margin-bottom: 24px;
+    margin-bottom: 16px;
   }
 
   .generate-tabs-section {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
+  }
+
+  .modern-input-card {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  .modern-input-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .modern-input-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .modern-input-wrapper textarea,
+  .modern-input-wrapper input {
+    padding: 10px 14px;
+    font-size: 13px;
   }
 }
 
-/* Animation d'entrée pour les sections */
+/* Animation d'entrée pour les sections - DÉSACTIVÉE */
 .generate-content-card {
-  animation: generateCardFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+  /* animation: generateCardFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) both; */
 }
 
 .generate-content-card:nth-child(1) {
-  animation-delay: 0.1s;
+  /* animation-delay: 0.1s; */
 }
 
 .generate-content-card:nth-child(2) {
-  animation-delay: 0.2s;
+  /* animation-delay: 0.2s; */
 }
 
 .generate-content-card:nth-child(3) {
-  animation-delay: 0.3s;
+  /* animation-delay: 0.3s; */
 }
 
-@keyframes generateCardFadeIn {
+/* @keyframes generateCardFadeIn {
   from {
     opacity: 0;
     transform: translateY(10px);
@@ -700,4 +732,4 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
+} */

@@ -1,0 +1,1175 @@
+.address-directory-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0, 0, 0, 0.15) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  z-index: 10002 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  animation: addressDirectoryOverlayFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 24px !important;
+  box-sizing: border-box !important;
+  overflow-y: auto !important;
+  margin: 0 !important;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.address-directory-overlay::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+@keyframes addressDirectoryOverlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.address-directory-content {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.98) 0%, 
+    rgba(255, 255, 255, 0.95) 100%) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border-radius: 18px !important;
+  box-shadow: 
+    0 24px 72px rgba(149, 132, 255, 0.18),
+    0 12px 36px rgba(149, 132, 255, 0.12),
+    0 4px 12px rgba(149, 132, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+  width: 100% !important;
+  max-width: 600px !important;
+  max-height: calc(100vh - 48px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  position: relative !important;
+  animation: addressDirectoryFadeIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1.5px solid rgba(149, 132, 255, 0.25) !important;
+  overflow: hidden !important;
+  margin: auto !important;
+  transform: none !important;
+}
+
+@keyframes addressDirectoryFadeIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.address-directory-header {
+  padding: 24px 24px 20px;
+  text-align: center;
+  border-bottom: 1px solid rgba(149, 132, 255, 0.1);
+  flex-shrink: 0;
+  background: linear-gradient(180deg, 
+    transparent 0%, 
+    rgba(149, 132, 255, 0.02) 100%);
+  position: relative;
+}
+
+.address-directory-icon-container {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.25) 0%, 
+    rgba(184, 170, 255, 0.2) 100%);
+  box-shadow: 
+    0 8px 24px rgba(149, 132, 255, 0.3),
+    0 4px 12px rgba(149, 132, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(149, 132, 255, 0.3);
+}
+
+.address-directory-icon {
+  font-size: 32px;
+  color: #9584ff;
+}
+
+.address-directory-title {
+  font-size: 24px;
+  font-weight: 700;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  letter-spacing: -0.02em;
+  color: #9584ff;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.address-directory-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(149, 132, 255, 0.2);
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(255, 255, 255, 0.85) 100%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  color: #9584ff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+  font-size: 18px;
+  font-weight: 600;
+  box-shadow: 
+    0 4px 16px rgba(149, 132, 255, 0.15),
+    0 2px 8px rgba(149, 132, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.address-directory-close:hover {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.95) 0%, 
+    rgba(255, 142, 142, 0.9) 100%);
+  color: white !important;
+  border-color: rgba(255, 107, 107, 0.4);
+  transform: translateY(-2px) scale(1.05);
+}
+
+.address-directory-close:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.address-directory-body {
+  padding: 20px 24px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.address-directory-body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.address-directory-search-container {
+  margin-bottom: 16px;
+}
+
+.address-directory-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.address-directory-search-icon {
+  position: absolute;
+  right: 16px;
+  color: #9584ff;
+  font-size: 16px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.address-directory-search-input {
+  width: 100%;
+  padding: 12px 48px 12px 18px;
+  border: 2px solid rgba(149, 132, 255, 0.2);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  color: var(--text-main, #2d2346);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 2px 8px rgba(149, 132, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.address-directory-search-input:focus {
+  outline: none;
+  border-color: rgba(149, 132, 255, 0.5);
+  box-shadow: 
+    0 4px 16px rgba(149, 132, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.address-directory-add-button {
+  width: 100%;
+  padding: 12px 24px;
+  border: 2px solid rgba(149, 132, 255, 0.3);
+  border-radius: 12px;
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.1) 0%, 
+    rgba(184, 170, 255, 0.05) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #9584ff;
+  font-weight: 700;
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  box-shadow: 
+    0 2px 8px rgba(149, 132, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.address-directory-add-button svg {
+  width: 14px !important;
+  height: 14px !important;
+  display: block !important;
+  flex-shrink: 0;
+}
+
+.address-directory-add-button:hover {
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.2) 0%, 
+    rgba(184, 170, 255, 0.15) 100%);
+  border-color: rgba(149, 132, 255, 0.5);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 
+    0 4px 16px rgba(149, 132, 255, 0.25),
+    0 2px 8px rgba(149, 132, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/* Wrapper pour gérer l'animation d'ouverture/fermeture */
+.address-directory-add-form-wrapper {
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.98);
+}
+
+.address-directory-add-form-wrapper.is-open {
+  max-height: 600px;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.address-directory-add-form-wrapper.is-closed {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.98);
+  margin-bottom: 0;
+}
+
+.address-directory-add-form {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.98) 0%, 
+    rgba(255, 255, 255, 0.95) 100%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 14px;
+  border: 1.5px solid rgba(149, 132, 255, 0.2);
+  padding: 0;
+  overflow: hidden;
+  animation: addressDirectoryFormSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes addressDirectoryFormSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  50% {
+    transform: translateY(5px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.address-directory-form-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 18px 6px;
+  border-bottom: 1px solid rgba(149, 132, 255, 0.1);
+  background: linear-gradient(180deg, 
+    rgba(149, 132, 255, 0.04) 0%, 
+    transparent 100%);
+}
+
+.address-directory-form-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #9584ff;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: -0.01em;
+}
+
+.address-directory-form-title i {
+  font-size: 18px;
+  color: #9584ff;
+  animation: addressDirectoryFormIconPulse 2s ease-in-out infinite;
+}
+
+@keyframes addressDirectoryFormIconPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+
+.address-directory-form-content {
+  padding: 8px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.address-directory-form-field {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  animation: addressDirectoryFieldFadeIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+
+.address-directory-form-field:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.address-directory-form-field:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+@keyframes addressDirectoryFieldFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
+.address-directory-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 85%;
+  max-width: 550px;
+}
+
+.address-directory-input-icon {
+  font-size: 16px;
+  color: #9584ff;
+  opacity: 0.7;
+  flex-shrink: 0;
+  transition: opacity 0.3s ease;
+}
+
+.address-directory-form-input {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1.5px solid rgba(149, 132, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-size: 13px;
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Consolas', 'Courier New', monospace;
+  color: var(--text-main, #2d2346);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.address-directory-form-input::placeholder {
+  color: var(--text-muted, #8d8ba7);
+  opacity: 0.6;
+}
+
+.address-directory-form-input:focus {
+  outline: none;
+  border-color: rgba(149, 132, 255, 0.5);
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-1px);
+}
+
+.address-directory-input-valid {
+  font-size: 16px;
+  color: #7fffa7;
+  flex-shrink: 0;
+  animation: addressDirectoryInputValidAppear 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes addressDirectoryInputValidAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(-180deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.address-directory-error {
+  padding: 6px 10px;
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.15) 0%, 
+    rgba(255, 142, 142, 0.1) 100%);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 6px;
+  color: #ff6b6b;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  animation: addressDirectoryErrorShake 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.address-directory-error i {
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.address-directory-error i {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+@keyframes addressDirectoryErrorShake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(5px);
+  }
+}
+
+.address-directory-form-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  padding: 8px 18px 10px;
+  border-top: 1px solid rgba(149, 132, 255, 0.1);
+  background: linear-gradient(180deg, 
+    transparent 0%, 
+    rgba(149, 132, 255, 0.02) 100%);
+}
+
+.address-directory-form-button {
+  flex: 1;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1.5px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  position: relative;
+}
+
+.address-directory-form-button i {
+  font-size: 12px;
+  transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.address-directory-form-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.address-directory-form-button-primary {
+  background: #9584ff;
+  color: white;
+  border-color: rgba(149, 132, 255, 0.4);
+}
+
+.address-directory-form-button-primary:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.02);
+  border-color: rgba(149, 132, 255, 0.5);
+}
+
+.address-directory-form-button-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.address-directory-form-button-secondary {
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.1) 0%, 
+    rgba(184, 170, 255, 0.05) 100%);
+  color: #9584ff;
+  border-color: rgba(149, 132, 255, 0.25);
+}
+
+.address-directory-form-button-secondary:hover {
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.2) 0%, 
+    rgba(184, 170, 255, 0.15) 100%);
+  border-color: rgba(149, 132, 255, 0.5);
+  transform: translateY(-2px) scale(1.02);
+  color: white;
+}
+
+.address-directory-form-button-secondary:hover i {
+  color: white;
+}
+
+.address-directory-form-button-secondary:active {
+  transform: translateY(0);
+}
+
+.address-directory-list {
+  max-height: 500px;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  position: relative;
+  width: calc(100% + 24px);
+  margin-left: -12px;
+  margin-right: -12px;
+}
+
+.address-directory-list::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Indication visuelle quand le contenu est scrollable */
+.address-directory-list.is-scrollable {
+  box-shadow: 
+    0 -2px 8px rgba(149, 132, 255, 0.2),
+    0 2px 8px rgba(149, 132, 255, 0.2);
+  border: 1px solid rgba(149, 132, 255, 0.2);
+  border-radius: 12px;
+  padding: 0 8px 8px 8px;
+}
+
+.address-directory-list.is-scrollable::before {
+  content: '';
+  position: sticky;
+  top: 0;
+  left: -12px;
+  right: -12px;
+  height: 20px;
+  background: linear-gradient(to bottom, 
+    rgba(255, 255, 255, 1) 0%, 
+    rgba(255, 255, 255, 0.8) 50%,
+    rgba(255, 255, 255, 0) 100%);
+  pointer-events: none;
+  z-index: 2;
+  margin: 0 -8px 0 -8px;
+  border-radius: 12px 12px 0 0;
+}
+
+.address-directory-list.is-scrollable::after {
+  content: '';
+  position: sticky;
+  bottom: 0;
+  left: -12px;
+  right: -12px;
+  height: 20px;
+  background: linear-gradient(to top, 
+    rgba(255, 255, 255, 1) 0%, 
+    rgba(255, 255, 255, 0.8) 50%,
+    rgba(255, 255, 255, 0) 100%);
+  pointer-events: none;
+  z-index: 2;
+  margin: 0 -8px -8px -8px;
+  border-radius: 0 0 12px 12px;
+}
+
+.address-directory-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted, #8d8ba7);
+  font-size: 14px;
+  font-style: italic;
+}
+
+.address-directory-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(255, 255, 255, 0.9) 100%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 12px;
+  border: 1.5px solid rgba(149, 132, 255, 0.15);
+  margin-bottom: 10px;
+  box-shadow: 
+    0 2px 8px rgba(149, 132, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  gap: 12px;
+}
+
+.address-directory-entry:hover {
+  /* Animation de hover désactivée */
+}
+
+.address-directory-entry-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.address-directory-entry-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b6880;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+  flex-shrink: 0;
+}
+
+.address-directory-entry-separator {
+  color: var(--text-muted, #8d8ba7);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.address-directory-entry-address {
+  font-size: 12px;
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Consolas', 'Courier New', monospace;
+  color: var(--text-muted, #8d8ba7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+.address-directory-entry-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.address-directory-copy-icon,
+.address-directory-remove-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  font-size: 14px;
+  color: #9584ff;
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.1) 0%, 
+    rgba(184, 170, 255, 0.05) 100%);
+  border: 1px solid rgba(149, 132, 255, 0.2);
+}
+
+.address-directory-copy-icon:hover {
+  background: linear-gradient(135deg, #9584ff 0%, #b8aaff 50%, #7fffa7 100%);
+  background-size: 200% 200%;
+  color: white;
+  border-color: rgba(149, 132, 255, 0.4);
+  transform: translateY(-2px) scale(1.1);
+  box-shadow: 
+    0 4px 16px rgba(149, 132, 255, 0.4),
+    0 8px 32px rgba(149, 132, 255, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.address-directory-copy-icon.copied {
+  background: linear-gradient(135deg, #7fffa7 0%, #a8ffc4 50%, #c4ffd9 100%);
+  color: #2d2346;
+  border-color: rgba(127, 255, 167, 0.4);
+  animation: addressDirectoryCopySuccess 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes addressDirectoryCopySuccess {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1) rotate(5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.address-directory-copy-feedback {
+  position: absolute;
+  top: -35px;
+  right: 0;
+  background: linear-gradient(135deg, #7fffa7 0%, #a8ffc4 100%);
+  color: #2d2346;
+  padding: 0.3em 0.7em;
+  border-radius: 6px;
+  font-size: 0.75em;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 
+    0 4px 12px rgba(127, 255, 167, 0.4),
+    0 8px 24px rgba(127, 255, 167, 0.2);
+  z-index: 10001;
+  animation: addressDirectoryCopyFeedbackAppear 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+@keyframes addressDirectoryCopyFeedbackAppear {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.8);
+  }
+  50% {
+    transform: translateY(-5px) scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.address-directory-remove-icon {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.1) 0%, 
+    rgba(255, 142, 142, 0.05) 100%);
+  color: #ff6b6b;
+  border-color: rgba(255, 107, 107, 0.2);
+}
+
+.address-directory-remove-icon:hover {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.2) 0%, 
+    rgba(255, 142, 142, 0.15) 100%);
+  border-color: rgba(255, 107, 107, 0.4);
+  color: #ff6b6b;
+  transform: translateY(-2px) scale(1.1);
+}
+
+/* Dark Mode */
+[data-theme="dark"] .address-directory-overlay {
+  background: rgba(15, 11, 26, 0.85) !important;
+}
+
+[data-theme="dark"] .address-directory-content {
+  background: linear-gradient(135deg, 
+    rgba(15, 11, 26, 0.98) 0%, 
+    rgba(26, 21, 37, 0.95) 50%,
+    rgba(15, 11, 26, 0.98) 100%) !important;
+  border-color: rgba(149, 132, 255, 0.4);
+  box-shadow: 
+    0 24px 72px rgba(0, 0, 0, 0.8),
+    0 12px 36px rgba(149, 132, 255, 0.3),
+    0 4px 12px rgba(149, 132, 255, 0.25),
+    inset 0 1px 0 rgba(149, 132, 255, 0.2) !important;
+}
+
+[data-theme="dark"] .address-directory-header {
+  border-bottom-color: rgba(149, 132, 255, 0.2);
+  background: linear-gradient(180deg, 
+    transparent 0%, 
+    rgba(149, 132, 255, 0.05) 100%);
+}
+
+[data-theme="dark"] .address-directory-icon-container {
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.3) 0%, 
+    rgba(184, 170, 255, 0.25) 100%);
+  box-shadow: 
+    0 8px 24px rgba(149, 132, 255, 0.4),
+    0 4px 12px rgba(149, 132, 255, 0.3) !important;
+  border-color: rgba(149, 132, 255, 0.4);
+}
+
+[data-theme="dark"] .address-directory-icon {
+  color: var(--accent-light);
+}
+
+[data-theme="dark"] .address-directory-close {
+  background: linear-gradient(135deg, 
+    rgba(26, 21, 37, 0.95) 0%, 
+    rgba(37, 32, 48, 0.9) 100%);
+  border-color: rgba(149, 132, 255, 0.3);
+  color: var(--accent-light);
+  box-shadow: 
+    0 4px 16px rgba(149, 132, 255, 0.2),
+    0 2px 8px rgba(149, 132, 255, 0.15) !important;
+}
+
+[data-theme="dark"] .address-directory-close:hover {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.9) 0%, 
+    rgba(255, 142, 142, 0.85) 100%);
+  border-color: rgba(255, 107, 107, 0.5);
+}
+
+[data-theme="dark"] .address-directory-body {
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .address-directory-search-icon {
+  color: var(--accent-light);
+}
+
+[data-theme="dark"] .address-directory-search-input::placeholder {
+  color: var(--text-light);
+  opacity: 0.5;
+}
+
+[data-theme="dark"] .address-directory-search-input:focus {
+  background: rgba(26, 21, 37, 0.9);
+  border-color: rgba(149, 132, 255, 0.5);
+  box-shadow: 
+    0 4px 16px rgba(149, 132, 255, 0.2) !important;
+}
+
+[data-theme="dark"] .address-directory-add-button {
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.15) 0%, 
+    rgba(184, 170, 255, 0.1) 100%);
+  border-color: rgba(149, 132, 255, 0.3);
+  color: var(--accent-light);
+  box-shadow: 
+    0 2px 8px rgba(149, 132, 255, 0.2) !important;
+}
+
+[data-theme="dark"] .address-directory-add-button:hover {
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.25) 0%, 
+    rgba(184, 170, 255, 0.2) 100%);
+  border-color: rgba(149, 132, 255, 0.5);
+  box-shadow: 
+    0 4px 16px rgba(149, 132, 255, 0.3),
+    0 2px 8px rgba(149, 132, 255, 0.2) !important;
+}
+
+[data-theme="dark"] .address-directory-empty {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .address-directory-entry-separator {
+  color: var(--text-light);
+}
+
+[data-theme="dark"] .address-directory-input-valid {
+  color: var(--color-success);
+}
+
+[data-theme="dark"] .address-directory-error {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.2) 0%, 
+    rgba(255, 142, 142, 0.15) 100%);
+  border-color: rgba(255, 107, 107, 0.4);
+  color: var(--color-error-light);
+}
+
+[data-theme="dark"] .address-directory-copy-feedback {
+  background: linear-gradient(135deg, var(--color-success) 0%, var(--color-success-light) 100%);
+  color: var(--text-main);
+  box-shadow: 
+    0 4px 12px rgba(127, 255, 167, 0.5),
+    0 8px 24px rgba(127, 255, 167, 0.3);
+}
+
+[data-theme="dark"] .address-directory-search-input,
+[data-theme="dark"] .address-directory-form-input {
+  background: rgba(26, 21, 37, 0.6);
+  border-color: rgba(149, 132, 255, 0.25);
+  color: var(--text-main, #e0d9ff);
+  box-shadow: 
+    0 2px 8px rgba(149, 132, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .address-directory-add-form {
+  background: linear-gradient(135deg, 
+    rgba(26, 21, 37, 0.95) 0%, 
+    rgba(37, 32, 48, 0.9) 50%,
+    rgba(26, 21, 37, 0.95) 100%);
+  border-color: rgba(149, 132, 255, 0.35);
+}
+
+[data-theme="dark"] .address-directory-form-header {
+  border-bottom-color: rgba(149, 132, 255, 0.15);
+  background: linear-gradient(180deg, 
+    rgba(149, 132, 255, 0.05) 0%, 
+    transparent 100%);
+}
+
+[data-theme="dark"] .address-directory-form-title {
+  color: #b8aaff;
+}
+
+[data-theme="dark"] .address-directory-form-title i {
+  color: #b8aaff;
+}
+
+
+[data-theme="dark"] .address-directory-form-input {
+  background: rgba(26, 21, 37, 0.7);
+  border-color: rgba(149, 132, 255, 0.2);
+  color: var(--text-main, #e0d9ff);
+}
+
+[data-theme="dark"] .address-directory-form-input:focus {
+  background: rgba(26, 21, 37, 0.9);
+  border-color: rgba(149, 132, 255, 0.4);
+  box-shadow: 
+    0 2px 8px rgba(149, 132, 255, 0.15) !important;
+}
+
+[data-theme="dark"] .address-directory-input-icon {
+  color: #b8aaff;
+  opacity: 0.6;
+}
+
+[data-theme="dark"] .address-directory-form-actions {
+  border-top-color: rgba(149, 132, 255, 0.15);
+  background: linear-gradient(180deg, 
+    transparent 0%, 
+    rgba(149, 132, 255, 0.03) 100%);
+}
+
+[data-theme="dark"] .address-directory-form-button-primary {
+  background: #9584ff;
+  color: white;
+  border-color: rgba(149, 132, 255, 0.4);
+}
+
+[data-theme="dark"] .address-directory-form-button-primary:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+[data-theme="dark"] .address-directory-form-button-secondary {
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.15) 0%, 
+    rgba(184, 170, 255, 0.1) 100%);
+  color: #b8aaff;
+  border-color: rgba(149, 132, 255, 0.25);
+}
+
+[data-theme="dark"] .address-directory-form-button-secondary:hover {
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.25) 0%, 
+    rgba(184, 170, 255, 0.2) 100%);
+  border-color: rgba(149, 132, 255, 0.5);
+  transform: translateY(-2px) scale(1.02);
+  color: white;
+}
+
+[data-theme="dark"] .address-directory-form-button-secondary:hover i {
+  color: white;
+}
+
+[data-theme="dark"] .address-directory-form-button-secondary:active {
+  transform: translateY(0);
+}
+
+[data-theme="dark"] .address-directory-entry {
+  background: linear-gradient(135deg, 
+    rgba(26, 21, 37, 0.9) 0%, 
+    rgba(37, 32, 48, 0.85) 50%,
+    rgba(26, 21, 37, 0.9) 100%);
+  border-color: rgba(149, 132, 255, 0.35);
+  box-shadow: 
+    0 2px 8px rgba(149, 132, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .address-directory-list.is-scrollable {
+  box-shadow: 
+    0 -2px 8px rgba(149, 132, 255, 0.3),
+    0 2px 8px rgba(149, 132, 255, 0.3);
+  border-color: rgba(149, 132, 255, 0.3);
+}
+
+[data-theme="dark"] .address-directory-list.is-scrollable::before {
+  background: linear-gradient(to bottom, 
+    rgba(26, 21, 37, 1) 0%, 
+    rgba(26, 21, 37, 0.8) 50%,
+    rgba(26, 21, 37, 0) 100%);
+}
+
+[data-theme="dark"] .address-directory-list.is-scrollable::after {
+  background: linear-gradient(to top, 
+    rgba(26, 21, 37, 1) 0%, 
+    rgba(26, 21, 37, 0.8) 50%,
+    rgba(26, 21, 37, 0) 100%);
+}
+
+[data-theme="dark"] .address-directory-entry-label {
+  color: #a8a0c7;
+}
+
+[data-theme="dark"] .address-directory-title {
+  color: #b8aaff;
+}
+
+[data-theme="dark"] .address-directory-form-title {
+  color: #b8aaff;
+}
+
+[data-theme="dark"] .address-directory-entry-address {
+  color: var(--text-muted, #a8a0c7);
+}
+
+[data-theme="dark"] .address-directory-copy-icon,
+[data-theme="dark"] .address-directory-remove-icon {
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.15) 0%, 
+    rgba(184, 170, 255, 0.1) 100%);
+  border-color: rgba(149, 132, 255, 0.3);
+  color: #b8aaff;
+}
+
+[data-theme="dark"] .address-directory-copy-icon:hover {
+  background: linear-gradient(135deg, #9584ff 0%, #b8aaff 50%, #7fffa7 100%);
+  color: white;
+  box-shadow: 
+    0 4px 16px rgba(149, 132, 255, 0.4),
+    0 8px 32px rgba(149, 132, 255, 0.3) !important;
+}
+
+[data-theme="dark"] .address-directory-remove-icon {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.15) 0%, 
+    rgba(255, 142, 142, 0.1) 100%);
+  border-color: rgba(255, 107, 107, 0.3);
+  color: #ff6b6b;
+}
+
+[data-theme="dark"] .address-directory-remove-icon:hover {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.25) 0%, 
+    rgba(255, 142, 142, 0.2) 100%);
+  border-color: rgba(255, 107, 107, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .address-directory-overlay {
+    padding: 16px !important;
+  }
+  
+  .address-directory-content {
+    max-height: calc(100vh - 32px) !important;
+  }
+  
+  .address-directory-header {
+    padding: 20px 16px 16px;
+  }
+  
+  .address-directory-body {
+    padding: 16px;
+  }
+  
+  .address-directory-form-header {
+    padding: 12px 16px 10px;
+  }
+  
+  .address-directory-form-title {
+    font-size: 15px;
+  }
+  
+  .address-directory-form-content {
+    padding: 6px 16px;
+    gap: 5px;
+  }
+  
+  .address-directory-form-title {
+    font-size: 17px;
+  }
+  
+  .address-directory-form-title i {
+    font-size: 17px;
+  }
+  
+  .address-directory-form-input {
+    padding: 5px 8px;
+    padding-right: 28px;
+    font-size: 13px;
+  }
+  
+  .address-directory-form-button {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+  
+  .address-directory-form-actions {
+    padding: 10px 16px 12px;
+    flex-direction: row;
+    gap: 8px;
+  }
+  
+  .address-directory-form-button {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .address-directory-form-button {
+    width: 100%;
+  }
+  
+  .address-directory-entry {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .address-directory-entry-content {
+    width: 100%;
+    min-width: 0;
+  }
+  
+  .address-directory-entry-label {
+    max-width: 150px;
+  }
+  
+  .address-directory-entry-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

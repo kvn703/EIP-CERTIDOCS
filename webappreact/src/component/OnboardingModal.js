@@ -1,25 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaTimes, FaFingerprint, FaShieldAlt, FaRocket } from 'react-icons/fa';
+import { FaWallet, FaFingerprint, FaShieldAlt, FaRocket, FaAddressBook } from 'react-icons/fa';
+import { useOnboarding } from '../context/OnboardingContext';
 import './OnboardingModal.css';
 
 const OnboardingModal = () => {
     const { t } = useTranslation();
-    const [isOpen, setIsOpen] = useState(false);
+    const { isOpen, closeOnboarding } = useOnboarding();
     const [currentStep, setCurrentStep] = useState(0);
 
+    // Réinitialiser à la première page chaque fois que le modal s'ouvre
     useEffect(() => {
-        const hasSeenTutorial = localStorage.getItem('certidocs_has_seen_tutorial');
-        if (!hasSeenTutorial) {
-            setIsOpen(true);
-            document.body.style.overflow = 'hidden';
+        if (isOpen) {
+            setCurrentStep(0);
         }
-    }, []);
+    }, [isOpen]);
 
     const handleClose = () => {
-        setIsOpen(false);
-        document.body.style.overflow = '';
-        localStorage.setItem('certidocs_has_seen_tutorial', 'true');
+        closeOnboarding();
     };
 
     const handleNext = () => {
@@ -43,6 +41,11 @@ const OnboardingModal = () => {
             desc: t('tutorial_welcome_desc')
         },
         {
+            icon: <FaWallet />,
+            title: t('tutorial_wallet_title'),
+            desc: t('tutorial_wallet_desc')
+        },
+        {
             icon: <FaFingerprint />,
             title: t('tutorial_generate_title'),
             desc: t('tutorial_generate_desc')
@@ -51,6 +54,11 @@ const OnboardingModal = () => {
             icon: <FaShieldAlt />,
             title: t('tutorial_verify_title'),
             desc: t('tutorial_verify_desc')
+        },
+        {
+            icon: <FaAddressBook />,
+            title: t('tutorial_directory_title'),
+            desc: t('tutorial_directory_desc')
         }
     ];
 
@@ -59,9 +67,7 @@ const OnboardingModal = () => {
     return (
         <div className="onboarding-overlay">
             <div className="onboarding-content">
-                <button className="onboarding-close" onClick={handleClose} aria-label={t('close')}>
-                    <FaTimes />
-                </button>
+                <i className="fas fa-times onboarding-close" onClick={handleClose} aria-label={t('close')}></i>
 
                 <div className="onboarding-step" key={currentStep} style={{ animation: 'fadeIn 0.5s ease' }}>
                     <div className="onboarding-icon-container">
@@ -88,20 +94,25 @@ const OnboardingModal = () => {
                     </div>
 
                     <div className="onboarding-footer">
-                        <button className="onboarding-skip" onClick={handleClose}>
-                            {t('tutorial_skip')}
-                        </button>
-
-                        <div className="onboarding-nav">
-                            {currentStep > 0 && (
+                        {currentStep === 0 ? (
+                            <div className="onboarding-nav onboarding-nav-first">
+                                <button className="onboarding-btn onboarding-btn-close" onClick={handleClose}>
+                                    {t('tutorial_close')}
+                                </button>
+                                <button className="onboarding-btn onboarding-btn-primary" onClick={handleNext}>
+                                    {t('tutorial_next')}
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="onboarding-nav">
                                 <button className="onboarding-btn onboarding-btn-secondary" onClick={handlePrev}>
                                     {t('tutorial_prev')}
                                 </button>
-                            )}
-                            <button className="onboarding-btn onboarding-btn-primary" onClick={handleNext}>
-                                {currentStep === steps.length - 1 ? t('tutorial_finish') : t('tutorial_next')}
-                            </button>
-                        </div>
+                                <button className="onboarding-btn onboarding-btn-primary" onClick={handleNext}>
+                                    {currentStep === steps.length - 1 ? t('tutorial_finish') : t('tutorial_next')}
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

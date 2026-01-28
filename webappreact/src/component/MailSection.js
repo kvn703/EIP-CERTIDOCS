@@ -27,6 +27,58 @@ const MailSection = ({ message, isConnected, active }) => {
   if (!isConnected) {
     return <div style={{ color: 'var(--text-muted)', textAlign: 'center', margin: '1.5em 0' }}>{t('connect_wallet_sign')}</div>;
   }
+  
+  // Afficher un message si l'onglet Mail est actif mais qu'il n'y a pas de contenu
+  if (!message && active) {
+    return (
+      <div className="mail-section-empty" style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '24px',
+        textAlign: 'center',
+        margin: '1.5em 0',
+        background: 'linear-gradient(135deg, rgba(240, 234, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%)',
+        borderRadius: '16px',
+        border: '1px solid rgba(149, 132, 255, 0.3)'
+      }}>
+        <div style={{
+          width: '64px',
+          height: '64px',
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, rgba(149, 132, 255, 0.2) 0%, rgba(184, 170, 255, 0.15) 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: '16px'
+        }}>
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '32px', height: '32px', color: '#9584ff' }}>
+            <path d="M3 8L10.89 13.26C11.2187 13.4793 11.6049 13.5963 12 13.5963C12.3951 13.5963 12.7813 13.4793 13.11 13.26L21 8M5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5H5C3.89543 5 3 5.89543 3 7V17C3 18.1046 3.89543 19 5 19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+        <h3 style={{
+          fontSize: '18px',
+          fontWeight: '700',
+          color: '#2d2346',
+          marginBottom: '8px',
+          marginTop: 0
+        }}>
+          {t('mail_content_not_found')}
+        </h3>
+        <p style={{
+          fontSize: '14px',
+          color: '#666',
+          lineHeight: '1.6',
+          margin: 0,
+          maxWidth: '400px'
+        }}>
+          {t('open_extension_from_compose')}
+        </p>
+      </div>
+    );
+  }
+  
   if (!message) {
     return null;
   }

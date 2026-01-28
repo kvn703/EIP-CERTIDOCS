@@ -61,4 +61,35 @@
 .pdf-remove-btn-2025:hover {
   background: #ffeaea;
   color: #c62828;
+}
+
+/* Dark Mode Styles */
+[data-theme="dark"] .pdf-dropzone-2025 {
+  background: rgba(26, 21, 37, 0.8);
+  border-color: rgba(149, 132, 255, 0.4);
+  box-shadow: 0 4px 24px rgba(149, 132, 255, 0.2);
+}
+
+[data-theme="dark"] .pdf-dropzone-2025.active {
+  border-color: var(--color-success);
+  background: linear-gradient(90deg, rgba(149, 132, 255, 0.15) 0%, rgba(184, 170, 255, 0.1) 100%);
+  box-shadow: 0 6px 32px rgba(149, 132, 255, 0.3);
+}
+
+[data-theme="dark"] .pdf-file-info-2025 {
+  color: var(--accent);
+}
+
+[data-theme="dark"] .pdf-file-name-2025 {
+  color: var(--accent-light);
+  background: rgba(149, 132, 255, 0.15);
+}
+
+[data-theme="dark"] .pdf-remove-btn-2025 {
+  color: var(--color-error-light);
+}
+
+[data-theme="dark"] .pdf-remove-btn-2025:hover {
+  background: rgba(255, 107, 107, 0.15);
+  color: var(--color-error);
 } 

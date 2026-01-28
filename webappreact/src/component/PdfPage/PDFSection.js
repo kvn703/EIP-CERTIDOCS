@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaFilePdf, FaTrashAlt, FaUpload } from 'react-icons/fa';
 import './PDFSection.css';
@@ -8,6 +8,18 @@ export default function PDFSection({ value, onChange }) {
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef();
   const [fileName, setFileName] = useState("");
+
+  // Synchroniser avec la prop value pour permettre la réinitialisation depuis le parent
+  useEffect(() => {
+    if (!value) {
+      setFileName("");
+      if (inputRef.current) {
+        inputRef.current.value = "";
+      }
+    } else if (value instanceof File) {
+      setFileName(value.name);
+    }
+  }, [value]);
 
   const handleDrop = (e) => {
     e.preventDefault();

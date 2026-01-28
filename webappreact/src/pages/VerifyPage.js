@@ -169,7 +169,7 @@ function VerifyPage() {
     const resultProcessedRef = useRef(false);
     const setActiveTab = (tabIndex) => {
         _setActiveTab(tabIndex);
-        if (tabIndex === 0) {
+        if (tabIndex === 0) { // Mail
             setIsString(false);
         }
         window.dispatchEvent(new CustomEvent('tabChanged', { detail: tabIndex }));
@@ -201,10 +201,8 @@ function VerifyPage() {
                 window.dispatchEvent(new Event('walletConnected'));
             };
             syncAndConnect();
-            setCurrentStep(1);
-        } else {
-            setCurrentStep(1);
         }
+        // Ne pas réinitialiser currentStep ici, laisser la logique basée sur les champs le gérer
     }, [isConnected]);
 
     useEffect(() => {
@@ -220,29 +218,43 @@ function VerifyPage() {
         }
     }, [verificationResult, hasVerificationCompleted, isResultModalOpen]);
 
+    // Calcul de l'étape actuelle basé sur les champs remplis
     useEffect(() => {
         if (verificationResult || hasVerificationCompleted) {
             return;
         }
 
         if (isVerifying) {
+            setCurrentStep(3);
+            return;
+        }
+
+        // Vérifier si l'empreinte est remplie (signatureId ou texte1)
+        const hasFingerprint = (signatureId && signatureId.trim() !== '') || (texte1 && texte1.trim() !== '') || signatureFile;
+        
+        // Vérifier si le contenu est rempli (message, texte2, pdfFile, ou imageFile)
+        const hasContent = (message && message.trim() !== '') || (texte2 && texte2.trim() !== '') || pdfFile || imageFile;
+
+        // Étape 3 : Résultat (en cours de vérification)
+        if (isVerifying) {
+            setCurrentStep(3);
+            return;
+        }
+
+        // Étape 2 : Contenu rempli - cocher étape 1 (Empreinte) et étape 2 (Contenu)
+        if (hasFingerprint && hasContent) {
+            setCurrentStep(3);
+            return;
+        }
+
+        // Étape 1 : Empreinte remplie - cocher étape 1 (Empreinte)
+        if (hasFingerprint) {
             setCurrentStep(2);
             return;
         }
 
-        if (!isConnected) {
-            setCurrentStep(1);
-            return;
-        }
-
-        if (isConnected && (signatureId || signatureFile || texte1) && (message || texte2 || pdfFile || imageFile)) {
-            setCurrentStep(2);
-            return;
-        }
-
-        if (isConnected) {
-            setCurrentStep(1);
-        }
+        // Étape 0 : Aucun champ rempli
+        setCurrentStep(1);
     }, [isConnected, isVerifying, verificationResult, hasVerificationCompleted, signatureId, signatureFile, texte1, message, texte2, pdfFile, imageFile]);
     // Détection des paramètres URL (logique existante préservée)
     useEffect(() => {
@@ -254,7 +266,7 @@ function VerifyPage() {
             setMessage(messageParam);
             setActiveTab(0);
         } else {
-            setActiveTab(1);
+            setActiveTab(1); // Onglet PDF par défaut si le mail ne peut pas être récupéré
         }
     }, [location.search]); // Se déclenche aussi lors de la navigation
 
@@ -427,7 +439,7 @@ function VerifyPage() {
                 const text = verify_element.innerText || verify_element.textContent || '';
 
                 // Vérifier si on a un résultat valide
-                if (text.includes("✅ Empreinte VALIDE") || text.includes("✅ Signature VALIDE")) {
+                if (text.includes("✅ Empreinte VALIDE") || text.includes("✅ Preuve VALIDE")) {
                     setIsVerifying(false);
                     setVerificationResult('success');
                     setHasVerificationCompleted(true);
@@ -437,7 +449,7 @@ function VerifyPage() {
                     verify_element.style.display = 'none';
                     verify_element.innerText = '';
                     if (interval) clearInterval(interval);
-                } else if (text.includes("❌ Empreinte NON VALIDE") || text.includes("❌ Signature NON VALIDE") || text.includes("❌ Erreur")) {
+                } else if (text.includes("❌ Empreinte NON VALIDE") || text.includes("❌ Preuve NON VALIDE") || text.includes("❌ Erreur")) {
                     setIsVerifying(false);
                     setVerificationResult('error');
                     setHasVerificationCompleted(true);
@@ -506,20 +518,16 @@ function VerifyPage() {
         if (!isConnected) return false;
 
         if (activeTab === 0) {
-            // Onglet Mail
             return !!(signatureId && message);
         } else if (activeTab === 1) {
-            // Onglet Texte
-            const hasSignature = signatureFile || (IsString && texte1 && signatureValidation.isValid);
-            return !!(texte2 && hasSignature);
-        } else if (activeTab === 2) {
-            // Onglet PDF
             const hasSignature = signatureFile || (IsString && texte1 && signatureValidation.isValid);
             return !!(pdfFile && hasSignature);
-        } else if (activeTab === 3) {
-            // Onglet Image
+        } else if (activeTab === 2) {
             const hasSignature = signatureFile || (IsString && texte1 && signatureValidation.isValid);
             return !!(imageFile && hasSignature);
+        } else if (activeTab === 3) {
+            const hasSignature = signatureFile || (IsString && texte1 && signatureValidation.isValid);
+            return !!(texte2 && hasSignature);
         }
         return false;
     };
@@ -533,19 +541,19 @@ function VerifyPage() {
                 return;
             }
         } else if (activeTab === 1) {
-            if (!texte2 || (!signatureFile && !texte1)) {
-                setIsVerifying(false);
-                setVerificationResult(null);
-                return;
-            }
-        } else if (activeTab === 2) {
             if (!pdfFile || (!signatureFile && !texte1)) {
                 setIsVerifying(false);
                 setVerificationResult(null);
                 return;
             }
-        } else if (activeTab === 3) {
+        } else if (activeTab === 2) {
             if (!imageFile || (!signatureFile && !texte1)) {
+                setIsVerifying(false);
+                setVerificationResult(null);
+                return;
+            }
+        } else if (activeTab === 3) {
+            if (!texte2 || (!signatureFile && !texte1)) {
                 setIsVerifying(false);
                 setVerificationResult(null);
                 return;
@@ -694,9 +702,46 @@ function VerifyPage() {
 
     const handleCloseModal = () => {
         setIsResultModalOpen(false);
+        const wasError = verificationResult === 'error';
         setVerificationResult(null);
         setIsVerifying(false);
+        setHasVerificationCompleted(false);
         resultProcessedRef.current = false;
+        // Si la preuve était invalide, réinitialiser la barre de progression et les champs
+        if (wasError) {
+            setCurrentStep(1);
+            // Réinitialiser les champs de l'empreinte
+            setSignatureId("");
+            setTexte1("");
+            setSignatureFile(null);
+            // Réinitialiser les champs du contenu
+            setMessage("");
+            setTexte2("");
+            setPdfFile(null);
+            setImageFile(null);
+            // Réinitialiser aussi les inputs DOM pour verify.js
+            setTimeout(() => {
+                const signatureIdInput = document.getElementById("signatureId");
+                const messageInput = document.getElementById("messageInput");
+                const texte2Input = document.getElementById("texte2");
+                const signatureIdStringInput = document.getElementById("signatureIdString");
+                if (signatureIdInput) signatureIdInput.value = "";
+                if (messageInput) messageInput.value = "";
+                if (texte2Input) texte2Input.value = "";
+                if (signatureIdStringInput) signatureIdStringInput.value = "";
+                
+                // Réinitialiser les inputs file pour PDF et Image
+                const pdfInputs = document.querySelectorAll('input[type="file"][accept="application/pdf"]');
+                pdfInputs.forEach(input => {
+                    if (input) input.value = "";
+                });
+                
+                const imageInputs = document.querySelectorAll('input[type="file"][accept*="image"]');
+                imageInputs.forEach(input => {
+                    if (input) input.value = "";
+                });
+            }, 0);
+        }
     };
     if (isReloading) {
         return (
@@ -841,7 +886,7 @@ function VerifyPage() {
                                         </div>
                                     )}
 
-                                    {/* Message signé masqué comme demandé */}
+                                    {/* Message certifié masqué comme demandé */}
                                     {/* {message && (
                                         <div className="verify-modern-input-card verify-modern-input-card-secondary">
                                             <div className="modern-input-icon">
@@ -924,147 +969,6 @@ function VerifyPage() {
         {
             label: (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <FaEdit style={{ fontSize: '16px' }} />
-                    <span>Texte</span>
-                </div>
-            ),
-            content: (
-                <>
-                    {isVerifying && !verificationResult && (
-                        <VerifyLoading />
-                    )}
-
-                    {verificationResult && !isResultModalOpen && (
-                        <VerificationAnimation
-                            isVerifying={false}
-                            result={verificationResult}
-                            onComplete={handleVerificationComplete}
-                        />
-                    )}
-
-                    {!isVerifying && !verificationResult && (
-                        <>
-                            <div className="verify-options-card">
-                                <div className="format-toggle-optional-label">
-                                    <span>Format d'empreinte</span>
-                                </div>
-                                <FormatToggle
-                                    value={IsString === null ? false : IsString}
-                                    onChange={(value) => {
-                                        setIsString(value);
-                                    }}
-                                />
-                                <input
-                                    type="checkbox"
-                                    id="signatureCheckbox"
-                                    checked={IsString === true}
-                                    onChange={() => { }}
-                                    style={{ display: 'none' }}
-                                />
-                            </div>
-
-                            {/* PHASE 2.1 : Cards d'input modernes */}
-                            <div className="verify-modern-inputs">
-                                {/* PHASE 2.2 : Input Signature ID */}
-                                <div className="verify-modern-input-card verify-modern-input-card-primary">
-                                    <div className="modern-input-icon">
-                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                        </svg>
-                                    </div>
-                                    <div className="modern-input-content">
-                                        <label className="modern-input-label">
-                                            Empreinte
-                                            {IsString && signatureValidation.isValid === false && (
-                                                <span style={{ color: '#ff6b6b', fontSize: '10px', marginLeft: '8px' }}>!</span>
-                                            )}
-                                            {IsString && signatureValidation.isValid === true && (
-                                                <span style={{ color: '#7fffa7', fontSize: '10px', marginLeft: '8px' }}>✓</span>
-                                            )}
-                                        </label>
-                                        <div className="modern-input-wrapper">
-                                            {IsString ? (
-                                                <>
-                                                    <CustomTextInput
-                                                        id="signatureIdString"
-                                                        placeholder="[CERTIDOCS]0x..."
-                                                        value={texte1}
-                                                        onChange={e => setTexte1(e.target.value)}
-                                                        aria-label="Empreinte ID au format textuel"
-                                                        aria-invalid={signatureValidation.isValid === false}
-                                                        aria-describedby={signatureValidation.message ? "signature-error" : undefined}
-                                                        style={{
-                                                            borderColor: signatureValidation.isValid === false
-                                                                ? 'rgba(255, 107, 107, 0.6)'
-                                                                : signatureValidation.isValid === true
-                                                                    ? 'rgba(127, 255, 167, 0.6)'
-                                                                    : undefined
-                                                        }}
-                                                    />
-                                                    {signatureValidation.message && (
-                                                        <div
-                                                            id="signature-error"
-                                                            role="alert"
-                                                            style={{
-                                                                fontSize: '11px',
-                                                                color: '#ff6b6b',
-                                                                marginTop: '4px',
-                                                                padding: '4px 8px',
-                                                                background: 'rgba(255, 107, 107, 0.1)',
-                                                                borderRadius: '6px',
-                                                                border: '1px solid rgba(255, 107, 107, 0.2)'
-                                                            }}
-                                                        >
-                                                            {signatureValidation.message}
-                                                        </div>
-                                                    )}
-                                                </>
-                                            ) : (
-                                                <ImageSection value={signatureFile} onChange={setSignatureFile} />
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="verify-modern-input-card verify-modern-input-card-secondary">
-                                    <div className="modern-input-icon">
-                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M3 7V5C3 3.89543 3.89543 3 5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                                            <path d="M7 13L10 16L17 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                        </svg>
-                                    </div>
-                                    <div className="modern-input-content">
-                                        <label className="modern-input-label">
-                                            {t('signed_message')}
-                                        </label>
-                                        <div className="modern-input-wrapper">
-                                            <CustomTextInput
-                                                id="texte2"
-                                                rows={3}
-                                                placeholder={t('paste_signed_message')}
-                                                value={texte2}
-                                                onChange={e => setTexte2(e.target.value)}
-                                                aria-label="Message signé à vérifier"
-                                                aria-required="true"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </>
-                    )}
-                    {/* Éléments toujours présents dans le DOM pour verify.js - Onglet Texte */}
-                    <div style={{ display: 'none' }}>
-                        <textarea id="texte2" value={texte2} onChange={() => { }} readOnly />
-                        <input id="signatureIdString" value={texte1} onChange={() => { }} readOnly />
-                    </div>
-                    <p id="verify" style={{ display: 'none' }}></p>
-                </>
-            ),
-        },
-        {
-            label: (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <FaFileAlt style={{ fontSize: '16px' }} />
                     <span>PDF</span>
                 </div>
@@ -1104,7 +1008,7 @@ function VerifyPage() {
 
                             {/* PHASE 2.1 : Cards d'input modernes */}
                             <div className="verify-modern-inputs">
-                                {/* PHASE 2.2 : Input Signature ID */}
+                                {/* PHASE 2.2 : Input Proof ID */}
                                 <div className="verify-modern-input-card verify-modern-input-card-primary">
                                     <div className="modern-input-icon">
                                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1227,7 +1131,7 @@ function VerifyPage() {
 
                             {/* PHASE 2.1 : Cards d'input modernes */}
                             <div className="verify-modern-inputs">
-                                {/* PHASE 2.2 : Input Signature ID */}
+                                {/* PHASE 2.2 : Input Proof ID */}
                                 <div className="verify-modern-input-card verify-modern-input-card-primary">
                                     <div className="modern-input-icon">
                                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1308,6 +1212,147 @@ function VerifyPage() {
                 </>
             ),
         },
+        {
+            label: (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <FaEdit style={{ fontSize: '16px' }} />
+                    <span>Texte</span>
+                </div>
+            ),
+            content: (
+                <>
+                    {isVerifying && !verificationResult && (
+                        <VerifyLoading />
+                    )}
+
+                    {verificationResult && !isResultModalOpen && (
+                        <VerificationAnimation
+                            isVerifying={false}
+                            result={verificationResult}
+                            onComplete={handleVerificationComplete}
+                        />
+                    )}
+
+                    {!isVerifying && !verificationResult && (
+                        <>
+                            <div className="verify-options-card">
+                                <div className="format-toggle-optional-label">
+                                    <span>Format d'empreinte</span>
+                                </div>
+                                <FormatToggle
+                                    value={IsString === null ? false : IsString}
+                                    onChange={(value) => {
+                                        setIsString(value);
+                                    }}
+                                />
+                                <input
+                                    type="checkbox"
+                                    id="signatureCheckbox"
+                                    checked={IsString === true}
+                                    onChange={() => { }}
+                                    style={{ display: 'none' }}
+                                />
+                            </div>
+
+                            {/* PHASE 2.1 : Cards d'input modernes */}
+                            <div className="verify-modern-inputs">
+                                {/* PHASE 2.2 : Input Proof ID */}
+                                <div className="verify-modern-input-card verify-modern-input-card-primary">
+                                    <div className="modern-input-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    </div>
+                                    <div className="modern-input-content">
+                                        <label className="modern-input-label">
+                                            Empreinte
+                                            {IsString && signatureValidation.isValid === false && (
+                                                <span style={{ color: '#ff6b6b', fontSize: '10px', marginLeft: '8px' }}>!</span>
+                                            )}
+                                            {IsString && signatureValidation.isValid === true && (
+                                                <span style={{ color: '#7fffa7', fontSize: '10px', marginLeft: '8px' }}>✓</span>
+                                            )}
+                                        </label>
+                                        <div className="modern-input-wrapper">
+                                            {IsString ? (
+                                                <>
+                                                    <CustomTextInput
+                                                        id="signatureIdString"
+                                                        placeholder="[CERTIDOCS]0x..."
+                                                        value={texte1}
+                                                        onChange={e => setTexte1(e.target.value)}
+                                                        aria-label="Empreinte ID au format textuel"
+                                                        aria-invalid={signatureValidation.isValid === false}
+                                                        aria-describedby={signatureValidation.message ? "signature-error" : undefined}
+                                                        style={{
+                                                            borderColor: signatureValidation.isValid === false
+                                                                ? 'rgba(255, 107, 107, 0.6)'
+                                                                : signatureValidation.isValid === true
+                                                                    ? 'rgba(127, 255, 167, 0.6)'
+                                                                    : undefined
+                                                        }}
+                                                    />
+                                                    {signatureValidation.message && (
+                                                        <div
+                                                            id="signature-error"
+                                                            role="alert"
+                                                            style={{
+                                                                fontSize: '11px',
+                                                                color: '#ff6b6b',
+                                                                marginTop: '4px',
+                                                                padding: '4px 8px',
+                                                                background: 'rgba(255, 107, 107, 0.1)',
+                                                                borderRadius: '6px',
+                                                                border: '1px solid rgba(255, 107, 107, 0.2)'
+                                                            }}
+                                                        >
+                                                            {signatureValidation.message}
+                                                        </div>
+                                                    )}
+                                                </>
+                                            ) : (
+                                                <ImageSection value={signatureFile} onChange={setSignatureFile} />
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="verify-modern-input-card verify-modern-input-card-secondary">
+                                    <div className="modern-input-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M3 7V5C3 3.89543 3.89543 3 5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                            <path d="M7 13L10 16L17 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    </div>
+                                    <div className="modern-input-content">
+                                        <label className="modern-input-label">
+                                            {t('signed_message')}
+                                        </label>
+                                        <div className="modern-input-wrapper">
+                                            <CustomTextInput
+                                                id="texte2"
+                                                rows={3}
+                                                placeholder={t('paste_signed_message')}
+                                                value={texte2}
+                                                onChange={e => setTexte2(e.target.value)}
+                                                aria-label="Message certifié à vérifier"
+                                                aria-required="true"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </>
+                    )}
+                    {/* Éléments toujours présents dans le DOM pour verify.js - Onglet Texte */}
+                    <div style={{ display: 'none' }}>
+                        <textarea id="texte2" value={texte2} onChange={() => { }} readOnly />
+                        <input id="signatureIdString" value={texte1} onChange={() => { }} readOnly />
+                    </div>
+                    <p id="verify" style={{ display: 'none' }}></p>
+                </>
+            ),
+        }
     ];
 
     return (
@@ -1319,7 +1364,7 @@ function VerifyPage() {
                             <Timeline
                                 currentStep={verificationResult ? 4 : currentStep}
                                 steps={[
-                                    { id: 1, label: t('step_connection'), icon: FaCircle },
+                                    { id: 1, label: t('step_fingerprint'), icon: FaCircle },
                                     { id: 2, label: t('step_content'), icon: FaEdit },
                                     { id: 3, label: t('step_result'), icon: FaCircle },
                                 ]}
