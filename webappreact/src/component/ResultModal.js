@@ -3,7 +3,7 @@ import { FaCheckCircle } from 'react-icons/fa';
 import SignatureCard from './SignatureCard';
 import './ResultModal.css';
 
-const ResultModal = ({ isOpen, onClose, signature, onCopy, isString, activeTab }) => {
+const ResultModal = ({ isOpen, onClose, signature, onCopy, isString, activeTab, pdfFile, imageFile }) => {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -55,6 +55,8 @@ const ResultModal = ({ isOpen, onClose, signature, onCopy, isString, activeTab }
               onCopy={onCopy}
               isString={isString}
               activeTab={activeTab}
+              pdfFile={pdfFile}
+              imageFile={imageFile}
             />
           )}
         </div>

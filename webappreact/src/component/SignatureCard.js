@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaDownload, FaCopy, FaCheck } from 'react-icons/fa';
 import styles from './SignatureCard.module.css';
 
-export default function SignatureCard({ signature, onCopy, isString, activeTab }) {
+export default function SignatureCard({ signature, onCopy, isString, activeTab, pdfFile, imageFile }) {
   const [copied, setCopied] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [downloading, setDownloading] = useState(false);
@@ -16,7 +16,7 @@ export default function SignatureCard({ signature, onCopy, isString, activeTab }
           ? 'http://localhost:3000'
           : 'https://certidocsweb-xnvzbr.dappling.network';
         
-        const image_url = `${base_url}/EMAIL_SIGNATURE.png`;
+        const image_url = `${base_url}/EMAIL_PROOF.png`;
         const text_to_hide = "[CERTIDOCS]" + signature;
         
         if (typeof window.hideTextInImage === 'function') {
@@ -116,16 +116,42 @@ export default function SignatureCard({ signature, onCopy, isString, activeTab }
           : 'https://certidocsweb-xnvzbr.dappling.network';
         
         const image_url =
-          activeTab === 0 ? `${base_url}/EMAIL_SIGNATURE.png` :
-          activeTab === 1 ? `${base_url}/PDF_SIGNATURE.png` :
-          activeTab === 2 ? `${base_url}/IMAGE_SIGNATURE.png` :
-          `${base_url}/TEXT_SIGNATURE.png`;
+          activeTab === 0 ? `${base_url}/EMAIL_PROOF.png` :
+          activeTab === 1 ? `${base_url}/PDF_PROOF.png` :
+          activeTab === 2 ? `${base_url}/IMAGE_PROOF.png` :
+          `${base_url}/TEXT_PROOF.png`;
+
+        // Générer le nom de fichier selon le format
+        let filename;
+        if (activeTab === 0) {
+          // Email
+          filename = "[PROOF]Email.png";
+        } else if (activeTab === 1) {
+          // PDF - utiliser le nom du fichier PDF
+          if (pdfFile && pdfFile.name) {
+            const originalName = pdfFile.name.replace(/\.pdf$/i, '');
+            filename = `[PROOF]${originalName}.png`;
+          } else {
+            filename = "[PROOF]Document.pdf.png";
+          }
+        } else if (activeTab === 2) {
+          // Image - utiliser le nom du fichier image
+          if (imageFile && imageFile.name) {
+            const originalName = imageFile.name.replace(/\.(png|jpg|jpeg)$/i, '');
+            filename = `[PROOF]${originalName}.png`;
+          } else {
+            filename = "[PROOF]Image.png";
+          }
+        } else {
+          // Texte
+          filename = "[PROOF]Text.png";
+        }
 
         const blob = await window.hideTextInImageReturnBlob(image_url, "[CERTIDOCS]" + signature);
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "signature.png";
+        a.download = filename;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);

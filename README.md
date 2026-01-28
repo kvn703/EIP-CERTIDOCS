@@ -263,16 +263,17 @@ L'annuaire est stocké localement dans votre navigateur (localStorage), ce qui s
 
 **Avantage :** Plus besoin de chercher ou de retaper les adresses longues. Vous pouvez rapidement sélectionner vos contacts fréquents.
 
-#### 📍 **Moment 3 : Vérification rapide d'identité**
+#### 📍 **Moment 3 : Vérification rapide d'identité et détection de fraude**
 
-**Scénario :** Vous recevez un document signé et voulez vérifier rapidement qui l'a signé.
+**Scénario :** Vous recevez un document signé et voulez vérifier rapidement qui l'a signé, ou vous suspectez une tentative de fraude.
 
 **Action :**
-- Ouvrez l'annuaire depuis l'en-tête
+- Ouvrez l'annuaire depuis l'en-tête ou depuis la section "CHECK USED WALLET" après une vérification
 - Collez l'adresse du signataire dans la barre de recherche
 - Si l'adresse est dans votre annuaire, vous verrez immédiatement le label associé
+- Comparez l'adresse du signataire avec celle attendue dans votre annuaire
 
-**Avantage :** Vous savez instantanément si vous avez déjà interagi avec cette adresse et qui elle représente.
+**Avantage :** Vous savez instantanément si vous avez déjà interagi avec cette adresse et qui elle représente. **Sécurité** : Même si une vérification technique réussit, l'annuaire permet de détecter les incohérences d'identité. Par exemple, si un attaquant a resigné un email modifié avec son propre portefeuille, la vérification technique peut réussir (le hash correspond), mais l'annuaire révélera que l'adresse du signataire ne correspond pas à celle attendue pour cette personne.
 
 #### 📍 **Moment 4 : Gestion de vos contacts fréquents**
 
@@ -408,7 +409,8 @@ L'annuaire est stocké localement dans votre navigateur (localStorage), ce qui s
    - Pour les fichiers, uploadez le fichier reçu
 
 4. **Saisie de la preuve** :
-   - Collez l'identifiant de signature (signatureId) fourni par l'expéditeur
+   - **Pour les emails** : L'extension détecte automatiquement la preuve dans le corps de l'email (si elle y est présente)
+   - **Pour les autres formats** : Collez l'identifiant de signature (signatureId) fourni par l'expéditeur
    - Le champ accepte les identifiants complets ou partiels
    - Pour les images avec stéganographie, la preuve peut être extraite automatiquement
 
@@ -419,7 +421,8 @@ L'annuaire est stocké localement dans votre navigateur (localStorage), ce qui s
 
 6. **Calcul de l'empreinte du document reçu** :
    - Le système calcule le hash cryptographique (Keccak256) du document que vous avez reçu
-   - Pour les emails : hash du contenu + expéditeur
+   - **Pour les emails** : hash du contenu + expéditeur (format : "From: [adresse_expéditeur]\n\n[contenu_email]")
+     - ⚠️ **Important** : L'adresse de l'expéditeur est incluse dans le hash, donc toute modification de l'adresse expéditrice sera détectée
    - Pour les PDFs/Images : hash du fichier binaire complet
    - Pour le texte : hash du texte UTF-8
 
@@ -437,6 +440,7 @@ L'annuaire est stocké localement dans votre navigateur (localStorage), ce qui s
    - ✅ **Destinataire autorisé** : Votre adresse est-elle dans la liste des destinataires autorisés ?
    - ✅ **Preuve non expirée** : La preuve n'a-t-elle pas dépassé sa date d'expiration ?
    - ✅ **Signature valide** : La signature cryptographique correspond-elle bien à l'adresse du signataire ?
+   - ✅ **Pour les emails** : Vérification que l'adresse expéditrice correspond à celle enregistrée dans la preuve
 
 9. **Résultat de la vérification** :
    - **✅ Valide** : Toutes les vérifications passent
@@ -465,13 +469,21 @@ L'annuaire est stocké localement dans votre navigateur (localStorage), ce qui s
     - 💡 **Astuce** : Cliquez pour sauvegarder l'adresse du signataire avec un label personnalisé
     - Cela facilite les vérifications futures avec cette personne
 
+12. **Vérification d'identité via l'annuaire** (recommandé) :
+    - Même si la vérification technique réussit, utilisez l'annuaire pour vérifier l'identité
+    - Ouvrez l'annuaire depuis l'en-tête ou depuis la section "CHECK USED WALLET"
+    - Recherchez l'adresse du signataire dans votre annuaire
+    - Si l'adresse est déjà présente avec un label connu, vous pouvez confirmer l'identité
+    - Si l'adresse n'est pas dans l'annuaire ou ne correspond pas à celle attendue, méfiez-vous
+    - 💡 **Sécurité** : L'annuaire permet de détecter les fraudes même quand la vérification technique réussit (par exemple, si un attaquant a resigné un document modifié avec son propre portefeuille)
+
 **Résultat :** Vous savez avec certitude si le document est authentique ou non. Si valide, vous avez la garantie que :
 - Le document n'a pas été modifié depuis sa signature
 - L'identité du signataire est vérifiée
 - La preuve est valide et non expirée
 - Vous pouvez faire confiance au document
 
-Vous pouvez également sauvegarder l'identité du signataire dans votre annuaire pour une utilisation future.
+Vous pouvez également sauvegarder l'identité du signataire dans votre annuaire pour une utilisation future et utiliser l'annuaire pour détecter les incohérences d'identité.
 
 ---
 
@@ -487,6 +499,8 @@ CertiDocs protège contre plusieurs types d'attaques courantes :
 
 **Exemple concret :** Si vous signez un contrat qui dit "1000€" et que quelqu'un le modifie en "10000€", la vérification échouera car l'empreinte sera différente.
 
+**Pour les emails :** L'adresse de l'expéditeur est incluse dans le hash. Si quelqu'un modifie l'email et change l'adresse expéditrice, la vérification échouera car le hash ne correspondra plus à celui enregistré dans la preuve originale.
+
 ### Protection contre l'usurpation d'identité
 
 **Le problème :** Quelqu'un prétend avoir créé un document à votre place.
@@ -494,6 +508,8 @@ CertiDocs protège contre plusieurs types d'attaques courantes :
 **La solution :** Chaque preuve est liée à l'adresse crypto de son créateur. Il est impossible de créer une preuve au nom de quelqu'un d'autre sans posséder sa clé privée (comme son mot de passe secret).
 
 **Exemple concret :** Si quelqu'un essaie de signer un document en prétendant être vous, le système vérifiera l'identité réelle et révélera que ce n'est pas vous.
+
+**Protection supplémentaire via l'annuaire :** Même si une vérification technique réussit (par exemple, si un attaquant a resigné un email modifié avec son propre portefeuille), l'annuaire permet de détecter l'incohérence. En comparant l'adresse du signataire avec celle enregistrée dans votre annuaire pour cette personne, vous pouvez immédiatement identifier que l'adresse ne correspond pas et détecter une tentative de fraude.
 
 ### Protection contre la réutilisation de preuve
 
@@ -528,11 +544,21 @@ CertiDocs fonctionne avec plusieurs types de documents :
 - **Pas de copier-coller** : Vous n'avez pas besoin de copier-coller manuellement le contenu
 
 **Processus technique :**
+
+**Pour la génération :**
 1. L'extension identifie les éléments DOM spécifiques à Gmail ou Outlook
-2. Extrait le texte brut de l'email en cours de composition ou de lecture
+2. Extrait le texte brut de l'email en cours de composition
 3. Normalise le texte (supprime les caractères invisibles, uniformise les espaces)
 4. Récupère l'adresse email de l'expéditeur depuis les métadonnées de la page
-5. Combine l'expéditeur et le contenu pour créer un hash unique
+5. Combine l'expéditeur et le contenu pour créer un hash unique (format : "From: [adresse_expéditeur]\n\n[contenu_email]")
+
+**Pour la vérification :**
+1. L'extension identifie les éléments DOM spécifiques à Gmail ou Outlook
+2. Extrait le texte brut de l'email reçu
+3. Détecte automatiquement la preuve (signatureId) dans le corps de l'email si elle y est présente
+4. Récupère l'adresse email de l'expéditeur depuis les métadonnées de la page
+5. Combine l'expéditeur et le contenu pour créer le hash à vérifier
+6. Compare ce hash avec celui enregistré dans la preuve sur la blockchain
 
 **Avantages :**
 - ✅ Gain de temps : Pas besoin de copier-coller
@@ -675,6 +701,40 @@ CertiDocs fonctionne avec plusieurs types de documents :
 5. 💡 **Bonus** : Le destinataire peut ajouter votre adresse dans son annuaire pour vérifier rapidement vos futurs documents
 
 **Avantage :** La preuve est directement dans l'image, ce qui facilite le partage et la vérification. L'annuaire permet de créer une relation de confiance réutilisable.
+
+### Cas d'usage 4 : Devis PDF avec coordonnées bancaires séparées
+
+**Situation :** Vous envoyez un devis PDF important à un client, et les coordonnées bancaires sont transmises séparément par email pour des raisons de sécurité. Vous voulez authentifier à la fois le PDF et l'email contenant l'IBAN.
+
+**Avec CertiDocs :**
+1. **Génération de la preuve pour le PDF** :
+   - Vous uploadez le PDF du devis dans CertiDocs
+   - Vous générez une preuve d'authenticité pour le PDF
+   - Vous recevez un identifiant unique (signatureId) pour le PDF
+
+2. **Génération de la preuve pour l'email** :
+   - Vous composez un email contenant les coordonnées bancaires (IBAN)
+   - Vous utilisez l'extension CertiDocs pour authentifier le contenu de l'email
+   - L'extension détecte automatiquement le contenu de l'email (incluant l'IBAN)
+   - Vous générez une preuve d'authenticité pour l'email
+   - Vous recevez un identifiant unique (signatureId) pour l'email
+
+3. **Envoi de l'email avec les deux preuves** :
+   - Vous envoyez un seul email contenant :
+     - Le PDF du devis en pièce jointe
+     - La preuve du PDF (signatureId) en pièce jointe ou dans le corps
+     - Le texte de l'email avec l'IBAN
+     - La preuve de l'email (signatureId) dans le corps de l'email
+
+4. **Vérification par le destinataire** :
+   - Le client vérifie d'abord l'email avec l'IBAN en utilisant l'extension CertiDocs
+   - L'extension détecte automatiquement le contenu de l'email ET la preuve dans le corps
+   - Le client vérifie ensuite le PDF en uploadant le fichier et en utilisant la preuve jointe
+   - Les deux vérifications doivent réussir pour garantir l'authenticité complète
+
+**Avantage :** Chaque élément sensible (PDF et email avec IBAN) a sa propre preuve cryptographique indépendante. Cela permet de protéger contre les fraudes au virement où un attaquant pourrait modifier l'IBAN dans l'email tout en conservant le PDF original. Si l'email est modifié, sa preuve deviendra invalide, même si le PDF reste valide.
+
+**Protection contre la fraude :** Si un attaquant modifie l'email pour changer l'IBAN et réutilise la preuve originale, la vérification échouera car le hash de l'email modifié ne correspondra plus. Si l'attaquant génère une nouvelle preuve avec son propre portefeuille, l'annuaire permettra de détecter que l'adresse du signataire ne correspond pas à celle attendue.
 
 ---
 
