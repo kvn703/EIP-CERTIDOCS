@@ -537,6 +537,8 @@
   border-radius: 8px;
   border: 1px solid rgba(149, 132, 255, 0.1);
   padding: 2px 14px;
+  /* Espacement entre authorized recipients et authenticity format */
+  margin-top: 24px;
   /* Réduit au minimum pour rapprocher du bouton */
   margin-bottom: 0px;
   /* Supprimé pour rapprocher du bouton */
@@ -669,6 +671,7 @@
 
   .generate-options-card {
     padding: 10px 12px;
+    margin-top: 20px;
     margin-bottom: 16px;
   }
 

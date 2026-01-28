@@ -19,4 +19,15 @@
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+
+/* Dark Mode Styles */
+[data-theme="dark"] .mail-section-loading {
+  background: linear-gradient(-45deg, rgba(26, 21, 37, 0.8), rgba(37, 32, 48, 0.7), rgba(26, 21, 37, 0.8));
+  background-size: 400% 400%;
+  border-left-color: rgba(149, 132, 255, 0.4);
+}
+
+[data-theme="dark"] .mail-section-loading.completed {
+  border-left-color: var(--color-success);
 } 

@@ -793,12 +793,128 @@
 }
 
 /* Dark Mode */
+[data-theme="dark"] .address-directory-overlay {
+  background: rgba(15, 11, 26, 0.85) !important;
+}
+
 [data-theme="dark"] .address-directory-content {
   background: linear-gradient(135deg, 
-    rgba(26, 21, 37, 0.95) 0%, 
-    rgba(37, 32, 48, 0.92) 50%,
-    rgba(26, 21, 37, 0.95) 100%);
+    rgba(15, 11, 26, 0.98) 0%, 
+    rgba(26, 21, 37, 0.95) 50%,
+    rgba(15, 11, 26, 0.98) 100%) !important;
   border-color: rgba(149, 132, 255, 0.4);
+  box-shadow: 
+    0 24px 72px rgba(0, 0, 0, 0.8),
+    0 12px 36px rgba(149, 132, 255, 0.3),
+    0 4px 12px rgba(149, 132, 255, 0.25),
+    inset 0 1px 0 rgba(149, 132, 255, 0.2) !important;
+}
+
+[data-theme="dark"] .address-directory-header {
+  border-bottom-color: rgba(149, 132, 255, 0.2);
+  background: linear-gradient(180deg, 
+    transparent 0%, 
+    rgba(149, 132, 255, 0.05) 100%);
+}
+
+[data-theme="dark"] .address-directory-icon-container {
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.3) 0%, 
+    rgba(184, 170, 255, 0.25) 100%);
+  box-shadow: 
+    0 8px 24px rgba(149, 132, 255, 0.4),
+    0 4px 12px rgba(149, 132, 255, 0.3) !important;
+  border-color: rgba(149, 132, 255, 0.4);
+}
+
+[data-theme="dark"] .address-directory-icon {
+  color: var(--accent-light);
+}
+
+[data-theme="dark"] .address-directory-close {
+  background: linear-gradient(135deg, 
+    rgba(26, 21, 37, 0.95) 0%, 
+    rgba(37, 32, 48, 0.9) 100%);
+  border-color: rgba(149, 132, 255, 0.3);
+  color: var(--accent-light);
+  box-shadow: 
+    0 4px 16px rgba(149, 132, 255, 0.2),
+    0 2px 8px rgba(149, 132, 255, 0.15) !important;
+}
+
+[data-theme="dark"] .address-directory-close:hover {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.9) 0%, 
+    rgba(255, 142, 142, 0.85) 100%);
+  border-color: rgba(255, 107, 107, 0.5);
+}
+
+[data-theme="dark"] .address-directory-body {
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .address-directory-search-icon {
+  color: var(--accent-light);
+}
+
+[data-theme="dark"] .address-directory-search-input::placeholder {
+  color: var(--text-light);
+  opacity: 0.5;
+}
+
+[data-theme="dark"] .address-directory-search-input:focus {
+  background: rgba(26, 21, 37, 0.9);
+  border-color: rgba(149, 132, 255, 0.5);
+  box-shadow: 
+    0 4px 16px rgba(149, 132, 255, 0.2) !important;
+}
+
+[data-theme="dark"] .address-directory-add-button {
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.15) 0%, 
+    rgba(184, 170, 255, 0.1) 100%);
+  border-color: rgba(149, 132, 255, 0.3);
+  color: var(--accent-light);
+  box-shadow: 
+    0 2px 8px rgba(149, 132, 255, 0.2) !important;
+}
+
+[data-theme="dark"] .address-directory-add-button:hover {
+  background: linear-gradient(135deg, 
+    rgba(149, 132, 255, 0.25) 0%, 
+    rgba(184, 170, 255, 0.2) 100%);
+  border-color: rgba(149, 132, 255, 0.5);
+  box-shadow: 
+    0 4px 16px rgba(149, 132, 255, 0.3),
+    0 2px 8px rgba(149, 132, 255, 0.2) !important;
+}
+
+[data-theme="dark"] .address-directory-empty {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .address-directory-entry-separator {
+  color: var(--text-light);
+}
+
+[data-theme="dark"] .address-directory-input-valid {
+  color: var(--color-success);
+}
+
+[data-theme="dark"] .address-directory-error {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.2) 0%, 
+    rgba(255, 142, 142, 0.15) 100%);
+  border-color: rgba(255, 107, 107, 0.4);
+  color: var(--color-error-light);
+}
+
+[data-theme="dark"] .address-directory-copy-feedback {
+  background: linear-gradient(135deg, var(--color-success) 0%, var(--color-success-light) 100%);
+  color: var(--text-main);
+  box-shadow: 
+    0 4px 12px rgba(127, 255, 167, 0.5),
+    0 8px 24px rgba(127, 255, 167, 0.3);
 }
 
 [data-theme="dark"] .address-directory-search-input,
@@ -806,6 +922,8 @@
   background: rgba(26, 21, 37, 0.6);
   border-color: rgba(149, 132, 255, 0.25);
   color: var(--text-main, #e0d9ff);
+  box-shadow: 
+    0 2px 8px rgba(149, 132, 255, 0.1) !important;
 }
 
 [data-theme="dark"] .address-directory-add-form {
@@ -841,6 +959,8 @@
 [data-theme="dark"] .address-directory-form-input:focus {
   background: rgba(26, 21, 37, 0.9);
   border-color: rgba(149, 132, 255, 0.4);
+  box-shadow: 
+    0 2px 8px rgba(149, 132, 255, 0.15) !important;
 }
 
 [data-theme="dark"] .address-directory-input-icon {
@@ -896,6 +1016,8 @@
     rgba(37, 32, 48, 0.85) 50%,
     rgba(26, 21, 37, 0.9) 100%);
   border-color: rgba(149, 132, 255, 0.35);
+  box-shadow: 
+    0 2px 8px rgba(149, 132, 255, 0.1) !important;
 }
 
 [data-theme="dark"] .address-directory-list.is-scrollable {
@@ -947,6 +1069,9 @@
 [data-theme="dark"] .address-directory-copy-icon:hover {
   background: linear-gradient(135deg, #9584ff 0%, #b8aaff 50%, #7fffa7 100%);
   color: white;
+  box-shadow: 
+    0 4px 16px rgba(149, 132, 255, 0.4),
+    0 8px 32px rgba(149, 132, 255, 0.3) !important;
 }
 
 [data-theme="dark"] .address-directory-remove-icon {
