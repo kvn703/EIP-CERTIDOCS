@@ -650,6 +650,8 @@ const GeneratePage = () => {
                 onCopy={launchConfetti}
                 isString={IsString}
                 activeTab={activeTab}
+                pdfFile={pdfFile}
+                imageFile={imageFile}
             />
         </>
     );
