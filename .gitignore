@@ -4,3 +4,9 @@ package-lock.json
 .DS_Store
 UI_UX_IMPROVEMENTS_2025.md
 local/
+.vscode/
+excel_analysis.json
+ANALYSE_CODEBASE.md
+SCENARIO_DEMO.md
+VERIFY_PAGE_IMPROVEMENTS_2025.md
+*.xlsx
