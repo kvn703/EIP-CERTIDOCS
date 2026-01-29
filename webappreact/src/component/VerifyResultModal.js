@@ -12,10 +12,13 @@ const VerifyResultModal = ({
   result,
   signatureId,
   message,
-  activeTab
+  activeTab,
+  signerAddress
 }) => {
   const { t } = useTranslation();
   const { address } = useAppKitAccount();
+  // Utiliser l'adresse du signataire si disponible, sinon le wallet connecté
+  const usedWalletAddress = signerAddress || address;
   const [copiedStates, setCopiedStates] = useState({
     address: false
   });
@@ -55,20 +58,20 @@ const VerifyResultModal = ({
   useEffect(() => {
     if (isOpen) {
       setIsDirectoryOpen(false);
-      if (address && isAddressInDirectory(address)) {
-        setAddressInput(address);
+      if (usedWalletAddress && isAddressInDirectory(usedWalletAddress)) {
+        setAddressInput(usedWalletAddress);
       } else {
         setAddressInput('');
       }
     }
-  }, [isOpen, address]);
+  }, [isOpen, usedWalletAddress]);
 
   // Valeurs dérivées (calcul au rendu) pour éviter décalage avec prefill
   const normalizedInput = addressInput ? normalizeAddress(addressInput) : '';
-  const normalizedAddress = address ? normalizeAddress(address) : '';
+  const normalizedAddress = usedWalletAddress ? normalizeAddress(usedWalletAddress) : '';
   const isValidAddressFormat = normalizedInput.length >= 42;
-  const addressesMatch = !!address && !!addressInput && isValidAddressFormat && normalizedInput === normalizedAddress;
-  const addressesDoNotMatch = isValidAddressFormat && !!address && normalizedInput !== normalizedAddress;
+  const addressesMatch = !!usedWalletAddress && !!addressInput && isValidAddressFormat && normalizedInput === normalizedAddress;
+  const addressesDoNotMatch = isValidAddressFormat && !!usedWalletAddress && normalizedInput !== normalizedAddress;
 
   const handleCopy = async (text, label, key) => {
     if (!text) return;
@@ -98,7 +101,7 @@ const VerifyResultModal = ({
   if (!isOpen) return null;
 
   const isSuccess = result === 'success';
-  const usedWalletLabel = address ? getAddressLabel(address) : null;
+  const usedWalletLabel = usedWalletAddress ? getAddressLabel(usedWalletAddress) : null;
 
   return (
     <div className="verify-result-modal-overlay" onClick={onClose}>
@@ -140,7 +143,7 @@ const VerifyResultModal = ({
             </div>
           )}
           <div className="verify-result-details-card">
-            {address && (
+            {usedWalletAddress && (
               <>
                 <div className="verify-result-detail-item">
                   <span className="verify-detail-label">
@@ -149,23 +152,23 @@ const VerifyResultModal = ({
                   </span>
                   <div className="verify-detail-value-with-copy">
                     <span
-                      className={`verify-detail-value ${!isAddressInDirectory(address) ? 'verify-detail-value-not-in-directory' : ''}`}
+                      className={`verify-detail-value ${!isAddressInDirectory(usedWalletAddress) ? 'verify-detail-value-not-in-directory' : ''}`}
                     >
                       {usedWalletLabel
-                        ? `${usedWalletLabel} (${short_address(address)})`
-                        : short_address(address)}
+                        ? `${usedWalletLabel} (${short_address(usedWalletAddress)})`
+                        : short_address(usedWalletAddress)}
                     </span>
                     <div style={{ position: 'relative' }}>
                       <i
                         className={`fas fa-copy verify-copy-icon ${copiedStates.address ? 'copied' : ''}`}
-                        onClick={() => handleCopy(address, 'Adresse wallet', 'address')}
+                        onClick={() => handleCopy(usedWalletAddress, 'Adresse wallet', 'address')}
                         aria-label="Copier l'adresse wallet"
                         role="button"
                         tabIndex={0}
                         onKeyPress={(e) => {
                           if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault();
-                            handleCopy(address, 'Adresse wallet', 'address');
+                            handleCopy(usedWalletAddress, 'Adresse wallet', 'address');
                           }
                         }}
                       ></i>
@@ -176,7 +179,7 @@ const VerifyResultModal = ({
                       )}
                     </div>
                   </div>
-                  {!isAddressInDirectory(address) && (
+                  {!isAddressInDirectory(usedWalletAddress) && (
                     <span className="verify-wallet-not-in-directory-note">
                       {t('verify_wallet_not_in_directory')}
                     </span>
@@ -241,24 +244,24 @@ const VerifyResultModal = ({
                       </button>
                       <button
                         className={`verify-directory-button verify-add-button ${
-                          addressesMatch && !isAddressInDirectory(address) ? '' : 'disabled'
+                          addressesMatch && !isAddressInDirectory(usedWalletAddress) ? '' : 'disabled'
                         }`}
                         onClick={() => {
-                          if (addressesMatch && !isAddressInDirectory(address)) {
+                          if (addressesMatch && !isAddressInDirectory(usedWalletAddress)) {
                             setShouldAddAddress(true);
                             setIsDirectoryOpen(true);
                           }
                         }}
-                        disabled={!addressesMatch || isAddressInDirectory(address)}
+                        disabled={!addressesMatch || isAddressInDirectory(usedWalletAddress)}
                         title={
-                          addressesMatch && isAddressInDirectory(address)
+                          addressesMatch && isAddressInDirectory(usedWalletAddress)
                             ? t('address_directory_already_exists')
                             : addressesMatch
                             ? t('address_directory_add_to_directory')
                             : t('address_directory_add_to_directory')
                         }
                       >
-                        {addressesMatch && isAddressInDirectory(address) ? (
+                        {addressesMatch && isAddressInDirectory(usedWalletAddress) ? (
                           <>
                             <FaCheck />
                             Address in directory
@@ -303,7 +306,7 @@ const VerifyResultModal = ({
           setIsDirectoryOpen(false);
           setShouldAddAddress(false);
         }}
-        addressToAdd={shouldAddAddress && addressesMatch ? address : null}
+        addressToAdd={shouldAddAddress && addressesMatch ? usedWalletAddress : null}
         onAddressAdded={() => {
           setIsDirectoryOpen(false);
           setShouldAddAddress(false);

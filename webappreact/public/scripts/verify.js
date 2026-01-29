@@ -7,7 +7,7 @@
             contract: null,
             contractAddress: "0x6515cc2007BF39BF74bc561d054D228325223A2A",
             abi: [
-                "function verifySignature(bytes32, address, bytes32) external view returns (bool)",
+                "function verifySignature(bytes32, address, bytes32) external view returns (bool, address, address, bytes32, bytes32)",
             ],
             currentTab: 0,
             currentSignatureFile: null,
@@ -353,7 +353,7 @@ async function verifySignature() {
             verify_element.innerText = "Vérification en cours...";
         }
         try {
-            const isValid = await contract.verifySignature(
+            const [isValid, signerAddress, recoveredSigner, messageHashStored, messageHashProvided] = await contract.verifySignature(
                 signatureId,
                 userAddress,
                 messageHash
@@ -365,6 +365,16 @@ async function verifySignature() {
                     ? "✅ Empreinte VALIDE"
                     : "❌ Empreinte NON VALIDE";
             }
+            
+            // Émettre un événement avec l'adresse du signataire pour React
+            window.dispatchEvent(new CustomEvent('verificationResult', { 
+                detail: { 
+                    isValid, 
+                    signerAddress: signerAddress || recoveredSigner,
+                    signatureId,
+                    messageHash 
+                } 
+            }));
         } catch (error) {
             if (!error.message.includes("could not decode result data")) {
                 alert(error.message);
@@ -373,6 +383,13 @@ async function verifySignature() {
             if (verify_element) {
                 verify_element.innerText = "❌ Erreur lors de la vérification.";
             }
+            // Émettre un événement d'erreur
+            window.dispatchEvent(new CustomEvent('verificationResult', { 
+                detail: { 
+                    isValid: false, 
+                    error: error.message 
+                } 
+            }));
         }
     } else if (currentTab === 3) {
         if (!currentSignatureFile && !isString) {
@@ -446,7 +463,7 @@ async function verifySignature() {
         const userAddress = await signer.getAddress();
         
         try {
-            const isValid = await contract.verifySignature(
+            const [isValid, signerAddress, recoveredSigner, messageHashStored, messageHashProvided] = await contract.verifySignature(
                 signatureId,
                 userAddress,
                 messageHash
@@ -455,6 +472,16 @@ async function verifySignature() {
             document.getElementById("verify").innerText = isValid
                 ? "✅ Empreinte VALIDE"
                 : "❌ Empreinte NON VALIDE";
+            
+            // Émettre un événement avec l'adresse du signataire pour React
+            window.dispatchEvent(new CustomEvent('verificationResult', { 
+                detail: { 
+                    isValid, 
+                    signerAddress: signerAddress || recoveredSigner,
+                    signatureId,
+                    messageHash 
+                } 
+            }));
         }
         catch (error) {
             if (!error.message.includes("could not decode result data")) {
@@ -462,6 +489,13 @@ async function verifySignature() {
             }
             document.getElementById("verify").innerText =
                 "❌ Erreur lors de la vérification.";
+            // Émettre un événement d'erreur
+            window.dispatchEvent(new CustomEvent('verificationResult', { 
+                detail: { 
+                    isValid: false, 
+                    error: error.message 
+                } 
+            }));
         }
     } else if (currentTab === 1) {
         if (!currentPDFFile) {
@@ -527,7 +561,7 @@ async function verifySignature() {
         const userAddress = await signer.getAddress();
         
         try {
-            const isValid = await contract.verifySignature(
+            const [isValid, signerAddress, recoveredSigner, messageHashStored, messageHashProvided] = await contract.verifySignature(
                 signatureId,
                 userAddress,
                 messageHash
@@ -536,6 +570,16 @@ async function verifySignature() {
             document.getElementById("verify").innerText = isValid
                 ? "✅ Empreinte VALIDE"
                 : "❌ Empreinte NON VALIDE";
+            
+            // Émettre un événement avec l'adresse du signataire pour React
+            window.dispatchEvent(new CustomEvent('verificationResult', { 
+                detail: { 
+                    isValid, 
+                    signerAddress: signerAddress || recoveredSigner,
+                    signatureId,
+                    messageHash 
+                } 
+            }));
         }
         catch (error) {
             if (!error.message.includes("could not decode result data")) {
@@ -543,6 +587,13 @@ async function verifySignature() {
             }
             document.getElementById("verify").innerText =
                 "❌ Erreur lors de la vérification.";
+            // Émettre un événement d'erreur
+            window.dispatchEvent(new CustomEvent('verificationResult', { 
+                detail: { 
+                    isValid: false, 
+                    error: error.message 
+                } 
+            }));
         }
     } else if (currentTab === 2) {
         if (!currentImageFile) {
@@ -609,7 +660,7 @@ async function verifySignature() {
         const userAddress = await signer.getAddress();
         
         try {
-            const isValid = await contract.verifySignature(
+            const [isValid, signerAddress, recoveredSigner, messageHashStored, messageHashProvided] = await contract.verifySignature(
                 signatureId,
                 userAddress,
                 messageHash
@@ -618,6 +669,16 @@ async function verifySignature() {
             document.getElementById("verify").innerText = isValid
                 ? "✅ Empreinte VALIDE"
                 : "❌ Empreinte NON VALIDE";
+            
+            // Émettre un événement avec l'adresse du signataire pour React
+            window.dispatchEvent(new CustomEvent('verificationResult', { 
+                detail: { 
+                    isValid, 
+                    signerAddress: signerAddress || recoveredSigner,
+                    signatureId,
+                    messageHash 
+                } 
+            }));
         }
         catch (error) {
             if (!error.message.includes("could not decode result data")) {
@@ -625,6 +686,13 @@ async function verifySignature() {
             }
             document.getElementById("verify").innerText =
                 "❌ Erreur lors de la vérification.";
+            // Émettre un événement d'erreur
+            window.dispatchEvent(new CustomEvent('verificationResult', { 
+                detail: { 
+                    isValid: false, 
+                    error: error.message 
+                } 
+            }));
         }
     } else {
         const verify_element = document.getElementById("verify");

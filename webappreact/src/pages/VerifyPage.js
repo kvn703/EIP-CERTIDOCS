@@ -166,6 +166,7 @@ function VerifyPage() {
     const [IsString, setIsString] = useState(false);
     const [currentStep, setCurrentStep] = useState(1);
     const [isResultModalOpen, setIsResultModalOpen] = useState(false);
+    const [signerAddress, setSignerAddress] = useState(null);
     const resultProcessedRef = useRef(false);
     const setActiveTab = (tabIndex) => {
         _setActiveTab(tabIndex);
@@ -472,6 +473,23 @@ function VerifyPage() {
             if (timeoutId) clearTimeout(timeoutId);
         };
     }, [isVerifying, verificationResult]);
+
+    // Écouter l'événement verificationResult pour récupérer l'adresse du signataire
+    useEffect(() => {
+        const handleVerificationResult = (event) => {
+            const { isValid, signerAddress, error } = event.detail;
+            if (signerAddress) {
+                setSignerAddress(signerAddress);
+            }
+            // Le résultat de vérification est déjà géré par le polling du DOM
+        };
+
+        window.addEventListener('verificationResult', handleVerificationResult);
+        return () => {
+            window.removeEventListener('verificationResult', handleVerificationResult);
+        };
+    }, []);
+
     const handleReloadMailContent = () => {
         setIsReloading(true);
         setTimeout(() => {
@@ -706,6 +724,7 @@ function VerifyPage() {
         setVerificationResult(null);
         setIsVerifying(false);
         setHasVerificationCompleted(false);
+        setSignerAddress(null);
         resultProcessedRef.current = false;
         // Si la preuve était invalide, réinitialiser la barre de progression et les champs
         if (wasError) {
@@ -1398,6 +1417,7 @@ function VerifyPage() {
                 signatureId={signatureId || texte1}
                 message={message || texte2}
                 activeTab={activeTab}
+                signerAddress={signerAddress}
             />
 
             <div style={{ display: 'none' }}>
