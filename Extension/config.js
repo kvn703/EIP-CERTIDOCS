@@ -12,9 +12,9 @@ const CONFIG = {
 
     // URLs de production
     prod: {
-        baseUrl: "https://certidocsweb-xnvzbr.dappling.network",
-        generateUrl: "https://certidocsweb-xnvzbr.dappling.network/",
-        verifyUrl: "https://certidocsweb-xnvzbr.dappling.network/verify"
+        baseUrl: "https://eip-certidocs-jy6jwy.dappling.network",
+        generateUrl: "https://eip-certidocs-jy6jwy.dappling.network/",
+        verifyUrl: "https://eip-certidocs-jy6jwy.dappling.network/verify"
     }
 };
 

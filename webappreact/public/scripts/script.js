@@ -26,7 +26,7 @@ const baseUrl = (() => {
         return 'http://localhost:3000';
     } else {
         // Environnement de production
-        return 'https://certidocsweb-xnvzbr.dappling.network';
+        return 'https://eip-certidocs-jy6jwy.dappling.network';
     }
 })();
 

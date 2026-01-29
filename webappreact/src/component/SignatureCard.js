@@ -14,7 +14,7 @@ export default function SignatureCard({ signature, onCopy, isString, activeTab, 
       try {
         const base_url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
           ? 'http://localhost:3000'
-          : 'https://certidocsweb-xnvzbr.dappling.network';
+          : 'https://eip-certidocs-jy6jwy.dappling.network';
         
         const image_url = `${base_url}/EMAIL_PROOF.png`;
         const text_to_hide = "[CERTIDOCS]" + signature;
@@ -113,7 +113,7 @@ export default function SignatureCard({ signature, onCopy, isString, activeTab, 
       if (typeof window.hideTextInImageReturnBlob === 'function') {
         const base_url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
           ? 'http://localhost:3000'
-          : 'https://certidocsweb-xnvzbr.dappling.network';
+          : 'https://eip-certidocs-jy6jwy.dappling.network';
         
         const image_url =
           activeTab === 0 ? `${base_url}/EMAIL_PROOF.png` :
